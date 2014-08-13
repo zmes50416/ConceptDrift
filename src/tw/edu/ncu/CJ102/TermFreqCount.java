@@ -7,9 +7,10 @@ public class TermFreqCount {
 	private static File file;
 	private static FileReader reader;
 	private static BufferedReader in;
+	private static String keywordFreqCountDIR = SettingManager.getSettingManager().getSetting(SettingManager.KFCDIR);
 
 	public static void main(String args[]) {
-		counting("1");
+		counting(Qtag.writeFilePath);
 	}
 	public static void counting(String DirPath) {
 		for(File file:new File(DirPath).listFiles()){
@@ -27,13 +28,13 @@ public class TermFreqCount {
 			StringTokenizer parser = null;
 			int lineNumber = 0;
 			BufferedWriter bw;
-			if(!new File("Keyword_output_freq/").exists()){
-				boolean mkdirSuccess = new File("Keyword_output_freq/").mkdirs();
+			if(!new File(keywordFreqCountDIR).exists()){
+				boolean mkdirSuccess = new File(keywordFreqCountDIR).mkdirs();
 				if (!mkdirSuccess) {
 					System.out.println("Directory creation failed");
 				}
 			}
-			bw = new BufferedWriter(new FileWriter("Keyword_output_freq/"+file.getName().split("\\.")[0] + "_"
+			bw = new BufferedWriter(new FileWriter(keywordFreqCountDIR+file.getName().split("\\.")[0] + "_"
 					+ "keyword_output_freq.txt", false));
 			while ((line = in.readLine()) != null)
 
@@ -67,14 +68,13 @@ public class TermFreqCount {
 					// ，並由bw物件參考引用
 					// 將字串寫入檔案
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
 			bw.close(); // 關閉BufferedWriter物件
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 

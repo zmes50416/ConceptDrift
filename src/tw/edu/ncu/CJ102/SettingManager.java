@@ -9,8 +9,9 @@ import java.util.Properties;
  */
 class SettingManager {
 	static final String DOCDIR = "DocumetnDirPath";
-	static final String QTAGDIR = "QTagDirPath";
+	static final String KFCDIR = "KeyWordFreqCountDirPath";
 	static final String POSDIR = "POSDirPath";
+	static final String EXPDIR = "ExperimentDirPath";
 	private static SettingManager instance = new SettingManager();
 	Properties settingProps;
 	private SettingManager(){
@@ -33,8 +34,9 @@ class SettingManager {
 	}
 	private void loadDefaultSetting(){
 		settingProps.put(DOCDIR, "usedData/");
-		settingProps.put(QTAGDIR, "Keyword_output_freq/");
-		settingProps.put(POSDIR, "POS_filter/");
+		settingProps.put(KFCDIR, "Util/Keyword_output_freq/");
+		settingProps.put(POSDIR, "Util/POS_filter/");
+		settingProps.put(EXPDIR, "usedData/");
 		
 		try {
 			settingProps.storeToXML(new FileOutputStream("setting.xml"), "XMLSetting, You can change setting from here");

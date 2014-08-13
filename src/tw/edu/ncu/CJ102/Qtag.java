@@ -18,6 +18,11 @@ import qtag.Tagger;
 public class Qtag {
 	static String readFilePath = "usedData/acq/";
 	static String writeFilePath = "usedData/acq_qtag/";
+	
+	public Qtag(){
+		
+	}
+	
 	public static String[] tokenise(String line) {
 
 		StringTokenizer st = new StringTokenizer(line);

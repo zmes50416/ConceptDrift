@@ -12,16 +12,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class POS_Filter {
-
+	static SettingManager setting;
+	final String POSDIRPATH;
 	/**
 	 * 
 	 */
 	public POS_Filter() {
 		// TODO Auto-generated constructor stub
+		setting = SettingManager.getSettingManager();
+		POSDIRPATH = setting.getSetting(SettingManager.POSDIR);
 	}
 
-	public static void filter(String f) throws IOException {
-		FileReader FileStream = new FileReader("Keyword_output_freq/"+f + "_"
+	public void filter(String fileName) throws IOException {
+		FileReader FileStream = new FileReader(POSDIRPATH +fileName + "_"
 				+ "keyword_output_freq.txt");
 		BufferedReader BufferedStream = new BufferedReader(FileStream);
 		String e = "";
@@ -65,82 +68,16 @@ public class POS_Filter {
 				set.add(key1);
 				System.out.println("add:" + key1);
 			}
-			//組合字過濾
-			/*if (key1.equals(key2)) {//最後一個字
-				if ((tag1.equals("NN") || tag1.equals("NNS") || tag1
-						.equals("NP"))
-						&& key1.length() > 2) {
-					set.add(key1);
-					// i++;
-					System.out.println("add:" + key1);
-				}
-			} else if (key2.equals(key3)) {//最後兩個字
-				if ((tag1.equals("NN") || tag1.equals("NP")
-						|| tag1.equals("NNS") || tag1.equals("NPS") || tag1
-						.equals("JJ"))
-						&& key1.length() > 2) {
-					if ((key1.endsWith(",") || key1.endsWith("."))||(key2.startsWith(",") || key2.startsWith("."))) {
-						set.add(key1);
-						System.out.println("add:" + key1);
-					} else if ((tag2.equals("NN") || tag2.equals("NP")
-							|| tag2.equals("NPS") || tag2.equals("NNS"))
-							&& key2.length() > 2) {
-
-						set.add(key1 + "+" + key2);
-						System.out.println("add:" + key1 + "+" + key2);
-						i++;
-						// System.out.println(key + "_" + key1);
-					} else {
-						set.add(key1);
-						System.out.println("add:" + key1);
-					}
-				}
-
-			} else {
-				if ((tag1.equals("NN") || tag1.equals("NP")
-						|| tag1.equals("NNS") || tag1.equals("JJ"))
-						&& key1.length() > 2) {
-					if ((key1.endsWith(",") || key1.endsWith("."))||(key2.startsWith(",") || key2.startsWith("."))) {
-						set.add(key1);
-						System.out.println("add:" + key1);//串接一個字
-					} else if ((tag2.equals("NN") || tag2.equals("NP")
-							|| tag2.equals("NPS") || tag2.equals("NNS"))
-							&& key2.length() > 2) {
-						if ((key2.endsWith(",") || key2.endsWith("."))||(key3.startsWith(",") || key3.startsWith("."))) {
-							set.add(key1 + "+" + key2);
-							System.out.println("add:" + key1 + "+" + key2);
-							i++;//串接兩個字
-						} else if ((tag3.equals("NN") || tag3.equals("NP")
-								|| tag3.equals("NPS") || tag3.equals("NNS"))
-								&& key3.length() > 2) {
-							set.add(key1 + "+" + key2 + "+" + key3);
-							System.out.println("add:" + key1 + "+" + key2 + "+"
-									+ key3);//串接三個字
-							i = i + 2;
-						} else {
-							set.add(key1 + "+" + key2);
-							System.out.println("add:" + key1 + "+" + key2);//串接兩個字
-							i++;
-						}
-
-					}else
-					{
-						set.add(key1);
-						System.out.println("add:" + key1);//串接一個字
-					}
-
-				}
-			}*/
 		}
 
 
 		Object[] objs = set.toArray();
-		if(!new File("POS_Filter/").exists()){
-			boolean mkdirSuccess = new File("POS_Filter/").mkdirs();
-			
+		if(!new File(this.POSDIRPATH).exists()){
+			boolean mkdirSuccess = new File(POSDIRPATH).mkdirs();	
 		}
+		
 		BufferedWriter bw;
-		bw = new BufferedWriter(new FileWriter("POS_Filter/"+f + "_" + "filter_output1.txt",
+		bw = new BufferedWriter(new FileWriter(POSDIRPATH+fileName + "_" + "filter_output1.txt",
 				false));
 		String objs_out = "";
 		for (int i = 0; i < objs.length; i++) {
@@ -177,7 +114,7 @@ public class POS_Filter {
 
 	public static void main(String args[]) throws IOException {
 		String fileName="acq_0000005_qtag";
-		filter(fileName);
+		new POS_Filter().filter(fileName);
 	}
 
 }
