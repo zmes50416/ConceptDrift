@@ -24,7 +24,7 @@ public class Result_Rank {
 		//ranking(1);
 	}
 	public static void ranking(String no) {
-		System.out.println("³B²zÀÉ®×"+no+"¤¤...");
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"ä¸­...");
 		try {
 			
 			BufferedReader br = new BufferedReader(new FileReader("citeulike/citeulike_NGD/"+no + "_" + 
@@ -73,7 +73,7 @@ public class Result_Rank {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("ÀÉ®×"+no+"³B²z§¹²¦");
+		System.out.println("æª”æ¡ˆ"+no+"è™•ç†å®Œç•¢");
 	}
 }
 

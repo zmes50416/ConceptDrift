@@ -4,12 +4,12 @@ public class parser
 {
 	public static void main(String[] args)
 	{
-		String find1 = "<doc ";//±ıÂ^¨ú¦r¦ê
-		String find2 = "</doc>";//±ıÂ^¨ú¦r¦ê
+		String find1 = "<doc ";//æ¬²æ“·å–å­—ä¸²
+		String find2 = "</doc>";//æ¬²æ“·å–å­—ä¸²
 
-		String path = "F:/extracted";//Åª¨ú¸ô®|
-		String out_path ="F:/enwiki-pages-articles";//¿é¥X¸ô®|
-		String name = "wiki";//¤å¥ó¦WºÙ
+		String path = "D:/Documents/WikiExtract/WikiHTML";//è®€å–è·¯å¾‘
+		String out_path ="D:/Documents/WikiExtract/WikiDoc";//è¼¸å‡ºè·¯å¾‘
+		String name = "wiki";//æ–‡ä»¶åç¨±
 
 		int i = 0;
 		String value;
@@ -27,7 +27,7 @@ public class parser
 			
 			for (String f : files){
 				try {
-					System.out.println("Åª¨ú"+path+"/"+d+"/"+f);
+					System.out.println("è®€å–"+path+"/"+d+"/"+f);
 					br = new BufferedReader(new InputStreamReader(new FileInputStream(path+"/"+d+"/"+f), "UTF8") );
 					new File(out_path+"/" + d ).mkdir();					
 					//bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out_path+"/" + d + "/" + name + "_output" + i + ".htm"), "UTF8"));
@@ -46,19 +46,19 @@ public class parser
 							value = line.replaceAll(find1, "");
 							value = value.replaceAll(">", "");
 							
-							System.out.println("¼g¤J: "+value);
+							System.out.println("å¯«å…¥: "+value);
 							
 							bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out_path+"/" + d + "/" + name + "_output" + i + ".htm"), "UTF8"));
 							
 							bw.write(value);
 							bw.newLine();
-							bw.flush(); // ²MªÅ½w½Ä°Ï
+							bw.flush(); // æ¸…ç©ºç·©è¡å€
 						}
 						else if (String.valueOf(line).contains(find2))
 						{
 							bw.flush();
 							bw.close();
-							System.out.println(path+"/"+d+"/"+f+" ¤w§¹¦¨!");
+							System.out.println(path+"/"+d+"/"+f+" å·²å®Œæˆ!");
 							
 							i++;
 							//bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out_path+"/" + d + "/" + name + "_output" + i + ".htm"), "UTF8"));
@@ -66,7 +66,7 @@ public class parser
 						else
 						{
 							bw.write(line);
-							System.out.println("¼g¤J: "+line);
+							System.out.println("å¯«å…¥: "+line);
 							bw.newLine();
 							bw.flush();
 						}
@@ -111,7 +111,7 @@ public class parser
 						value = value.replaceAll(">", "");
 						bw.write(value);
 						bw.newLine();
-						bw.flush(); // ²MªÅ½w½Ä°Ï
+						bw.flush(); // æ¸…ç©ºç·©è¡å€
 					}
 					else if (String.valueOf(line).contains(find2))
 					{

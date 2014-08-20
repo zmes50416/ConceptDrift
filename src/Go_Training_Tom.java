@@ -27,79 +27,79 @@ public class Go_Training_Tom {
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*//¥H¤U¬°Reuters°V½m¡B´ú¸Õ¸ê®Æ¶°³Ğ«Øµ{¦¡½X
+		/*//ä»¥ä¸‹ç‚ºReutersè¨“ç·´ã€æ¸¬è©¦è³‡æ–™é›†å‰µå»ºç¨‹å¼ç¢¼
 		String dir = "Tom_exp2/";
-		int days = 3; //¹êÅç¤Ñ¼Æ
-		new File(dir).mkdirs(); //³Ğ³y¥X¹êÅç¸ê®Æ§X
-		new File(dir+"user_porfile").mkdirs(); //³Ğ³y¥X¹êÅç¨Ï¥ÎªÌ¼Ò«¬¸ê®Æ§X
-		new File(dir+"training").mkdirs(); //³Ğ³y¥X¹êÅç°V½m¶°¸ê®Æ§X
-		new File(dir+"testing").mkdirs(); //³Ğ³y¥X¹êÅç´ú¸Õ¶°¸ê®Æ§X
+		int days = 3; //å¯¦é©—å¤©æ•¸
+		new File(dir).mkdirs(); //å‰µé€ å‡ºå¯¦é©—è³‡æ–™åŒ£
+		new File(dir+"user_porfile").mkdirs(); //å‰µé€ å‡ºå¯¦é©—ä½¿ç”¨è€…æ¨¡å‹è³‡æ–™åŒ£
+		new File(dir+"training").mkdirs(); //å‰µé€ å‡ºå¯¦é©—è¨“ç·´é›†è³‡æ–™åŒ£
+		new File(dir+"testing").mkdirs(); //å‰µé€ å‡ºå¯¦é©—æ¸¬è©¦é›†è³‡æ–™åŒ£
 		for(int i=1; i<=days; i++){
-			System.out.println("²Ä"+i+"¤Ñ");
-			new File(dir+"training/"+"day_"+i).mkdirs(); //³Ğ³y¥X¹êÅç°V½m¶°²Äi¤Ñ¸ê®Æ§X
-			new File(dir+"testing/"+"day_"+i).mkdirs(); //³Ğ³y¥X¹êÅç´ú¸Õ¶°²Äi¤Ñ¸ê®Æ§X
+			System.out.println("ç¬¬"+i+"å¤©");
+			new File(dir+"training/"+"day_"+i).mkdirs(); //å‰µé€ å‡ºå¯¦é©—è¨“ç·´é›†ç¬¬iå¤©è³‡æ–™åŒ£
+			new File(dir+"testing/"+"day_"+i).mkdirs(); //å‰µé€ å‡ºå¯¦é©—æ¸¬è©¦é›†ç¬¬iå¤©è³‡æ–™åŒ£
 			topic_doc_generateTrainSet("Tom_reuters/single",dir+"training/"+"day_"+i,"acq");
 			topic_doc_generateTestSet("Tom_reuters/single",dir+"testing/"+"day_"+i,"acq");
 		}
-		//¥H¤W¬°Reuters°V½m¡B´ú¸Õ¸ê®Æ¶°³Ğ«Øµ{¦¡½X*/
+		//ä»¥ä¸Šç‚ºReutersè¨“ç·´ã€æ¸¬è©¦è³‡æ–™é›†å‰µå»ºç¨‹å¼ç¢¼*/
 		
-		//¥H¤U¬°CiteULike°V½m¡B´ú¸Õ¸ê®Æ¶°³Ğ«Øµ{¦¡½X
+		//ä»¥ä¸‹ç‚ºCiteULikeè¨“ç·´ã€æ¸¬è©¦è³‡æ–™é›†å‰µå»ºç¨‹å¼ç¢¼
 		String dir = "Tom_exp5/", line="", real_people="";
-		int train_days = 30, test_days = 10; //citeulike-¹êÅç¤Ñ¼Æ¡A0¬°¥ş³¡¡A-1¬°¤£¨Ï¥Î
-		//real_people = "06c159908900abf05b5ab975b9766f0a"; //¿ï¾Üciteulike¸ê®Æ¬y
+		int train_days = 30, test_days = 10; //citeulike-å¯¦é©—å¤©æ•¸ï¼Œ0ç‚ºå…¨éƒ¨ï¼Œ-1ç‚ºä¸ä½¿ç”¨
+		//real_people = "06c159908900abf05b5ab975b9766f0a"; //é¸æ“‡citeulikeè³‡æ–™æµ
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("citeulike/used_file_into.txt"));
 			while((line=br.readLine())!=null){
-				real_people = line.split("-")[0]; //¿ï¾Üciteulike¸ê®Æ¬y
+				real_people = line.split("-")[0]; //é¸æ“‡citeulikeè³‡æ–™æµ
 				real_word_generateSet("citeulike/citeulike_Tom_citeulike_0.4/",dir,real_people,train_days,test_days);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//¥H¤W¬°CiteULike°V½m¡B´ú¸Õ¸ê®Æ¶°³Ğ«Øµ{¦¡½X
+		//ä»¥ä¸Šç‚ºCiteULikeè¨“ç·´ã€æ¸¬è©¦è³‡æ–™é›†å‰µå»ºç¨‹å¼ç¢¼
 	}
 	
-	//²£¥Í¤£«ü©w¥DÃD»P¤å¥ó¼Æ¶qªº°V½m¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šä¸»é¡Œèˆ‡æ–‡ä»¶æ•¸é‡çš„è¨“ç·´é›†
 	public static void topic_doc_generateTrainSet(String source_dir, String resultDir){
 		random_topic_doc_generate(source_dir,resultDir,"training");
 	}
-	//²£¥Í¤£«ü©w¤å¥ó¼Æ¶qªº°V½m¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šæ–‡ä»¶æ•¸é‡çš„è¨“ç·´é›†
 	public static void topic_doc_generateTrainSet(String source_dir, String resultDir, String topic){
-		System.out.println("°V½m¶°«ü©w¥DÃD = "+topic);
+		System.out.println("è¨“ç·´é›†æŒ‡å®šä¸»é¡Œ = "+topic);
 		random_doc_generate(source_dir,resultDir,"training",topic);
 	}
-	//²£¥Í¤£«ü©w¥DÃDªº°V½m¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šä¸»é¡Œçš„è¨“ç·´é›†
 	public static void topic_doc_generateTrainSet(String source_dir, String resultDir, int size){
 		random_topic_generate(source_dir,resultDir,"training",size);
 	}
-	//²£¥Í¤£«ü©w¥DÃD»P¤å¥ó¼Æ¶qªº´ú¸Õ¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šä¸»é¡Œèˆ‡æ–‡ä»¶æ•¸é‡çš„æ¸¬è©¦é›†
 	public static void topic_doc_generateTestSet(String source_dir, String resultDir){
 		random_topic_doc_generate(source_dir,resultDir,"testing");
 	}
-	//²£¥Í¤£«ü©w¤å¥ó¼Æ¶qªº´ú¸Õ¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šæ–‡ä»¶æ•¸é‡çš„æ¸¬è©¦é›†
 	public static void topic_doc_generateTestSet(String source_dir, String resultDir, String topic){
-		System.out.println("´ú¸Õ¶°«ü©w¥DÃD = "+topic);
+		System.out.println("æ¸¬è©¦é›†æŒ‡å®šä¸»é¡Œ = "+topic);
 		random_doc_generate(source_dir,resultDir,"testing",topic);
 	}
-	//²£¥Í¤£«ü©w¥DÃDªº´ú¸Õ¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šä¸»é¡Œçš„æ¸¬è©¦é›†
 	public static void topic_doc_generateTestSet(String source_dir, String resultDir, int size){
 		random_topic_generate(source_dir,resultDir,"testing",size);
 	}
-	//²£¥Í¤£«ü©w¤å¥ó¼Æ¶qªº°V½m»P´ú¸Õ¶°
+	//ç”¢ç”Ÿä¸æŒ‡å®šæ–‡ä»¶æ•¸é‡çš„è¨“ç·´èˆ‡æ¸¬è©¦é›†
 	public static void topic_doc_generateTrainTestSet(String source_dir, String resultDir, int day, String topic){
-		System.out.println("°V½m»P´ú¸Õ¶°«ü©w¥DÃD = "+topic);
+		System.out.println("è¨“ç·´èˆ‡æ¸¬è©¦é›†æŒ‡å®šä¸»é¡Œ = "+topic);
 		random_doc_generate(source_dir,resultDir,"training",topic);
 	}
 	
-	//«ü©w¥DÃD¡AÀH¾÷¥DÃD¤å¥ó¼Æ¶q
+	//æŒ‡å®šä¸»é¡Œï¼Œéš¨æ©Ÿä¸»é¡Œæ–‡ä»¶æ•¸é‡
 	public static void random_doc_generate(String source_dir, String resultDir, String Object, String topic){
 		Random ran = new Random();
-		int size = ran.nextInt(15)+1; //ÀH¾÷1~15½g¤å³¹
-		System.out.println("ÀH¾÷¥DÃD¤å¥ó¼Æ¶q = "+size);
+		int size = ran.nextInt(15)+1; //éš¨æ©Ÿ1~15ç¯‡æ–‡ç« 
+		System.out.println("éš¨æ©Ÿä¸»é¡Œæ–‡ä»¶æ•¸é‡ = "+size);
 		point_topic_doc_generateSet(source_dir, resultDir, topic, size);
 	}
-	//ÀH¾÷¥DÃD¡A«ü©w¥DÃD¤å¥ó¼Æ¶q
+	//éš¨æ©Ÿä¸»é¡Œï¼ŒæŒ‡å®šä¸»é¡Œæ–‡ä»¶æ•¸é‡
 	public static void random_topic_generate(String source_dir, String resultDir, String Object, int size){
 		File cdir = new File(source_dir);
 		ArrayList<File> list = new ArrayList<File>();
@@ -109,7 +109,7 @@ public class Go_Training_Tom {
 		Collections.shuffle(list);
 		point_topic_doc_generateSet(source_dir, resultDir, list.get(1).getName(), size);
 	}
-	//n­ÓÀH¾÷¥DÃD¡Am½gÀH¾÷¥DÃD¤å¥ó
+	//nå€‹éš¨æ©Ÿä¸»é¡Œï¼Œmç¯‡éš¨æ©Ÿä¸»é¡Œæ–‡ä»¶
 	public static void random_topic_doc_generate(String source_dir, String resultDir, String Object){
 		int topic_count;
 		int size = 0;
@@ -117,7 +117,7 @@ public class Go_Training_Tom {
 		ArrayList<File> list = new ArrayList<File>();
 		ArrayList<File> topicList = new ArrayList<File>();
 		Random ran = new Random();
-		topic_count = ran.nextInt(7)+1; //ÀH¾÷1~7­Ó¥DÃD
+		topic_count = ran.nextInt(7)+1; //éš¨æ©Ÿ1~7å€‹ä¸»é¡Œ
 		for(File f : cdir.listFiles()){
 			list.add(f);
 		}
@@ -126,16 +126,16 @@ public class Go_Training_Tom {
 			topicList.add(list.get(i));
 		}
 		for(File d: topicList){
-			size = ran.nextInt(15)+1; //ÀH¾÷1~15½g¤å³¹
+			size = ran.nextInt(15)+1; //éš¨æ©Ÿ1~15ç¯‡æ–‡ç« 
 			point_topic_doc_generateSet(source_dir, resultDir, d.getName(), size);
 		}
 	}
 	
-	//«ü©w¥DÃD»P¼Æ¶q
+	//æŒ‡å®šä¸»é¡Œèˆ‡æ•¸é‡
 	public static void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size){
 		point_topic_doc_generateSet(source_dir,resultDir,topic,size,0);
 	}
-	//°Ñ¼Æ¬°¸ê®Æ¨Ó·½¸ê®Æ§X, ¥Ø¼Ğ¸ê®Æ§X, ¥Ø¼Ğ¥DÃD, ¥DÃD¤å¥ó¼Æ¶q, ¶Ã¼ÆºØ¤l
+	//åƒæ•¸ç‚ºè³‡æ–™ä¾†æºè³‡æ–™åŒ£, ç›®æ¨™è³‡æ–™åŒ£, ç›®æ¨™ä¸»é¡Œ, ä¸»é¡Œæ–‡ä»¶æ•¸é‡, äº‚æ•¸ç¨®å­
 	public static void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size, int random_num){
 		File cdir = new File(source_dir+"/"+topic);
 		ArrayList<File> list = new ArrayList<File>();
@@ -145,12 +145,12 @@ public class Go_Training_Tom {
 			list.add(f);
 		}
 		if(random_num==0){
-			Collections.shuffle(list); //ÀH¾÷±Æ§Ç
+			Collections.shuffle(list); //éš¨æ©Ÿæ’åº
 		}else{
-			Collections.shuffle(list,new Random(random_num)); //ÀH¾÷±Æ§Ç
+			Collections.shuffle(list,new Random(random_num)); //éš¨æ©Ÿæ’åº
 		}
 		for(int i=0; i<size; i++){
-			//System.out.println("¶}©l½Æ»s²Ä "+(i+1)+" ½g = "+list.get(i).getName());
+			//System.out.println("é–‹å§‹è¤‡è£½ç¬¬ "+(i+1)+" ç¯‡ = "+list.get(i).getName());
 			copyfile(list.get(i), new File(resultDir + "/" + list.get(i).getName()));
 		}
 	}
@@ -182,20 +182,20 @@ public class Go_Training_Tom {
 		}
 	}
 	
-	//°Ñ¼Æ¬°¸ê®Æ¨Ó·½¸ê®Æ§X, ¥Ø¼Ğ¸ê®Æ§X, ¸ê®Æ¬y¹ï¶H, °V½m¤Ñ¼Æ, ´ú¸Õ¤Ñ¼Æ
+	//åƒæ•¸ç‚ºè³‡æ–™ä¾†æºè³‡æ–™åŒ£, ç›®æ¨™è³‡æ–™åŒ£, è³‡æ–™æµå°è±¡, è¨“ç·´å¤©æ•¸, æ¸¬è©¦å¤©æ•¸
 	public static int real_word_generateSet(String source_dir, String resultDir, String real_people, int train_days, int test_days){
 		try {
 			String line = "",article_id = "";
 			BufferedReader br;
 			ArrayList<String> list = new ArrayList<String>();
-			int first_day_m=13, first_day_d=32, last_day_m=0, last_day_d=0; //¬ö¿ı¸ê®Æ¬yªº³Ìªì»P³Ì«á¤@¤Ñ
-			int train_start_m=0, train_start_d=0, test_start_m=0, test_start_d=0; //¶}©l²£¥Í°V½m¡B´ú¸Õ¶°ªº¤é´Á
-			int days_num = 0; //¾ú¥v¬ö¿ıªº®É¶¡¬ö¿ı¼e«×¡A¤@­Ó¤ëºâ30¤Ñ
-			int max_data_gap = 0; //¾ú¥v¬ö¿ı¸ê®Æ¶¡³Ì¤j¶¡¹j
+			int first_day_m=13, first_day_d=32, last_day_m=0, last_day_d=0; //ç´€éŒ„è³‡æ–™æµçš„æœ€åˆèˆ‡æœ€å¾Œä¸€å¤©
+			int train_start_m=0, train_start_d=0, test_start_m=0, test_start_d=0; //é–‹å§‹ç”¢ç”Ÿè¨“ç·´ã€æ¸¬è©¦é›†çš„æ—¥æœŸ
+			int days_num = 0; //æ­·å²ç´€éŒ„çš„æ™‚é–“ç´€éŒ„å¯¬åº¦ï¼Œä¸€å€‹æœˆç®—30å¤©
+			int max_data_gap = 0; //æ­·å²ç´€éŒ„è³‡æ–™é–“æœ€å¤§é–“éš”
 			int data_line=0, m=0, d=0, pre_m=0, pre_d=0;
-			int train_num=0, test_num=0; //°V½m»P´ú¸Õ¤å¥ó¼Æ¶q­p¼Æ¾¹
+			int train_num=0, test_num=0; //è¨“ç·´èˆ‡æ¸¬è©¦æ–‡ä»¶æ•¸é‡è¨ˆæ•¸å™¨
 			double gap_times=0, gap_sum_days=0;
-			boolean long_enough=true; //¿ï¨úªº¸ê®Æ¬y°÷¤£°÷ªø
+			boolean long_enough=true; //é¸å–çš„è³‡æ–™æµå¤ ä¸å¤ é•·
 			ArrayList<String> steam_list = new ArrayList<String>();
 			steam_list.clear();
 			new File(resultDir+"training").deleteOnExit();
@@ -220,21 +220,21 @@ public class Go_Training_Tom {
 				while((line=br.readLine())!=null){
 					list.add(br.readLine().split(",")[0]);
 				}
-				Collections.shuffle(list); //ÀH¾÷±Æ§Ç
+				Collections.shuffle(list); //éš¨æ©Ÿæ’åº
 				real_people=list.get(1).split("-")[0];
 				br.close();
 				list.clear();
 				line="";
 			}
-			System.out.println("¸ê®Æ¬y¬°: "+real_people);
+			System.out.println("è³‡æ–™æµç‚º: "+real_people);
 			real_real_people = real_people;
 			
-			br = new BufferedReader(new FileReader("citeulike/CiteULike¸ê®Æ¶°/2014/"+real_people+"-read2014.txt"));
+			br = new BufferedReader(new FileReader("citeulike/CiteULikeè³‡æ–™é›†/2014/"+real_people+"-read2014.txt"));
 			while((line=br.readLine())!=null){
 				//System.out.println(line);
-				article_id = line.split(",")[0]; //¤å³¹id
-				m = Integer.valueOf(line.split(",")[1].split(" ")[0].split("-")[1]); //¬İ¤å³¹ªº¤ë¥÷
-				d = Integer.valueOf(line.split(",")[1].split(" ")[0].split("-")[2]); //¬İ¤å³¹ªº¤é
+				article_id = line.split(",")[0]; //æ–‡ç« id
+				m = Integer.valueOf(line.split(",")[1].split(" ")[0].split("-")[1]); //çœ‹æ–‡ç« çš„æœˆä»½
+				d = Integer.valueOf(line.split(",")[1].split(" ")[0].split("-")[2]); //çœ‹æ–‡ç« çš„æ—¥
 				data_line++;
 				
 				if(data_line==1){
@@ -244,52 +244,52 @@ public class Go_Training_Tom {
 				steam_list.add(String.valueOf(m)+"-"+String.valueOf(d)+","+article_id);
 			}
 			br.close();
-			//System.out.println("³Ì«á¤@µ§¸ê®Æ¬O¦b"+m+"¤ë"+d+"¤é");
+			//System.out.println("æœ€å¾Œä¸€ç­†è³‡æ–™æ˜¯åœ¨"+m+"æœˆ"+d+"æ—¥");
 			days_num = (m - first_day_m)*30 + (d - first_day_d) + 1;
 			//System.out.println("first_day_m="+first_day_m+" first_day_d="+first_day_d+" m="+m+" d="+d);
 			data_line = steam_list.size();
 			
-			//­pºâ¸Ó±q¸ê®Æ¬yªº­ş¤Ñ¶}©l³Ğ³y´ú¸Õ¶°
+			//è¨ˆç®—è©²å¾è³‡æ–™æµçš„å“ªå¤©é–‹å§‹å‰µé€ æ¸¬è©¦é›†
 			if(test_days!=0 || test_days!=-1){
 				while(test_days>d){
 					if(m==1){
-						System.out.println("¸ê®Æ¬yªø«×¤£¨¬");
+						System.out.println("è³‡æ–™æµé•·åº¦ä¸è¶³");
 						long_enough=false;
-					}else if(m==3){ //2¤ë¥u¯à­É28¤Ñµ¹d
+					}else if(m==3){ //2æœˆåªèƒ½å€Ÿ28å¤©çµ¦d
 						d = d+28;
-					}else if(m==2 || m==4 || m==6 || m==8 || m==9 || m==11){ //1 3 5 7 8 10¤ë¯à­É31¤Ñ
+					}else if(m==2 || m==4 || m==6 || m==8 || m==9 || m==11){ //1 3 5 7 8 10æœˆèƒ½å€Ÿ31å¤©
 						d = d+31;
-					}else if(m==5 || m==7 || m==10 || m==12){ //4 6 9 11¤ë¯à­É30¤Ñ
+					}else if(m==5 || m==7 || m==10 || m==12){ //4 6 9 11æœˆèƒ½å€Ÿ30å¤©
 						d = d+30;
 					}
 					m--;
 				}
 				d = d - test_days + 1;
 				test_start_m = m; test_start_d = d;
-				//System.out.println("´ú¸Õ¶}©l®É¶¡¬O"+test_start_m+"¤ë"+test_start_d+"¤é¡A¦@"+test_days+"¤Ñ");
+				//System.out.println("æ¸¬è©¦é–‹å§‹æ™‚é–“æ˜¯"+test_start_m+"æœˆ"+test_start_d+"æ—¥ï¼Œå…±"+test_days+"å¤©");
 			}
 			
-			//­pºâ¸Ó±q¸ê®Æ¬yªº­ş¤Ñ¶}©l³Ğ³y°V½m¶°
+			//è¨ˆç®—è©²å¾è³‡æ–™æµçš„å“ªå¤©é–‹å§‹å‰µé€ è¨“ç·´é›†
 			if(train_days!=0 || train_days!=-1){
 				while(train_days>d){
 					if(m==1){
-						System.out.println("¸ê®Æ¬yªø«×¤£¨¬");
+						System.out.println("è³‡æ–™æµé•·åº¦ä¸è¶³");
 						long_enough=false;
-					}else if(m==3){ //2¤ë¥u¯à­É28¤Ñµ¹d
+					}else if(m==3){ //2æœˆåªèƒ½å€Ÿ28å¤©çµ¦d
 						d = d+28;
-					}else if(m==2 || m==4 || m==6 || m==8 || m==9 || m==11){ //1 3 5 7 8 10¤ë¯à­É31¤Ñ
+					}else if(m==2 || m==4 || m==6 || m==8 || m==9 || m==11){ //1 3 5 7 8 10æœˆèƒ½å€Ÿ31å¤©
 						d = d+31;
-					}else if(m==5 || m==7 || m==10 || m==12){ //4 6 9 11¤ë¯à­É30¤Ñ
+					}else if(m==5 || m==7 || m==10 || m==12){ //4 6 9 11æœˆèƒ½å€Ÿ30å¤©
 						d = d+30;
 					}
 					m--;
 				}
 				d = d - train_days + 1;
 				train_start_m = m; train_start_d = d;
-				//System.out.println("°V½m¶}©l®É¶¡¬O"+train_start_m+"¤ë"+train_start_d+"¤é¡A¦@"+train_days+"¤Ñ");
+				//System.out.println("è¨“ç·´é–‹å§‹æ™‚é–“æ˜¯"+train_start_m+"æœˆ"+train_start_d+"æ—¥ï¼Œå…±"+train_days+"å¤©");
 			}
 			
-			//System.out.println("¦@"+data_line+"µ§¸ê®Æ");
+			//System.out.println("å…±"+data_line+"ç­†è³‡æ–™");
 			if(long_enough){
 				int i,j,z;
 				//String start_day = String.valueOf(m)+"-"+String.valueOf(d);
@@ -310,15 +310,15 @@ public class Go_Training_Tom {
 					train_start_m=first_day_m;
 					train_start_d=first_day_d;
 				}
-				//System.out.println("²Ä"+j+"µ§¸ê®Æ¶}©l°V½m");
+				//System.out.println("ç¬¬"+j+"ç­†è³‡æ–™é–‹å§‹è¨“ç·´");
 				//System.out.println("train_days="+train_days);
 				
-				//¶}©l²£¥Í°V½m¶°
+				//é–‹å§‹ç”¢ç”Ÿè¨“ç·´é›†
 				if(train_days!=-1){
 					for(i=1;i<=train_days;i++){
-						//System.out.println("¶}©l²£¥Í"+train_start_m+"¤ë"+train_start_d+"¤é°V½m»P´ú¸Õ¶°");
-						new File(resultDir+"training/"+"day_"+i).mkdirs(); //³Ğ³y¥X¹êÅç°V½m¶°²Äi¤Ñ¸ê®Æ§X
-						new File(resultDir+"testing/"+"day_"+i).mkdirs(); //³Ğ³y¥X¹êÅç´ú¸Õ¶°²Äi¤Ñ¸ê®Æ§X
+						//System.out.println("é–‹å§‹ç”¢ç”Ÿ"+train_start_m+"æœˆ"+train_start_d+"æ—¥è¨“ç·´èˆ‡æ¸¬è©¦é›†");
+						new File(resultDir+"training/"+"day_"+i).mkdirs(); //å‰µé€ å‡ºå¯¦é©—è¨“ç·´é›†ç¬¬iå¤©è³‡æ–™åŒ£
+						new File(resultDir+"testing/"+"day_"+i).mkdirs(); //å‰µé€ å‡ºå¯¦é©—æ¸¬è©¦é›†ç¬¬iå¤©è³‡æ–™åŒ£
 						temp_resultDir = resultDir+"training/"+"day_"+i;
 						list.clear();
 						
@@ -327,7 +327,7 @@ public class Go_Training_Tom {
 							if(train_start_m==Integer.valueOf(line.split(",")[0].split("-")[0]) && train_start_d==Integer.valueOf(line.split(",")[0].split("-")[1])){
 								File f = new File(source_dir+"cite_0abciteulike"+line.split(",")[1]+"_concepts.txt");
 								if(f.exists() && !list.contains(f.getName())){
-									//System.out.println("½Æ»sÀÉ®×: "+temp_resultDir + "/" + f.getName());
+									//System.out.println("è¤‡è£½æª”æ¡ˆ: "+temp_resultDir + "/" + f.getName());
 									copyfile(f, new File(temp_resultDir + "/" + f.getName()));
 									list.add(f.getName());
 									train_num++;
@@ -368,14 +368,14 @@ public class Go_Training_Tom {
 					test_start_m=first_day_m;
 					test_start_d=first_day_d;
 				}
-				//System.out.println("²Ä"+j+"µ§¸ê®Æ¶}©l´ú¸Õ");
+				//System.out.println("ç¬¬"+j+"ç­†è³‡æ–™é–‹å§‹æ¸¬è©¦");
 				
-				//¶}©l²£¥Í´ú¸Õ¶°
+				//é–‹å§‹ç”¢ç”Ÿæ¸¬è©¦é›†
 				if(test_days!=-1){
 					for(z=(i-1);z<=(train_days+test_days);z++){
-						//System.out.println("¶}©l²£¥Í"+test_start_m+"¤ë"+test_start_d+"¤é¡A°V½m»P´ú¸Õ¶°");
-						new File(resultDir+"training/"+"day_"+z).mkdirs(); //³Ğ³y¥X¹êÅç°V½m¶°²Äi¤Ñ¸ê®Æ§X
-						new File(resultDir+"testing/"+"day_"+z).mkdirs(); //³Ğ³y¥X¹êÅç´ú¸Õ¶°²Äi¤Ñ¸ê®Æ§X
+						//System.out.println("é–‹å§‹ç”¢ç”Ÿ"+test_start_m+"æœˆ"+test_start_d+"æ—¥ï¼Œè¨“ç·´èˆ‡æ¸¬è©¦é›†");
+						new File(resultDir+"training/"+"day_"+z).mkdirs(); //å‰µé€ å‡ºå¯¦é©—è¨“ç·´é›†ç¬¬iå¤©è³‡æ–™åŒ£
+						new File(resultDir+"testing/"+"day_"+z).mkdirs(); //å‰µé€ å‡ºå¯¦é©—æ¸¬è©¦é›†ç¬¬iå¤©è³‡æ–™åŒ£
 						temp_resultDir = resultDir+"testing/"+"day_"+z;
 						list.clear();
 						
@@ -384,7 +384,7 @@ public class Go_Training_Tom {
 							if(test_start_m==Integer.valueOf(line.split(",")[0].split("-")[0]) && test_start_d==Integer.valueOf(line.split(",")[0].split("-")[1])){
 								File f = new File(source_dir+"cite_0abciteulike"+line.split(",")[1]+"_concepts.txt");
 								if(f.exists() && !list.contains(f.getName())){
-									//System.out.println("½Æ»sÀÉ®×: "+temp_resultDir + "/" + f.getName());
+									//System.out.println("è¤‡è£½æª”æ¡ˆ: "+temp_resultDir + "/" + f.getName());
 									copyfile(f, new File(temp_resultDir + "/" + f.getName()));
 									list.add(f.getName());
 									test_num++;
@@ -422,8 +422,8 @@ public class Go_Training_Tom {
 					bw.flush();
 					bw.close();
 				}*/
-				System.out.println("¦@²£¥Í"+train_num+"½g°V½m¤å¥ó");
-				System.out.println("¦@²£¥Í"+test_num+"½g´ú¸Õ¤å¥ó");
+				System.out.println("å…±ç”¢ç”Ÿ"+train_num+"ç¯‡è¨“ç·´æ–‡ä»¶");
+				System.out.println("å…±ç”¢ç”Ÿ"+test_num+"ç¯‡æ¸¬è©¦æ–‡ä»¶");
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -445,7 +445,7 @@ public class Go_Training_Tom {
 		return real_real_people;
 	}
 	
-	//°Ñ¼Æ¬°¸ê®Æ¨Ó·½¸ê®Æ§X, ¥Ø¼Ğ¸ê®Æ§X, ¸ê®Æ¬y¹ï¶H, °V½m¤Ñ¼Æ, ´ú¸Õ¤Ñ¼Æ
+	//åƒæ•¸ç‚ºè³‡æ–™ä¾†æºè³‡æ–™åŒ£, ç›®æ¨™è³‡æ–™åŒ£, è³‡æ–™æµå°è±¡, è¨“ç·´å¤©æ•¸, æ¸¬è©¦å¤©æ•¸
 	public static boolean d_to_m(int m,int d){
 		if(d==28){
 			if(m==2){

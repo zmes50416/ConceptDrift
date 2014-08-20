@@ -29,8 +29,8 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 //for test!!!
 public class TOM_betweennessCentrality {
 	
-	double core_threshold = 0.75; //¨ú¦h¤Ö·í§@®Ö¤ß
-	double betweeness_threshold = 0.35; //¥h±¼¦h¤Ö³s½u
+	double core_threshold = 0.75; //å–å¤šå°‘ç•¶ä½œæ ¸å¿ƒ
+	double betweeness_threshold = 0.35; //å»æ‰å¤šå°‘é€£ç·š
 	
 	double simMin;
 	
@@ -50,7 +50,7 @@ public class TOM_betweennessCentrality {
 	
 	Map<link, Pair<String>> edges_removed;
 	
-	//°Ñ¼Æ: ¤À¸s¸ê®Æ¨Ó·½, ¤À¸s«á¸ê®Æ¦s©ñ¦aÂI, ÀÉ¦W
+	//åƒæ•¸: åˆ†ç¾¤è³‡æ–™ä¾†æº, åˆ†ç¾¤å¾Œè³‡æ–™å­˜æ”¾åœ°é», æª”å
 	public Map<String, Integer> betweenness_cal(String source_dir, String resultDir, String conceptFile, boolean changeSimMin){
 		linkList = new LinkedList<String>();
 		vertices = new HashSet<String>();
@@ -68,14 +68,14 @@ public class TOM_betweennessCentrality {
 		BufferedWriter bw,bw2,bw3;
 		
 		String filename = "";
-		//reuters¸ê®Æ¶°ªºÀÉ¦WµÑ¨ú¤èªk
+		//reutersè³‡æ–™é›†çš„æª”åèƒå–æ–¹æ³•
 		for(int i=0; i<conceptFile.split("_").length;i++){
 			//System.out.println("filename = "+ filename);
 			if(i==0){
 				filename=conceptFile.split("_")[0];
 			}else{
 				char[] filename_temp = conceptFile.split("_")[i].toCharArray();
-				if(!Character.isDigit(filename_temp[0])){ //¦pªG²Ä¤@­Ó¦r¤¸¬O¼Æ¦r¥Nªí¨ìÀÉ¦Wµ²§À¤F
+				if(!Character.isDigit(filename_temp[0])){ //å¦‚æœç¬¬ä¸€å€‹å­—å…ƒæ˜¯æ•¸å­—ä»£è¡¨åˆ°æª”åçµå°¾äº†
 					filename=filename+"_"+conceptFile.split("_")[i];
 				}else{
 					filename=filename+"_"+conceptFile.split("_")[i];
@@ -84,13 +84,13 @@ public class TOM_betweennessCentrality {
 			}
 		}
 		
-		//citeulike¸ê®Æ¶°ªºÀÉ¦WµÑ¨ú¤èªk
+		//citeulikeè³‡æ–™é›†çš„æª”åèƒå–æ–¹æ³•
 		//filename = conceptFile.split("_")[0];
 		
 		String conceptsFile = filename+"_concepts.txt";
 		String centerFile = filename+"_centers.txt";
 		
-		System.out.print("¤ÀªR«áÀÉ®×¬O"+filename+"\n");
+		System.out.print("åˆ†æå¾Œæª”æ¡ˆæ˜¯"+filename+"\n");
 		
 		try {
 			//br = new BufferedReader(new FileReader(source_dir +"/"+ conceptFile));
@@ -98,12 +98,12 @@ public class TOM_betweennessCentrality {
 			br = new BufferedReader(new FileReader(source_dir +"/"+ filename +"_Rank.txt"));
 			br2 = new BufferedReader(new FileReader("citeulike/citeulike_sTF_score/"+filename+"_Term_TFcalculate.txt"));
 			
-			bw = new BufferedWriter(new FileWriter(resultDir +"/"+ conceptsFile));//³B²z«áªº·§©À¸s
-			//bw2 =  new BufferedWriter(new FileWriter(resultDir +"/centers/"+ centerFile));//¦U·§©À¸s¬D¿ï¹Lªºµ²ªG
-			bw3 =  new BufferedWriter(new FileWriter("time/bc.txt", true));//¬ö¿ı®É¶¡
+			bw = new BufferedWriter(new FileWriter(resultDir +"/"+ conceptsFile));//è™•ç†å¾Œçš„æ¦‚å¿µç¾¤
+			//bw2 =  new BufferedWriter(new FileWriter(resultDir +"/centers/"+ centerFile));//å„æ¦‚å¿µç¾¤æŒ‘é¸éçš„çµæœ
+			bw3 =  new BufferedWriter(new FileWriter("time/bc.txt", true));//ç´€éŒ„æ™‚é–“
 			
 			String line;
-			//¨ú¥X¦¹ÀÉ®×ªº©Ò¦³¦rµü»PÅv­«
+			//å–å‡ºæ­¤æª”æ¡ˆçš„æ‰€æœ‰å­—è©èˆ‡æ¬Šé‡
 			while((line=br2.readLine())!=null){
 				String v1 = line.split(",")[0];
 				TF_term.put(v1,Integer.valueOf(line.split(",")[1]));
@@ -152,7 +152,7 @@ public class TOM_betweennessCentrality {
 				linkmap.put(e,l);
 			}
 		     
-		    //­ì©lªº¤À¸s¡AÃäÅv­«¬°1
+		    //åŸå§‹çš„åˆ†ç¾¤ï¼Œé‚Šæ¬Šé‡ç‚º1
 			//EdgeBetweennessClusterer<String,link> cluster = 
 			//		new EdgeBetweennessClusterer<String,link>((int) (map.size()*betweeness_threshold)); 
 			
@@ -167,7 +167,7 @@ public class TOM_betweennessCentrality {
 			bw3.close();
 			
 			
-			//²¾°£Ãä«á¦Aºâdegree
+			//ç§»é™¤é‚Šå¾Œå†ç®—degree
 			
 			for(link l : edges_removed.keySet()){
 				//g.removeEdge(l);
@@ -181,7 +181,7 @@ public class TOM_betweennessCentrality {
 			int i = 1;
 			for(Set<String> v :clusterSet){
 				allConcepts.add(v);
-				//¤j©ó¨â­Ó¦¨­ûºâ¤@­Ó·§©À
+				//å¤§æ–¼å…©å€‹æˆå“¡ç®—ä¸€å€‹æ¦‚å¿µ
 				if(v.size()>2){
 					concepts.add(v);
 				}
@@ -214,16 +214,16 @@ public class TOM_betweennessCentrality {
 					//System.out.println(s+","+degree+","+g.degree(s)+","+i);
 					
 					if(TF_term.get(s)!=null){
-						bw.write(s+"," + TF_term.get(s) +","+ i); //¦r,TF¤À¼Æ,¸s (concepts
+						bw.write(s+"," + TF_term.get(s) +","+ i); //å­—,TFåˆ†æ•¸,ç¾¤ (concepts
 					}else{
-						bw.write(s+"," + 0 +","+ i); //¦r,TF¤À¼Æ,¸s (concepts
+						bw.write(s+"," + 0 +","+ i); //å­—,TFåˆ†æ•¸,ç¾¤ (concepts
 					}
 					bw.newLine();
 					bw.flush();				
 					
 				}
 				
-				//±Æ§Ç¨Ã¨ú±odegree±Æ¦æ«enªºterm
+				//æ’åºä¸¦å–å¾—degreeæ’è¡Œå‰nçš„term
 				//sort_data = new ArrayList<Map.Entry<String, Integer>>(degreemap.entrySet());
 				double terms_cum = degreemap.size()*core_threshold;
 				/*Collections.sort(sort_data,
@@ -234,7 +234,7 @@ public class TOM_betweennessCentrality {
 							}
 						});	*/
 				
-				//¤§«e¤èªk
+				//ä¹‹å‰æ–¹æ³•
 				/*String name;
 				if(conceptFile.equals("concept.txt")){
 					name = "Stem/a_Term_calculate(onlyterm)_stem.txt";
@@ -243,7 +243,7 @@ public class TOM_betweennessCentrality {
 					name = "Stem/"+conceptFile.split("_")[0]+"_"+conceptFile.split("_")[1]+"_Term_calculate_stem.txt";
 					Tom_bcr1 = new BufferedReader(new FileReader(name));
 				}
-				System.out.println("°t¹ïTF¤À¼ÆÀÉ®× : "+name);
+				System.out.println("é…å°TFåˆ†æ•¸æª”æ¡ˆ : "+name);
 				String readline;
 				int j = 0;
 				readline = Tom_bcr1.readLine();
@@ -252,21 +252,21 @@ public class TOM_betweennessCentrality {
 					readline = readline.split(",")[0];
 					if(degreemap.get(readline)!=null){
 						j++;
-						bw2.write(readline+","+degreemap.get(readline)+","+i); //¦r,degree,¸s (main_concepts
+						bw2.write(readline+","+degreemap.get(readline)+","+i); //å­—,degree,ç¾¤ (main_concepts
 						bw2.newLine();
 						bw2.flush();
 					}else{
-						System.out.print(readline+" §ä¤£¨ì¹ïÀ³¸s\n");
+						System.out.print(readline+" æ‰¾ä¸åˆ°å°æ‡‰ç¾¤\n");
 					}
 					readline = Tom_bcr1.readLine();
 				}
 				Tom_bcr1.close();*/
 				
-				//¾Çªø¤èªk
+				//å­¸é•·æ–¹æ³•
 				/*for(int j=0;j< sort_data.size()*core_threshold;j++ ){
 					Entry<String, Integer> e = sort_data.get(j);
 				//for(Entry<String, Integer> e : sort_data){
-					bw2.write(e.getKey()+","+e.getValue()+","+i); //¦r,degree,¸s (main_concepts
+					bw2.write(e.getKey()+","+e.getValue()+","+i); //å­—,degree,ç¾¤ (main_concepts
 					bw2.newLine();
 					bw2.flush();		
 				//}
@@ -293,12 +293,12 @@ public class TOM_betweennessCentrality {
 		for (String t : edges) {
 			if ((t.split(",")[0].equals(node) || t.split(",")[1].equals(node))) {
 				degree++;
-			}//¥u¦³¤p©óªùÂe­Èªº¤~·|«Ø¥ß³sµ²(edges¤w¿z¿ï)
-		}//­pºâ¦U¸`ÂI(¦rµü)ªº³sµ²«×(degree)
+			}//åªæœ‰å°æ–¼é–€æª»å€¼çš„æ‰æœƒå»ºç«‹é€£çµ(edgeså·²ç¯©é¸)
+		}//è¨ˆç®—å„ç¯€é»(å­—è©)çš„é€£çµåº¦(degree)
 		return degree;
 	}
 	
-	//­×§ï¦Ûjung2 ­ì©l½X: edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer
+	//ä¿®æ”¹è‡ªjung2 åŸå§‹ç¢¼: edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer
 	public Set<Set<String>> transform(Graph<String,link> graph, int mNumEdgesToRemove){
 		//System.err.println("Edge Betweenness Clusterering...");
 		edges_removed = new LinkedHashMap<link, Pair<String>>();;
@@ -333,7 +333,7 @@ public class TOM_betweennessCentrality {
     				to_remove = e;
     			}
     		}*/
-        	//System.out.print("§PÂ_¤£¬Û³sÃä¬° = "+to_remove.id+"\n");
+        	//System.out.print("åˆ¤æ–·ä¸ç›¸é€£é‚Šç‚º = "+to_remove.id+"\n");
             edges_removed.put(to_remove, graph.getEndpoints(to_remove));
             graph.removeEdge(to_remove);
         }
@@ -368,7 +368,7 @@ public class TOM_betweennessCentrality {
         		if (c1 == c2 && !v1.equals(v2)) {
         			double delta = (g.isNeighbor(v1,v2)?1:0) - (double)g.degree(v1)*(double)g.degree(v2)/m2;
         			if(!g.isNeighbor(v1,v2)){
-        				System.out.print(v1 + " »P " + v2 + " ¹ê»Ú¤W¦P¸s¡A³Q§P¬°«D¦P¸s \n");
+        				System.out.print(v1 + " èˆ‡ " + v2 + " å¯¦éš›ä¸ŠåŒç¾¤ï¼Œè¢«åˆ¤ç‚ºéåŒç¾¤ \n");
         			}
         			sum = sum+delta;
         		}
@@ -384,13 +384,13 @@ public class TOM_betweennessCentrality {
 		TOM_betweennessCentrality bc = new TOM_betweennessCentrality();
 		//bc.betweeness_threshold = 0.5; 
 		
-		//­n­pºâ¤¤¶¡«×¤À¸s¸ê®ÆÀÉ¦Wªº¨Ó·½
+		//è¦è¨ˆç®—ä¸­é–“åº¦åˆ†ç¾¤è³‡æ–™æª”åçš„ä¾†æº
 		File d = new File("citeulike/citeulike_Tom_citeulike_0.4/");
 		//File d = new File("Tom_reuters/single/acq");
 		
 		//File f = new File("Rank/acq_0011975_Rank.txt");
 		for(File f : d.listFiles()){
-			System.out.print("¥Ø«e³B²zÀÉ®×¬°"+f.getName()+"\n");
+			System.out.print("ç›®å‰è™•ç†æª”æ¡ˆç‚º"+f.getName()+"\n");
 			//bc.betweenness_cal("citeulike/citeulike_NGD_Tolerance_0.4/", "citeulike/citeulike_Tom_citeulike_0.4/", f.getName(), true);
 			//bc.betweenness_cal("source_dir", "Tom_reuters/multi", f.getName(), true);
 			bc.betweenness_cal("citeulike/citeulike_Rank", "citeulike/citeulike_Tom_citeulike_noTolerance", f.getName(), true);

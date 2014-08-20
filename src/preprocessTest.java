@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 /**
  * @author user
- * ¥Î¥Hµû¦ô»P¾Çªø«e³B²zªº®t²§
+ * ç”¨ä»¥è©•ä¼°èˆ‡å­¸é•·å‰è™•ç†çš„å·®ç•°
  */
 public class preprocessTest {
 
@@ -50,10 +50,10 @@ public class preprocessTest {
 				linkList = new LinkedList<String>();
 				String line;
 				
-				//­×§ï«áªº°µªk
+				//ä¿®æ”¹å¾Œçš„åšæ³•
 				while((line = br.readLine())!=null && Double.parseDouble(line.split(",")[2])<1){
 				
-				//¾Çªø§@ªk
+				//å­¸é•·ä½œæ³•
 				//while((line = br.readLine())!=null){
 					linkList.add(line);
 				}

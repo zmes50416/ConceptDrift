@@ -18,9 +18,9 @@ import tw.edu.ncu.sia.util.ServerUtil;
 
 public class Drift_exp3 {
 	static String cat[] = {"acq"};
-	static double betweeness_threshold = 0.5; //¥h±¼¦h¤Ö³s½u
+	static double betweeness_threshold = 0.5; //å»æ‰å¤šå°‘é€£ç·š
 	
-	static double core_threshold =1; //¨ú¦h¤Ö·í§@®Ö¤ß
+	static double core_threshold =1; //å–å¤šå°‘ç•¶ä½œæ ¸å¿ƒ
 	
 	static String baseDir;
 	static String trainDir;
@@ -28,7 +28,7 @@ public class Drift_exp3 {
 	
 
 	/**
-	 * §ä¥X¼ç¦b¬ÛÃö¤å¥ó¯à¤Oµû¦ô
+	 * æ‰¾å‡ºæ½›åœ¨ç›¸é—œæ–‡ä»¶èƒ½åŠ›è©•ä¼°
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
@@ -63,30 +63,30 @@ public class Drift_exp3 {
 					BufferedWriter timew = new BufferedWriter(new FileWriter(timetxt));
 					BufferedWriter bw4_Tom = new BufferedWriter(new FileWriter(baseDir+"/weight.txt"));
 					StartTime = System.currentTimeMillis();
-					System.out.println("°V½m¡B´ú¸Õ¤å¥ó¤¤ :");
-					timew.write("°V½m¡B´ú¸Õ¤å¥ó¤¤ :");
+					System.out.println("è¨“ç·´ã€æ¸¬è©¦æ–‡ä»¶ä¸­ :");
+					timew.write("è¨“ç·´ã€æ¸¬è©¦æ–‡ä»¶ä¸­ :");
 					timew.newLine();
 					timew.flush();
-					timew.write("¶}©l®É¶¡ :" + StartTime);
+					timew.write("é–‹å§‹æ™‚é–“ :" + StartTime);
 					timew.newLine();
 					timew.flush();
 					//Go_Training3.generateTrainSet(5, trainDir, cat[0]);
 					//Go_Training3.generateTestSet(30, testDir, cat);
 					//Go_Training3.generateTestSet_multi(5, testDir, cat[0]);
 					EndTime = System.currentTimeMillis();
-					timew.write("µ²§ô®É¶¡ :" + EndTime);
+					timew.write("çµæŸæ™‚é–“ :" + EndTime);
 					timew.newLine();
 					timew.flush();
-					timew.write("¦@¨Ï¥Î®É¶¡(¬í) :" + (EndTime-StartTime)/1000);
+					timew.write("å…±ä½¿ç”¨æ™‚é–“(ç§’) :" + (EndTime-StartTime)/1000);
 					timew.newLine();
 					timew.flush();
 							
 					StartTime = System.currentTimeMillis();
-					System.out.println("¯S¼xµÑ¨ú¤¤ :");
-					timew.write("¯S¼xµÑ¨ú¤¤ :");
+					System.out.println("ç‰¹å¾µèƒå–ä¸­ :");
+					timew.write("ç‰¹å¾µèƒå–ä¸­ :");
 					timew.newLine();
 					timew.flush();
-					timew.write("¶}©l®É¶¡ :" + StartTime);
+					timew.write("é–‹å§‹æ™‚é–“ :" + StartTime);
 					timew.newLine();
 					timew.flush();
 					File dir = new File(trainDir);
@@ -101,10 +101,10 @@ public class Drift_exp3 {
 						//map_Data.putAll(ngds);	
 					}
 					EndTime = System.currentTimeMillis();
-					timew.write("µ²§ô®É¶¡ :" + EndTime);
+					timew.write("çµæŸæ™‚é–“ :" + EndTime);
 					timew.newLine();
 					timew.flush();
-					timew.write("¦@¨Ï¥Î®É¶¡(¬í) :" + (EndTime-StartTime)/1000);
+					timew.write("å…±ä½¿ç”¨æ™‚é–“(ç§’) :" + (EndTime-StartTime)/1000);
 					timew.newLine();
 					timew.flush();
 					
@@ -116,11 +116,11 @@ public class Drift_exp3 {
 					}
 					
 					StartTime = System.currentTimeMillis();
-					System.out.println("slor·j´M»PNGD­pºâ¤¤ :");
-					timew.write("slor·j´M»PNGD­pºâ¤¤ :");
+					System.out.println("sloræœå°‹èˆ‡NGDè¨ˆç®—ä¸­ :");
+					timew.write("sloræœå°‹èˆ‡NGDè¨ˆç®—ä¸­ :");
 					timew.newLine();
 					timew.flush();
-					timew.write("¶}©l®É¶¡ :" + StartTime);
+					timew.write("é–‹å§‹æ™‚é–“ :" + StartTime);
 					timew.newLine();
 					timew.flush();
 					for(String v1 : vertices){
@@ -139,10 +139,10 @@ public class Drift_exp3 {
 						}
 					}
 					EndTime = System.currentTimeMillis();
-					timew.write("µ²§ô®É¶¡ :" + EndTime);
+					timew.write("çµæŸæ™‚é–“ :" + EndTime);
 					timew.newLine();
 					timew.flush();
-					timew.write("¦@¨Ï¥Î®É¶¡(¬í) :" + (EndTime-StartTime)/1000);
+					timew.write("å…±ä½¿ç”¨æ™‚é–“(ç§’) :" + (EndTime-StartTime)/1000);
 					timew.newLine();
 					timew.flush();
 					
@@ -179,11 +179,11 @@ public class Drift_exp3 {
 					}
 					
 					StartTime = System.currentTimeMillis();
-					System.out.println("Betweennes­pºâ¤¤ :");
-					timew.write("Betweennes­pºâ¤¤ :");
+					System.out.println("Betweennesè¨ˆç®—ä¸­ :");
+					timew.write("Betweennesè¨ˆç®—ä¸­ :");
 					timew.newLine();
 					timew.flush();
-					timew.write("¶}©l®É¶¡ :" + StartTime);
+					timew.write("é–‹å§‹æ™‚é–“ :" + StartTime);
 					timew.newLine();
 					timew.flush();
 					TOM_betweennessCentrality bc = new TOM_betweennessCentrality();
@@ -192,10 +192,10 @@ public class Drift_exp3 {
 					
 					//bc.betweenness_cal(baseDir, "concept.txt", "center.txt", "concepts.txt", true);
 					EndTime = System.currentTimeMillis();
-					timew.write("µ²§ô®É¶¡ :" + EndTime);
+					timew.write("çµæŸæ™‚é–“ :" + EndTime);
 					timew.newLine();
 					timew.flush();
-					timew.write("¦@¨Ï¥Î®É¶¡(¬í) :" + (EndTime-StartTime)/1000);
+					timew.write("å…±ä½¿ç”¨æ™‚é–“(ç§’) :" + (EndTime-StartTime)/1000);
 					timew.newLine();
 					timew.flush();
 					
@@ -203,11 +203,11 @@ public class Drift_exp3 {
 					
 					try {
 						StartTime = System.currentTimeMillis();
-						System.out.println("¤å¥ó»P¨Ï¥ÎªÌ¼Ò«¬¬ÛÃö©Ê­pºâ¤¤ :");
-						timew.write("¤å¥ó»P¨Ï¥ÎªÌ¼Ò«¬¬ÛÃö©Ê­pºâ¤¤ :");
+						System.out.println("æ–‡ä»¶èˆ‡ä½¿ç”¨è€…æ¨¡å‹ç›¸é—œæ€§è¨ˆç®—ä¸­ :");
+						timew.write("æ–‡ä»¶èˆ‡ä½¿ç”¨è€…æ¨¡å‹ç›¸é—œæ€§è¨ˆç®—ä¸­ :");
 						timew.newLine();
 						timew.flush();
-						timew.write("¶}©l®É¶¡ :" + StartTime);
+						timew.write("é–‹å§‹æ™‚é–“ :" + StartTime);
 						timew.newLine();
 						//cr.caculRank(trainDir, "center.txt", "all.txt" ,testDir, cat, 10, true);
 						//String dog[] = {"trade","crude"};
@@ -224,13 +224,13 @@ public class Drift_exp3 {
 							bw4_Tom.flush();
 						}
 						bw4_Tom.close();*/
-						//cr.set_term_vertice_times(term_vertice_times); //¦pªG­n¥ÎÅv­«¼Ò¦¡°O±o¥´¶}
+						//cr.set_term_vertice_times(term_vertice_times); //å¦‚æœè¦ç”¨æ¬Šé‡æ¨¡å¼è¨˜å¾—æ‰“é–‹
 						cr.caculRetateness(baseDir, trainDir, "center.txt", "all.txt" ,testDir, dog, true);
 						EndTime = System.currentTimeMillis();
-						timew.write("µ²§ô®É¶¡ :" + EndTime);
+						timew.write("çµæŸæ™‚é–“ :" + EndTime);
 						timew.newLine();
 						timew.flush();
-						timew.write("¦@¨Ï¥Î®É¶¡(¬í) :" + (EndTime-StartTime)/1000);
+						timew.write("å…±ä½¿ç”¨æ™‚é–“(ç§’) :" + (EndTime-StartTime)/1000);
 						timew.newLine();
 						timew.flush();
 					} catch (IOException e) {

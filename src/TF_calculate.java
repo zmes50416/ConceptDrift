@@ -40,11 +40,11 @@ public class TF_calculate {
 	}
 	
 	public static void TF_main(String source_dir, String resultDir) throws IOException{
-		System.out.print("sTF¶}©l\n");
+		System.out.print("sTFé–‹å§‹\n");
 		boolean onlyterm;
-		//new File("sTFIDF_process").mkdirs(); //¿é¥X¸ê®Æ§¨
-		File dir = new File(source_dir); //¨Ó·½¸ê®Æ§¨
-		//¦UÃş§O¦rµü²Î­p
+		//new File("sTFIDF_process").mkdirs(); //è¼¸å‡ºè³‡æ–™å¤¾
+		File dir = new File(source_dir); //ä¾†æºè³‡æ–™å¤¾
+		//å„é¡åˆ¥å­—è©çµ±è¨ˆ
 		One_Type_Term(dir,resultDir, "no", false);
 		TF_term_times.clear();
 		TF_term_times_other.clear();
@@ -61,12 +61,12 @@ public class TF_calculate {
 		BufferedReader m_r1, m_r2;
 		String line,v1,filename="";
 		int term_times,temp_use;
-		Pattern p = Pattern.compile("[(),\"\\?!:;=]"); //¹LÂo¦rµüªº¤@¨ÇÂø½è
+		Pattern p = Pattern.compile("[(),\"\\?!:;=]"); //éæ¿¾å­—è©çš„ä¸€äº›é›œè³ª
 		File[] fileslist;
-		System.out.print("¨Ó·½ÀÉ®×"+source_dir.getName()+"\n");
+		System.out.print("ä¾†æºæª”æ¡ˆ"+source_dir.getName()+"\n");
 		if(source_dir.isDirectory()){
-			fileslist = source_dir.listFiles(); //¸ê®Æ§¨¼Ò¦¡
-		}else{ //³æÀÉ¼Ò¦¡
+			fileslist = source_dir.listFiles(); //è³‡æ–™å¤¾æ¨¡å¼
+		}else{ //å–®æª”æ¨¡å¼
 			fileslist = new File[1];
 			fileslist[0] = source_dir;
 		}
@@ -78,14 +78,14 @@ public class TF_calculate {
 			}else if(files.isFile()){
 				filename="";
 				if(files.getName().split("_")[0].equals(thistype)||thistype.equals("no")){
-					/*//reuters¸ê®Æ¶°ªºÀÉ¦WµÑ¨ú¤èªk
+					/*//reutersè³‡æ–™é›†çš„æª”åèƒå–æ–¹æ³•
 					for(int i=0; i<files.getName().split("_").length;i++){
 						//System.out.println("filename = "+ filename);
 						if(i==0){
 							filename=files.getName().split("_")[0];
 						}else{
 							char[] filename_temp = files.getName().split("_")[i].toCharArray();
-							if(!Character.isDigit(filename_temp[0])){ //¦pªG²Ä¤@­Ó¦r¤¸¬O¼Æ¦r¥Nªí¨ìÀÉ¦Wµ²§À¤F
+							if(!Character.isDigit(filename_temp[0])){ //å¦‚æœç¬¬ä¸€å€‹å­—å…ƒæ˜¯æ•¸å­—ä»£è¡¨åˆ°æª”åçµå°¾äº†
 								filename=filename+"_"+files.getName().split("_")[i];
 							}else{
 								filename=filename+"_"+files.getName().split("_")[i];
@@ -94,24 +94,24 @@ public class TF_calculate {
 						}
 					}*/
 					
-					//citeulike¸ê®Æ¶°ªºÀÉ¦WµÑ¨ú¤èªk
+					//citeulikeè³‡æ–™é›†çš„æª”åèƒå–æ–¹æ³•
 					filename = files.getName().split("_")[0];
 					
-					System.out.print("Åª¨úÀÉ®×"+files.getName()+"\n");
+					System.out.print("è®€å–æª”æ¡ˆ"+files.getName()+"\n");
 					m_r1 = new BufferedReader(new FileReader("citeulike/citeulike_Keyword_output_freq/"+filename+"_keyword_output_freq.txt"));
 					m_r2 = new BufferedReader(new FileReader(files));
 					while((line=m_r2.readLine())!=null){
 						v1 = line.split(",")[0];
 						TF_term_times.put(v1,0);
-						//System.out.print("©ñ¤J¦rµü"+v1+"\n");
+						//System.out.print("æ”¾å…¥å­—è©"+v1+"\n");
 					}
 					while((line=m_r1.readLine())!=null){
 						v1 = line.split(",")[0];
-						//System.out.print("´M§ä"+v1+"¥X²{¦¸¼Æ\n");
+						//System.out.print("å°‹æ‰¾"+v1+"å‡ºç¾æ¬¡æ•¸\n");
 						int i = 3;
 						if(TF_term_times.containsKey(v1)){
 							term_times = Integer.valueOf(line.split(", ")[1]);
-							//System.out.print(v1+"ªº­È="+term_times+"\n");
+							//System.out.print(v1+"çš„å€¼="+term_times+"\n");
 							while(i<line.length() && term_times==0){
 								term_times = Integer.valueOf(line.split(", ")[i]);
 								i++;
@@ -122,7 +122,7 @@ public class TF_calculate {
 						}
 					}
 					m_r1.close();
-					//¨Ì¤À¼Æ°ª§C±Æ§Ç
+					//ä¾åˆ†æ•¸é«˜ä½æ’åº
 					List<Map.Entry<String, Integer>> list_Data = 
 							new ArrayList<Map.Entry<String, Integer>>(TF_term_times.entrySet());
 					Collections.sort(list_Data, new Comparator<Map.Entry<String, Integer>>(){
@@ -140,10 +140,10 @@ public class TF_calculate {
 					new File(resultDir).mkdir();
 					if(onlyterm){
 						ts_w1 = new BufferedWriter(new FileWriter(resultDir+filename+"_Term_TFcalculate(onlyterm).txt"));
-						System.out.print("²£¥X"+resultDir+filename+"_Term_TFcalculate(onlyterm).txt"+"¿é¥X¤¤\n");
+						System.out.print("ç”¢å‡º"+resultDir+filename+"_Term_TFcalculate(onlyterm).txt"+"è¼¸å‡ºä¸­\n");
 					}else{
 						ts_w1 = new BufferedWriter(new FileWriter(resultDir+filename+"_Term_TFcalculate.txt"));
-						System.out.print("²£¥X"+resultDir+filename+"_Term_TFcalculate.txt"+"¿é¥X¤¤\n");
+						System.out.print("ç”¢å‡º"+resultDir+filename+"_Term_TFcalculate.txt"+"è¼¸å‡ºä¸­\n");
 					}
 					
 					if(onlyterm){
@@ -155,7 +155,7 @@ public class TF_calculate {
 							}
 						}
 					}else{
-						//ts_w1.write("¦r,¥X²{ÀW²v"); 
+						//ts_w1.write("å­—,å‡ºç¾é »ç‡"); 
 						//ts_w1.newLine();
 						//ts_w1.flush();
 						for (Map.Entry<String, Integer> entry : list_Data){
@@ -167,7 +167,7 @@ public class TF_calculate {
 						}
 					}
 					ts_w1.close();
-					System.out.print("ÀÉ®×"+files.getName()+"³B²zµ²§ô\n");
+					System.out.print("æª”æ¡ˆ"+files.getName()+"è™•ç†çµæŸ\n");
 				}
 			}
 		}

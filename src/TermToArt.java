@@ -35,7 +35,7 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 		}
 	}
 
-	// °O¿ı¬O§_±N¸ê®Æ¦L¥X
+	// è¨˜éŒ„æ˜¯å¦å°‡è³‡æ–™å°å‡º
 	private boolean inHeader = false;
 	private static int _sn = -1;
 	// static private ArrayList<Double> num=new ArrayList<Double>();
@@ -46,21 +46,21 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 	public TermToArt() {
 	}
 
-	// ±N Parse HTML «áªº¸ê®Æ¦L¥X
+	// å°‡ Parse HTML å¾Œçš„è³‡æ–™å°å‡º
 	public void handleText(char[] text, int position) {
 		if (inHeader) {
 
 			BufferedWriter bw;
-			if (String.valueOf(text).contains("¬ù¦³ ")
-					|| String.valueOf(text).contains(" ¶µµ²ªG")) {
-				String value = String.valueOf(text).replaceAll(",", ""); // ¬ù¦³
+			if (String.valueOf(text).contains("ç´„æœ‰ ")
+					|| String.valueOf(text).contains(" é …çµæœ")) {
+				String value = String.valueOf(text).replaceAll(",", ""); // ç´„æœ‰
 				// 173,000
-				// ¶µµ²ªG
+				// é …çµæœ
 
 				double value1 = Double.parseDouble(value.split(" ")[value
 						.split(" ").length - 2]);
 				Value[n] = value1;
-			} else if (String.valueOf(text).contains("§ä¤£¨ì©M±zªº¬d¸ß")) {
+			} else if (String.valueOf(text).contains("æ‰¾ä¸åˆ°å’Œæ‚¨çš„æŸ¥è©¢")) {
 				double value1 = Double.parseDouble("0");
 				System.out.println("update2");
 				Value[n] = 0;
@@ -73,14 +73,14 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 	public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
 			int position) {
 
-		// ¤ÀªR Tag ªº­«ÂI¦b³o¦æ
+		// åˆ†æ Tag çš„é‡é»åœ¨é€™è¡Œ
 		if (tag == HTML.Tag.DIV) {
 			Enumeration e = attributes.getAttributeNames();
 			while (e.hasMoreElements()) {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID && value.equals("resultStats")) {
 					this.inHeader = true;
 				}
@@ -91,7 +91,7 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID) {
 					this.inHeader = true;
 				}
@@ -105,7 +105,7 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 		HTMLEditorKit.ParserCallback callback = new TermToArt();
 		String i1 = s;
 		String j = "http://www.google.com.tw/search?aq=f&sourceid=chrome&ie=UTF-8&q=";
-		// String f = "&btnG=·j´M&aq=f&aqi=&aql=&oq=&gs_rfai=";
+		// String f = "&btnG=æœå°‹&aq=f&aqi=&aql=&oq=&gs_rfai=";
 		String http = j + i1;
 		// System.out.println(http);
 
@@ -120,7 +120,7 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 					"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-TW; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14"
 							+ "SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
 
-	// Åª¤Jºô­¶
+	// è®€å…¥ç¶²é 
 	// InputStream in = u.openStream();
 	BufferedInputStream in = new BufferedInputStream(urlConnection
 			.getInputStream());
@@ -132,10 +132,10 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("IP³QÂê¡A­«·s¨ú±oIP");
+			System.out.println("IPè¢«é–ï¼Œé‡æ–°å–å¾—IP");
 			
-			IP_Operation.IP_change();//´«IP
-			System.out.println("­«·s¨ú±o¦rµü("+s+")·j´Mµ²ªG");
+			IP_Operation.IP_change();//æ›IP
+			System.out.println("é‡æ–°å–å¾—å­—è©("+s+")æœå°‹çµæœ");
 			search_pair(s);
 			
 		}
@@ -164,7 +164,7 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 			e.printStackTrace();
 		}
 	}
-	//»y·N¤¤¤ß¦rµü­p¤À
+	//èªæ„ä¸­å¿ƒå­—è©è¨ˆåˆ†
 	public  double Scoring(String term,double volume,String path,int colSize) throws IOException {
 
 		String[] s = new String[3];
@@ -206,7 +206,7 @@ public class TermToArt extends HTMLEditorKit.ParserCallback {
 						e.printStackTrace();
 					}
 					
-					if(volume == 1) //Á×§K¤À¥À¬°¹s
+					if(volume == 1) //é¿å…åˆ†æ¯ç‚ºé›¶
 						volume++;
 					
 					double NGD = NGD_calculate.NGD_cal(volume, concept

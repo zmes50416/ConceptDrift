@@ -8,9 +8,9 @@ public class Go_Batch {
 	public static void main(String[] args) throws ParseException {
 		
 		
-		long AverageTime =0; // ­pºâ¥­§¡³B²z®É¶¡¨Ï¥Î
+		long AverageTime =0; // è¨ˆç®—å¹³å‡è™•ç†æ™‚é–“ä½¿ç”¨
 
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡	
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“	
 		try {
 		
 				File dir=new File("preprocess/");
@@ -19,7 +19,7 @@ public class Go_Batch {
 				{
 					s=s.replace(".txt", "");
 					Qtag.tagging(s);
-					Term_freq_count.counting(s);//­pºâfreq 
+					Term_freq_count.counting(s);//è¨ˆç®—freq 
 					POS_filter.filter(s);//
 					new Lucene_Search1().doit(s);
 					//new Google_Search1_cache().doit(j);
@@ -42,8 +42,8 @@ public class Go_Batch {
 				System.out.println("ERROR HAPPEN");
 				e.printStackTrace();
 			}
-			long ProcessTime = System.currentTimeMillis() - StartTime; // ­pºâ³B²z®É¶¡
-			//AverageTime += ProcessTime; // ²Ö¿n­pºâ®É¶¡
+			long ProcessTime = System.currentTimeMillis() - StartTime; // è¨ˆç®—è™•ç†æ™‚é–“
+			//AverageTime += ProcessTime; // ç´¯ç©è¨ˆç®—æ™‚é–“
 			System.out.println(ProcessTime);
 	}
 }

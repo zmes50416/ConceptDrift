@@ -28,7 +28,7 @@ public class temp {
 				name1=line1.split("-")[0];
 				name2=line2.split(",")[0];
 				if(!name1.equals(name2)){
-					System.out.println("¤H¦W¤£¤Ç°t");
+					System.out.println("äººåä¸åŒ¹é…");
 				}else{
 					all=Double.valueOf(line1.split(",")[1])+Double.valueOf(line1.split(",")[2]);
 					yes=Double.valueOf(line2.split(",")[1]);

@@ -40,8 +40,8 @@ public class NGD_Tolerance {
 	}
 	
 	public static void Tolerance_main(String source_dir, String resultDir){
-		System.out.print("Tol_NGD¶}©l\n");
-		File dir = new File(source_dir); //¨Ó·½¸ê®Æ§¨
+		System.out.print("Tol_NGDé–‹å§‹\n");
+		File dir = new File(source_dir); //ä¾†æºè³‡æ–™å¤¾
 		Tolerance_work(dir,resultDir);
 		System.out.print("End\n");
 	}
@@ -50,10 +50,10 @@ public class NGD_Tolerance {
 		Map<String, Double> ngds = null;
 		File[] fileslist;
 		String filename="";
-		System.out.print("¨Ó·½¸ê®Æ§X"+source_dir.getName()+"\n");
+		System.out.print("ä¾†æºè³‡æ–™åŒ£"+source_dir.getName()+"\n");
 		if(source_dir.isDirectory()){
-			fileslist = source_dir.listFiles(); //¸ê®Æ§¨¼Ò¦¡
-		}else{ //³æÀÉ¼Ò¦¡
+			fileslist = source_dir.listFiles(); //è³‡æ–™å¤¾æ¨¡å¼
+		}else{ //å–®æª”æ¨¡å¼
 			fileslist = new File[1];
 			fileslist[0] = source_dir;
 		}
@@ -64,14 +64,14 @@ public class NGD_Tolerance {
 			}else if(files.isFile()){
 				try {
 					filename="";
-					/*//reuters¸ê®Æ¶°ªºÀÉ¦WµÑ¨ú¤èªk
+					/*//reutersè³‡æ–™é›†çš„æª”åèƒå–æ–¹æ³•
 					for(int i=0; i<files.getName().split("_").length;i++){
 						//System.out.println("filename = "+ filename);
 						if(i==0){
 							filename=files.getName().split("_")[0];
 						}else{
 							char[] filename_temp = files.getName().split("_")[i].toCharArray();
-							if(!Character.isDigit(filename_temp[0])){ //¦pªG²Ä¤@­Ó¦r¤¸¬O¼Æ¦r¥Nªí¨ìÀÉ¦Wµ²§À¤F
+							if(!Character.isDigit(filename_temp[0])){ //å¦‚æœç¬¬ä¸€å€‹å­—å…ƒæ˜¯æ•¸å­—ä»£è¡¨åˆ°æª”åçµå°¾äº†
 								filename=filename+"_"+files.getName().split("_")[i];
 							}else{
 								filename=filename+"_"+files.getName().split("_")[i];
@@ -80,7 +80,7 @@ public class NGD_Tolerance {
 						}
 					}*/
 					
-					//citeulike¸ê®Æ¶°ªºÀÉ¦WµÑ¨ú¤èªk
+					//citeulikeè³‡æ–™é›†çš„æª”åèƒå–æ–¹æ³•
 					filename = files.getName().split("_")[0];
 					
 					File brfile = new File("citeulike/citeulike_Rank/"+filename+"_Rank.txt");
@@ -94,25 +94,25 @@ public class NGD_Tolerance {
 					ngds = new HashMap<String, Double>();
 					String line, v1, v2, bigTF, smallTF, word="";
 					double temp_ngd;
-					int small_than_tolerance_rate_num; //¬İ¤p©óngdªùÂe­Èªº¸ê®Æ¦³´X±ø
+					int small_than_tolerance_rate_num; //çœ‹å°æ–¼ngdé–€æª»å€¼çš„è³‡æ–™æœ‰å¹¾æ¢
 					
-					System.out.print("Åª¨úÀÉ®×"+br2file.getName()+"\n");
-					//¨ú¥X¦¹ÀÉ®×ªº©Ò¦³¦rµü»PÅv­«
+					System.out.print("è®€å–æª”æ¡ˆ"+br2file.getName()+"\n");
+					//å–å‡ºæ­¤æª”æ¡ˆçš„æ‰€æœ‰å­—è©èˆ‡æ¬Šé‡
 					while((line=br2.readLine())!=null){
 						v1 = line.split(",")[0];
 						TF_term.put(v1,Integer.valueOf(line.split(",")[1]));
 					}
 					
-					System.out.print("Åª¨úÀÉ®×"+brfile.getName()+"\n");
+					System.out.print("è®€å–æª”æ¡ˆ"+brfile.getName()+"\n");
 					
 					small_than_tolerance_rate_num=0;
-					//¨ú¥X©Ò¦³_Rankªº¸ê®Æ
+					//å–å‡ºæ‰€æœ‰_Rankçš„è³‡æ–™
 					while((line=br.readLine())!=null){
 						temp_ngd = Double.parseDouble(line.split(",")[2]);
 						if(temp_ngd<=tolerance_rate){
 							small_than_tolerance_rate_num++;
 						}
-						//¥h°£NDG¤À¼Æ¤j©ó1ªºµ²ªG
+						//å»é™¤NDGåˆ†æ•¸å¤§æ–¼1çš„çµæœ
 						if(temp_ngd<1){
 							v1 = line.split(",")[0];
 							v2 = line.split(",")[1];
@@ -122,46 +122,46 @@ public class NGD_Tolerance {
 						}
 					}
 
-					//¶}©lNGD®e®t¨BÆJ
+					//é–‹å§‹NGDå®¹å·®æ­¥é©Ÿ
 					for(int i=1;i<=small_than_tolerance_rate_num;i++){
 						Map.Entry<String, Double> entry = list_data.get(i-1);	
 						temp_ngd = entry.getValue();
 						word = entry.getKey();
-						//System.out.print("Åª¨ú"+ word + "," + temp_ngd + "\n");
+						//System.out.print("è®€å–"+ word + "," + temp_ngd + "\n");
 						v1 = word.split(",")[0];
 						v2 = word.split(",")[1];
-						//¦rµü¥²¶·¬O¦bTF¤å¥ó¤¤¦³¬ö¿ıªº¦rµü
+						//å­—è©å¿…é ˆæ˜¯åœ¨TFæ–‡ä»¶ä¸­æœ‰ç´€éŒ„çš„å­—è©
 						if(TF_term.get(v1)!=null && TF_term.get(v2)!=null){
-							//®e®t¹L«á«esmall_than_tolerance_rate_num¦æ¤º¨â¨â¸`ÂIÀ³¸Ó¬Û¦P¡A­Y¤£¬Û¦P«h¶i¦æ®e®t
+							//å®¹å·®éå¾Œå‰small_than_tolerance_rate_numè¡Œå…§å…©å…©ç¯€é»æ‡‰è©²ç›¸åŒï¼Œè‹¥ä¸ç›¸åŒå‰‡é€²è¡Œå®¹å·®
 							if(!v1.equals(v2)){
-								//¨úTF­È¸û°ªªº¦rµü¨ú¥N¸û§Cªº
+								//å–TFå€¼è¼ƒé«˜çš„å­—è©å–ä»£è¼ƒä½çš„
 								if(TF_term.get(v1)>=TF_term.get(v2)){
-									//System.out.print("·s¼W¨ú¥N³W«h"+v1+"±N¨ú¥N"+v2+"\n");
+									//System.out.print("æ–°å¢å–ä»£è¦å‰‡"+v1+"å°‡å–ä»£"+v2+"\n");
 									bigTF = v1;
 									smallTF = v2;
 								}else{
-									//System.out.print("·s¼W¨ú¥N³W«h"+v2+"±N¨ú¥N"+v1+"\n");
+									//System.out.print("æ–°å¢å–ä»£è¦å‰‡"+v2+"å°‡å–ä»£"+v1+"\n");
 									bigTF = v2;
 									smallTF = v1;
 								}
 								
 								//System.out.println("bigTF="+bigTF+" ,smallTF="+smallTF);
 								
-								//bigTF¶}©l¹ï©Ò¦³smallTF¸`ÂI¶i¦æ¨ú¥N
+								//bigTFé–‹å§‹å°æ‰€æœ‰smallTFç¯€é»é€²è¡Œå–ä»£
 								int temp_index=0;
 								for(Map.Entry<String, Double> entry2 : list_data){
 									if(entry2.getKey().split(",")[0].equals(smallTF)){
 										Map.Entry<String, Double> temp_entry = new AbstractMap.SimpleEntry<String, Double>(bigTF+","+entry2.getKey().split(",")[1],entry2.getValue());
 										list_data.set(temp_index, temp_entry);
-										//System.out.println("½s¸¹"+temp_index+" ¨ú¥N«e = "+ entry2.getKey() +","+ entry2.getValue());
-										//System.out.println("½s¸¹"+temp_index+" ¨ú¥N«á = "+ list_data.get(temp_index).getKey() +","+ list_data.get(temp_index).getValue());
+										//System.out.println("ç·¨è™Ÿ"+temp_index+" å–ä»£å‰ = "+ entry2.getKey() +","+ entry2.getValue());
+										//System.out.println("ç·¨è™Ÿ"+temp_index+" å–ä»£å¾Œ = "+ list_data.get(temp_index).getKey() +","+ list_data.get(temp_index).getValue());
 										entry2=list_data.get(temp_index);
 									}
 									if(entry2.getKey().split(",")[1].equals(smallTF)){
 										Map.Entry<String, Double> temp_entry = new AbstractMap.SimpleEntry<String, Double>(entry2.getKey().split(",")[0]+","+bigTF,entry2.getValue());
 										list_data.set(temp_index, temp_entry);
-										//System.out.println("½s¸¹"+temp_index+" ¨ú¥N«e = "+ entry2.getKey() +","+ entry2.getValue());
-										//System.out.println("½s¸¹"+temp_index+" ¨ú¥N«á = "+ list_data.get(temp_index).getKey() +","+ list_data.get(temp_index).getValue());
+										//System.out.println("ç·¨è™Ÿ"+temp_index+" å–ä»£å‰ = "+ entry2.getKey() +","+ entry2.getValue());
+										//System.out.println("ç·¨è™Ÿ"+temp_index+" å–ä»£å¾Œ = "+ list_data.get(temp_index).getKey() +","+ list_data.get(temp_index).getValue());
 									}
 									temp_index++;
 								}

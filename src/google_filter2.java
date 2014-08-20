@@ -20,7 +20,7 @@ public class google_filter2 {
 
 	public static void search_filter(String no)  {
 		FileReader FileStream;
-		System.out.println("³B²zÀÉ®×"+no+"¤¤...");
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"ä¸­...");
 		try {
 			FileStream = new FileReader("citeulike/citeulike_Search2/"+no + "_"
 					+ "google_output2.txt");
@@ -51,9 +51,9 @@ public class google_filter2 {
 				String value1 = null;
 				if (count < datas.length) {
 
-					if (line.contains("¬ù¦³ ")||line.contains(" ¶µµ²ªG")) {
+					if (line.contains("ç´„æœ‰ ")||line.contains(" é …çµæœ")) {
 
-						String value = line.replaceAll(",", ""); // ¬ù¦³ 173,000 ¶µµ²ªG
+						String value = line.replaceAll(",", ""); // ç´„æœ‰ 173,000 é …çµæœ
 
 						value1 = value.split(" ")[value.split(" ").length-2];
 						// set.add(value1);
@@ -93,17 +93,17 @@ public class google_filter2 {
 
 						bw.write(arry_out);
 						bw.newLine();
-						bw.flush(); // ²MªÅ½w½Ä°Ï
+						bw.flush(); // æ¸…ç©ºç·©è¡å€
 						
-						// «Ø¥ß¹B¥Î½w½Ä°Ï¿é¥X¸ê®Æ¦Üdata.txtÀÉªºBufferedWriterª«¥ó
-						// ¡A¨Ã¥Ñbwª«¥ó°Ñ¦Ò¤Ş¥Î
-						// ±N¦r¦ê¼g¤JÀÉ®×
+						// å»ºç«‹é‹ç”¨ç·©è¡å€è¼¸å‡ºè³‡æ–™è‡³data.txtæª”çš„BufferedWriterç‰©ä»¶
+						// ï¼Œä¸¦ç”±bwç‰©ä»¶åƒè€ƒå¼•ç”¨
+						// å°‡å­—ä¸²å¯«å…¥æª”æ¡ˆ
 					} catch (IOException f) {
 						// TODO Auto-generated catch block
 						f.printStackTrace();
 					}
 				
-					System.out.println("³B²zÀÉ®×"+no+"³B²z§¹²¦");
+					System.out.println("è™•ç†æª”æ¡ˆ"+no+"è™•ç†å®Œç•¢");
 			}
 			
 			

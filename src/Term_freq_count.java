@@ -36,15 +36,15 @@ public class Term_freq_count {
 				++lineNumber;
 				parser = new StringTokenizer(line, " ");
 				
-				while (parser.hasMoreTokens())// Åª¤J¨C­Ó³æ¦r
+				while (parser.hasMoreTokens())// è®€å…¥æ¯å€‹å–®å­—
 				{
 					word = parser.nextToken("\n").toUpperCase();
 					frequency = (String) concordance.get(word);
 					if (frequency == null)
-						frequency = "1";// ­Y¸Ó¦r¨S¥X²{«h¦¸¼Æ¬°0
+						frequency = "1";// è‹¥è©²å­—æ²’å‡ºç¾å‰‡æ¬¡æ•¸ç‚º0
 					else {
 						int n = Integer.parseInt(frequency);
-						++n;// ­Y¥X²{«h++
+						++n;// è‹¥å‡ºç¾å‰‡++
 						frequency = "" + n;
 					}
 					concordance.put(word, frequency);
@@ -56,18 +56,18 @@ public class Term_freq_count {
 					
 					bw.write(word + ", " + frequency);
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
 					
-					// «Ø¥ß¹B¥Î½w½Ä°Ï¿é¥X¸ê®Æ¦Üdata.txtÀÉªºBufferedWriterª«¥ó
-					// ¡A¨Ã¥Ñbwª«¥ó°Ñ¦Ò¤Ş¥Î
-					// ±N¦r¦ê¼g¤JÀÉ®×
+					// å»ºç«‹é‹ç”¨ç·©è¡å€è¼¸å‡ºè³‡æ–™è‡³data.txtæª”çš„BufferedWriterç‰©ä»¶
+					// ï¼Œä¸¦ç”±bwç‰©ä»¶åƒè€ƒå¼•ç”¨
+					// å°‡å­—ä¸²å¯«å…¥æª”æ¡ˆ
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
 			}
-			bw.close(); // Ãö³¬BufferedWriterª«¥ó
+			bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 		} catch (Exception e) {
 			System.out.println(e);
 		}

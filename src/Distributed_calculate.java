@@ -81,7 +81,7 @@ public class Distributed_calculate {
 
 					bw.write(objs_out);
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
 
 				} catch (IOException f) {
 					// TODO Auto-generated catch block
@@ -89,7 +89,7 @@ public class Distributed_calculate {
 				}
 
 			}
-			bw.close(); // Ãö³¬BufferedWriterª«¥ó
+			bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

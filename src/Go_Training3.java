@@ -27,7 +27,7 @@ public class Go_Training3 {
 	static String maindir = "reuters";
 	static HashSet<String> set;
 	static HashMap<String, Integer> term_vertice_times = new HashMap<String, Integer>();
-	//²£¥Í«ü©w¥DÃD°V½m¶°
+	//ç”¢ç”ŸæŒ‡å®šä¸»é¡Œè¨“ç·´é›†
 	public static HashSet<String> generateTrainSet(int size, String dir, String cat){
 		set = new HashSet<String>();
 		cat = "trade";
@@ -41,7 +41,7 @@ public class Go_Training3 {
 		/*for(File f : cdir.listFiles())
 			list.add(f);
 		
-		Collections.shuffle(list); //ÀH¾÷±Æ§Ç
+		Collections.shuffle(list); //éš¨æ©Ÿæ’åº
 		
 		for(int i=0; i<size; i++){*/
 			String[] txt1 = new String[5];
@@ -115,7 +115,7 @@ public class Go_Training3 {
 		
 	}
 	
-	//²£¥Í«ü©w¸ê®Æ§¨°V½m¶°
+	//ç”¢ç”ŸæŒ‡å®šè³‡æ–™å¤¾è¨“ç·´é›†
 	public static void generateTrainSet(String maindir, int size, String dir){
 		set = new HashSet<String>();
 		
@@ -138,7 +138,7 @@ public class Go_Training3 {
 		
 	}
 	
-	//ÀH¾÷²£¥Ín­Ó¥DÃD¡A¨C­Ó¥DÃDm­Ó¤å¥óªº°V½m¶°©ódir
+	//éš¨æ©Ÿç”¢ç”Ÿnå€‹ä¸»é¡Œï¼Œæ¯å€‹ä¸»é¡Œmå€‹æ–‡ä»¶çš„è¨“ç·´é›†æ–¼dir
 	public static void generateTrainSet(String maindir, int size,int topic_count,String dir){
 		set = new HashSet<String>();
 		
@@ -213,7 +213,7 @@ public class Go_Training3 {
 				if(d.getName().equals(c))
 					isCat = true;
 			
-			//¦pªG¬O°V½m¶°ªºÃş§O­nÁ×§K­«½Æ
+			//å¦‚æœæ˜¯è¨“ç·´é›†çš„é¡åˆ¥è¦é¿å…é‡è¤‡
 			if(isCat){
 				int i = 0;
 				int j = 0;
@@ -246,13 +246,13 @@ public class Go_Training3 {
 			
 			String line;
 			while ((line=br.readLine()) !=null ){
-				//¥h°£NDG¤À¼Æ¤j©ó1ªºµ²ªG
+				//å»é™¤NDGåˆ†æ•¸å¤§æ–¼1çš„çµæœ
 				if(Double.parseDouble(line.split(",")[2])<1 )
 					list.add(line);
 			}
 			br.close();
 			
-			//«e50% NGD¤À¼Æ¸ê®Æ¡A·í§@±j¯P¦rµü
+			//å‰50% NGDåˆ†æ•¸è³‡æ–™ï¼Œç•¶ä½œå¼·çƒˆå­—è©
 			double simMin = Double.parseDouble(list.get(list.size()/2).split(",")[2]);
 			System.out.print("simMin = " + simMin+"\n");
 			//simMin = 0.679174915480266;

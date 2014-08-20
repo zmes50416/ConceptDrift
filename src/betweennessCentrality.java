@@ -29,8 +29,8 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 
 public class betweennessCentrality {
 	
-	double core_threshold = 0.33; //¨ú¦h¤Ö·í§@®Ö¤ß
-	double betweeness_threshold = 0.5; //¥h±¼¦h¤Ö³s½u
+	double core_threshold = 0.33; //å–å¤šå°‘ç•¶ä½œæ ¸å¿ƒ
+	double betweeness_threshold = 0.5; //å»æ‰å¤šå°‘é€£ç·š
 	
 	double simMin;
 	
@@ -70,12 +70,12 @@ public class betweennessCentrality {
 		
 		try {
 			
-			br = new BufferedReader(new FileReader(topicdir +"/"+ conceptFile));//Åª¤J·§©À 
+			br = new BufferedReader(new FileReader(topicdir +"/"+ conceptFile));//è®€å…¥æ¦‚å¿µ 
 			new File(topicdir +"/concepts").mkdirs();
 			new File(topicdir +"/centers").mkdirs();
 			
-			bw = new BufferedWriter(new FileWriter(topicdir +"/concepts/"+ conceptsFile));//³B²z«áªº·§©À¸s
-			bw2 =  new BufferedWriter(new FileWriter(topicdir +"/centers/"+ centerFile));//¦U·§©À¸s¬D¿ï¹Lªºµ²ªG
+			bw = new BufferedWriter(new FileWriter(topicdir +"/concepts/"+ conceptsFile));//è™•ç†å¾Œçš„æ¦‚å¿µç¾¤
+			bw2 =  new BufferedWriter(new FileWriter(topicdir +"/centers/"+ centerFile));//å„æ¦‚å¿µç¾¤æŒ‘é¸éçš„çµæœ
 
 			String line;	
 			
@@ -111,13 +111,13 @@ public class betweennessCentrality {
 				linkmap.put(e,l);
 			}
 		     
-		    //­ì©lªº¤À¸s¡AÃäÅv­«¬°1
+		    //åŸå§‹çš„åˆ†ç¾¤ï¼Œé‚Šæ¬Šé‡ç‚º1
 			//EdgeBetweennessClusterer<String,link> cluster = 
 			//		new EdgeBetweennessClusterer<String,link>((int) (map.size()*betweeness_threshold)); 
 			
 			Set<Set<String>> clusterSet = transform(g,  (int) (map.size()*betweeness_threshold));
 			
-			//²¾°£Ãä«á¦Aºâdegree
+			//ç§»é™¤é‚Šå¾Œå†ç®—degree
 			
 			for(link l : edges_removed.keySet()){
 				//g.removeEdge(l);
@@ -131,7 +131,7 @@ public class betweennessCentrality {
 			int i = 1;
 			for(Set<String> v :clusterSet){
 				allConcepts.add(v);
-				//¤j©ó¨â­Ó¦¨­ûºâ¤@­Ó·§©À
+				//å¤§æ–¼å…©å€‹æˆå“¡ç®—ä¸€å€‹æ¦‚å¿µ
 				if(v.size()>2){
 					concepts.add(v);
 				}
@@ -164,13 +164,13 @@ public class betweennessCentrality {
 					System.err.println(s+","+degree+","+g.degree(s)+","+i);
 					
 					
-					bw.write(s+"," + degree +","+ i); //¦r,degree,¸s (concepts
+					bw.write(s+"," + degree +","+ i); //å­—,degree,ç¾¤ (concepts
 					bw.newLine();
 					bw.flush();				
 					
 				}
 				
-				//±Æ§Ç¨Ã¨ú±odegree±Æ¦æ«enªºterm
+				//æ’åºä¸¦å–å¾—degreeæ’è¡Œå‰nçš„term
 				sort_data = new ArrayList<Map.Entry<String, Integer>>(degreemap.entrySet());
 				
 				Collections.sort(sort_data,
@@ -183,7 +183,7 @@ public class betweennessCentrality {
 				
 				for(int j=0;j< sort_data.size()*core_threshold;j++ ){
 					Entry<String, Integer> e = sort_data.get(j);
-					bw2.write(e.getKey()+","+e.getValue()+","+i); //¦r,degree,¸s (main_concepts
+					bw2.write(e.getKey()+","+e.getValue()+","+i); //å­—,degree,ç¾¤ (main_concepts
 					bw2.newLine();
 					bw2.flush();		
 				}				
@@ -209,12 +209,12 @@ public class betweennessCentrality {
 		for (String t : edges) {
 			if ((t.split(",")[0].equals(node) || t.split(",")[1].equals(node))) {
 				degree++;
-			}//¥u¦³¤p©óªùÂe­Èªº¤~·|«Ø¥ß³sµ²(edges¤w¿z¿ï)
-		}//­pºâ¦U¸`ÂI(¦rµü)ªº³sµ²«×(degree)
+			}//åªæœ‰å°æ–¼é–€æª»å€¼çš„æ‰æœƒå»ºç«‹é€£çµ(edgeså·²ç¯©é¸)
+		}//è¨ˆç®—å„ç¯€é»(å­—è©)çš„é€£çµåº¦(degree)
 		return degree;
 	}
 	
-	//­×§ï¦Ûjung2 ­ì©l½X: edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer
+	//ä¿®æ”¹è‡ªjung2 åŸå§‹ç¢¼: edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer
 	public Set<Set<String>> transform(Graph<String,link> graph, int mNumEdgesToRemove){
 		edges_removed = new LinkedHashMap<link, Pair<String>>();;
 		

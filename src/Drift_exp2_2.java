@@ -19,16 +19,16 @@ import tw.edu.ncu.sia.util.ServerUtil;
 
 public class Drift_exp2_2 {
 	static String cat[] = {"acq"};
-	static double betweeness_threshold = 0.35; //¥h±¼¦h¤Ö³s½u
+	static double betweeness_threshold = 0.35; //å»æ‰å¤šå°‘é€£ç·š
 	
-	static double core_threshold = 0.75; //¨ú¦h¤Ö·í§@®Ö¤ß
+	static double core_threshold = 0.75; //å–å¤šå°‘ç•¶ä½œæ ¸å¿ƒ
 	
 	static String trainDir;
 	static String testDir;
 	
 
 	/**
-	 * core_thresholdªº­q©w
+	 * core_thresholdçš„è¨‚å®š
 	 */
 	public static void main(String[] args) {
 		
@@ -68,7 +68,7 @@ public class Drift_exp2_2 {
 					
 					
 					try {
-						ServerUtil.initialize(); //ªì©l¤Æ¯Á¤Ş¦øªA¾¹slor
+						ServerUtil.initialize(); //åˆå§‹åŒ–ç´¢å¼•ä¼ºæœå™¨slor
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -78,12 +78,12 @@ public class Drift_exp2_2 {
 						for(String v2:vertices){
 							if(!v1.equals(v2) && !map_Data.containsKey(v1+","+v2) && !map_Data.containsKey(v2+","+v1) ){
 							
-								double x = ServerUtil.getHits("\""+v1+"\""); //¨ú±o¥]§t³»ÂI1¦rµüªº¤å¥ó¼Æ¶q
-								double y = ServerUtil.getHits("\""+v2+"\""); //¨ú±o¥]§t³»ÂI2¦rµüªº¤å¥ó¼Æ¶q
+								double x = ServerUtil.getHits("\""+v1+"\""); //å–å¾—åŒ…å«é ‚é»1å­—è©çš„æ–‡ä»¶æ•¸é‡
+								double y = ServerUtil.getHits("\""+v2+"\""); //å–å¾—åŒ…å«é ‚é»2å­—è©çš„æ–‡ä»¶æ•¸é‡
 							
-								double m = ServerUtil.getHits("+\""+v1+"\" +\""+v2+"\""); //¨ú±o¥]§t³»ÂI1©M2¦rµüªº¤å¥ó¼Æ¶q
+								double m = ServerUtil.getHits("+\""+v1+"\" +\""+v2+"\""); //å–å¾—åŒ…å«é ‚é»1å’Œ2å­—è©çš„æ–‡ä»¶æ•¸é‡
 							
-								double ngd = NGD_calculate.NGD_cal(x, y, m); //­pºângd¤À¼Æ
+								double ngd = NGD_calculate.NGD_cal(x, y, m); //è¨ˆç®—ngdåˆ†æ•¸
 							
 								map_Data.put(v1+","+v2, ngd);
 							}

@@ -23,8 +23,8 @@ public class Go_TrainingC {
 	static String mainDir="";
 	public static void main(String[] args) {
 
-		long AverageTime = 0; // ­pºâ¥­§¡³B²z®É¶¡¨Ï¥Î
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long AverageTime = 0; // è¨ˆç®—å¹³å‡è™•ç†æ™‚é–“ä½¿ç”¨
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		
 		long start=0;
 		File dir=new File("Topics/");
@@ -55,8 +55,8 @@ public class Go_TrainingC {
 			System.out.println(System.currentTimeMillis()-start);
 		
 
-		long ProcessTime = System.currentTimeMillis() - StartTime; // ­pºâ³B²z®É¶¡
-		// AverageTime += ProcessTime; // ²Ö¿n­pºâ®É¶¡
+		long ProcessTime = System.currentTimeMillis() - StartTime; // è¨ˆç®—è™•ç†æ™‚é–“
+		// AverageTime += ProcessTime; // ç´¯ç©è¨ˆç®—æ™‚é–“
 		System.out.println(ProcessTime);
 	}
 
@@ -73,8 +73,8 @@ public class Go_TrainingC {
 			while ((line = br.readLine()) != null) {
 
 				String key = line.split(",")[0];
-				double score = Double.parseDouble(line.split(",")[1]);//¤À¼Æ
-				double hits = Double.parseDouble(line.split(",")[2]);//·j´Mµ²ªG
+				double score = Double.parseDouble(line.split(",")[1]);//åˆ†æ•¸
+				double hits = Double.parseDouble(line.split(",")[2]);//æœå°‹çµæœ
 				map_Data.put(key, score);
 				map_Data2.put(key, hits);
 			}
@@ -97,7 +97,7 @@ public class Go_TrainingC {
 				i++;
 				bw.write(entry.getKey() + "," + entry.getValue()+","+map_Data2.get(entry.getKey()));
 				bw.newLine();
-				bw.flush(); // ²MªÅ½w½Ä°Ï
+				bw.flush(); // æ¸…ç©ºç·©è¡å€
 
 			}
 		} catch (IOException e) {
@@ -128,7 +128,7 @@ public class Go_TrainingC {
 										new File(topicDir+"Set/").list().length)
 								+","+Double.parseDouble(line.split(",")[1]));
 				bw.newLine();
-				bw.flush(); // ²MªÅ½w½Ä°Ï
+				bw.flush(); // æ¸…ç©ºç·©è¡å€
 
 				i++;
 				
@@ -201,7 +201,7 @@ public class Go_TrainingC {
 					System.out.println(line);
 					bw.write(line.split(",")[0] + "," + line.split(",")[2]);
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
 				}
 				
 			}
@@ -216,7 +216,7 @@ public class Go_TrainingC {
 				System.out.println(line);
 				bw.write(line.split(",")[0] + "," + line.split(",")[1]);
 				bw.newLine();
-				bw.flush(); // ²MªÅ½w½Ä°Ï
+				bw.flush(); // æ¸…ç©ºç·©è¡å€
 			}
 		}
 	}

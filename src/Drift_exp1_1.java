@@ -54,7 +54,7 @@ public class Drift_exp1_1 {
 					sum+=m;
 				
 					try {
-						System.out.print("¥Ø«e¤å¥ó¬° = "+f.getName()+":"+m+"\n");
+						System.out.print("ç›®å‰æ–‡ä»¶ç‚º = "+f.getName()+":"+m+"\n");
 						bw.write(f.getName()+":"+m);
 						bw.newLine();
 					} catch (IOException e) {

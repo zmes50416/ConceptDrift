@@ -32,13 +32,13 @@ public class KcoreGUI extends JFrame {
 	JPanel control = new JPanel();
 	JButton renew = new JButton("Renew");
 	JButton reclc = new JButton("Reclc");
-	JLabel label1 = new JLabel("ÀÉ®×½s¸¹");
-	JLabel label2 = new JLabel("ªùÂe­È");
+	JLabel label1 = new JLabel("æª”æ¡ˆç·¨è™Ÿ");
+	JLabel label2 = new JLabel("é–€æª»å€¼");
 	JTextField index = new JTextField("0");
 	JTextField threshold = new JTextField("0.5");
-	JCheckBox filter = new JCheckBox("¹LÂo");
-	JCheckBox cut = new JCheckBox("°Ï¹j");
-	JCheckBox arrange = new JCheckBox("¾ã²z");
+	JCheckBox filter = new JCheckBox("éæ¿¾");
+	JCheckBox cut = new JCheckBox("å€éš”");
+	JCheckBox arrange = new JCheckBox("æ•´ç†");
 	JComboBox k_value;
 	Random rand = new Random();
 	int no = 0;
@@ -211,7 +211,7 @@ public class KcoreGUI extends JFrame {
 				Point p = nodes.get(l.split(",")[0]);
 				Point p2 = nodes.get(l.split(",")[1]);
 				//if(Double.valueOf(l.split(",")[2].substring(0,3)) < 0.5)
-				//{ //¦pªG¤j©óªùÂe´Ó´N¤£µe½u¤F
+				//{ //å¦‚æœå¤§æ–¼é–€æª»æ¤å°±ä¸ç•«ç·šäº†
 				if (filter.isSelected()) {
 					if (core.get(l.split(",")[0]) >= corehold
 							&& core.get(l.split(",")[1]) >= corehold) {

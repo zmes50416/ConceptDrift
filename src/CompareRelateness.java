@@ -99,7 +99,7 @@ public class CompareRelateness {
 		int index = 0, lastindex = 0;
 		boolean first = true;
 		
-		//- ¶]exp4­n¨Ï¥Î¬Û¦P°V½m¡B´ú¸Õ¤å¥ó¡A°È¥²µù¸Ñ³o½d³ò¤ºªºµ{¦¡
+		//- è·‘exp4è¦ä½¿ç”¨ç›¸åŒè¨“ç·´ã€æ¸¬è©¦æ–‡ä»¶ï¼Œå‹™å¿…è¨»è§£é€™ç¯„åœå…§çš„ç¨‹å¼
 		///*
 		concept = new LinkedList<String>();
 		
@@ -113,7 +113,7 @@ public class CompareRelateness {
 			br = new BufferedReader(new FileReader(dir +"/concepts/"+f+"_concepts.txt"));
 			while ((line = br.readLine()) != null) {
 				if(!line.equals("")){
-					String w1 = line.split(",")[0]; //¦r
+					String w1 = line.split(",")[0]; //å­—
 					
 					if(first){
 						concept.add(w1);
@@ -164,7 +164,7 @@ public class CompareRelateness {
 			br = new BufferedReader(new FileReader(dir +"/concepts/"+f+"_concepts.txt"));
 			while ((line = br.readLine()) != null) {
 				if(!line.equals("")){
-					String w1 = line.split(",")[0]; //¦r
+					String w1 = line.split(",")[0]; //å­—
 					
 					if(first){
 						concept.add(w1);
@@ -197,7 +197,7 @@ public class CompareRelateness {
 		
 	}
 	
-	//¿é¥X¨Ì·Ó³Ì¤j³s½u¼Æ¡BÁ`³s½u¼Æ¡Bº¡¨¬ªùÂe¤ñ¨Òªº±Æ¦W¡A¨Ã¨Ì¦¹­pºâp@n
+	//è¼¸å‡ºä¾ç…§æœ€å¤§é€£ç·šæ•¸ã€ç¸½é€£ç·šæ•¸ã€æ»¿è¶³é–€æª»æ¯”ä¾‹çš„æ’åï¼Œä¸¦ä¾æ­¤è¨ˆç®—p@n
 	public void caculRank(String topicDir, String centerFile,
 			String writeFile, String testDir, String cat[], int nCount,boolean changeSimMin ) throws IOException{
 		HashMap<String, Double> allThreshold_max = new HashMap<String, Double>();
@@ -235,7 +235,7 @@ public class CompareRelateness {
 			e.printStackTrace();
 		}
 		
-		bw.write("¨Ï¥ÎªÌ¼Ò«¬·§©À¼Æ:"+coreConcepts.size());
+		bw.write("ä½¿ç”¨è€…æ¨¡å‹æ¦‚å¿µæ•¸:"+coreConcepts.size());
 		bw.newLine();
 		
 		for (String f : dir.list()){
@@ -250,18 +250,18 @@ public class CompareRelateness {
 			int links = 0;
 			getConcept(f, testDir);
 			
-			bw.write(f+"·§©À¼Æ:"+concept.size());
+			bw.write(f+"æ¦‚å¿µæ•¸:"+concept.size());
 			bw.newLine();
 			
 			int uc=0, dc=0;
 			
-			//¹ï©ó¨Ï¥ÎªÌ¼Ò«¬¤¤ªº¨C­Ó·§©À¸s
+			//å°æ–¼ä½¿ç”¨è€…æ¨¡å‹ä¸­çš„æ¯å€‹æ¦‚å¿µç¾¤
 			for(String core : coreConcepts){
 				String cores[] = core.split(",");
 				dc=0;
 				uc++;
 	
-				//¹ï©ó¤å¥óªº¨C­Ó·§©À¸s
+				//å°æ–¼æ–‡ä»¶çš„æ¯å€‹æ¦‚å¿µç¾¤
 				for(String c : concept){
 					dc++;
 					
@@ -270,7 +270,7 @@ public class CompareRelateness {
 					threshold = (int) (cores.length * concepts.length);
 					links = 0;
 					
-					//¨Ï¥ÎªÌ¼Ò«¬ªº¨ä¤¤ªºcore»P¤å¥óªº¨ä¤¤ªºconcept¨â¨â­pºâNGD¡B±o¨ìº¡¨¬ªùÂeªº³s½u¼Æ
+					//ä½¿ç”¨è€…æ¨¡å‹çš„å…¶ä¸­çš„coreèˆ‡æ–‡ä»¶çš„å…¶ä¸­çš„conceptå…©å…©è¨ˆç®—NGDã€å¾—åˆ°æ»¿è¶³é–€æª»çš„é€£ç·šæ•¸
 					for(String s: cores){
 						for(String w: concepts){
 							System.out.println(s+","+w);
@@ -325,7 +325,7 @@ public class CompareRelateness {
 			normalized_allThreshold_max.put(f, max_n);
 
 
-			//§ä¥X³Ì¤j­È»PÁ`©M³sµ²¼Æ
+			//æ‰¾å‡ºæœ€å¤§å€¼èˆ‡ç¸½å’Œé€£çµæ•¸
 			for(int lc: link_count){
 				if(lc>max_c)
 					max_c = lc;
@@ -355,7 +355,7 @@ public class CompareRelateness {
 		List<Map.Entry<String, Integer>> sorted_max = map_sort(max_map);
 		
 		List <String> result = new LinkedList<String>(); 
-		//¼g¥X¨Ì·Ósumªº±Æ§Çµ²ªG¥H¤Îp@N
+		//å¯«å‡ºä¾ç…§sumçš„æ’åºçµæœä»¥åŠp@N
 		int i = 0, n=nCount, j=0;
 		for(Map.Entry<String, Integer> e: sorted_sum){
 			j++;
@@ -380,7 +380,7 @@ public class CompareRelateness {
 		bw2.flush();
 		bw2.close();
 		
-		//¼g¥X¨Ì·Ómaxªº±Æ§Çµ²ªG¥H¤Îp@N
+		//å¯«å‡ºä¾ç…§maxçš„æ’åºçµæœä»¥åŠp@N
 		i = 0;
 		j=0;
 		n = nCount;
@@ -409,7 +409,7 @@ public class CompareRelateness {
 		bw3.flush();
 		bw3.close();
 		
-		//¼g¥X¨Ì·Ó³Ì¤jº¡¨¬ªùÂe¤ñ¨Òªº±Æ§Çµ²ªG¥H¤Îp@N
+		//å¯«å‡ºä¾ç…§æœ€å¤§æ»¿è¶³é–€æª»æ¯”ä¾‹çš„æ’åºçµæœä»¥åŠp@N
 		i = 0;
 		n = nCount;
 		j=0;
@@ -442,7 +442,7 @@ public class CompareRelateness {
 		bw4.flush();
 		bw4.close();
 		
-		//¼g¥X¨Ì·Ó¥¿³W¤Æ«á³Ì¤jº¡¨¬ªùÂe¤ñ¨Òªº±Æ§Çµ²ªG¥H¤Îp@N
+		//å¯«å‡ºä¾ç…§æ­£è¦åŒ–å¾Œæœ€å¤§æ»¿è¶³é–€æª»æ¯”ä¾‹çš„æ’åºçµæœä»¥åŠp@N
 		i = 0;
 		j=0;
 		n = nCount;
@@ -523,7 +523,7 @@ public class CompareRelateness {
 		double precision = 0;
 		double recall = 0;
 		double fmeasure = 0;
-		boolean relateness = false; //¨t²Î§P©w¬OÄİ©ó¸ÓÃş
+		boolean relateness = false; //ç³»çµ±åˆ¤å®šæ˜¯å±¬æ–¼è©²é¡
 		
 		getCenter(resultDir+"/centers/"+centerFile, changeSimMin);
 		BufferedWriter bw = new BufferedWriter(new FileWriter(resultDir
@@ -533,7 +533,7 @@ public class CompareRelateness {
 				+"/"+ "see.txt", true));
 		//==rrr==
 		
-		//¬ö¿ı®É¶¡¥Î
+		//ç´€éŒ„æ™‚é–“ç”¨
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter("time/caculRetateness.txt", true));
 		
 		File dir = new File(testDir);
@@ -545,11 +545,11 @@ public class CompareRelateness {
 			e.printStackTrace();
 		}
 		
-		bw.write("¨Ï¥ÎªÌ¼Ò«¬·§©À¼Æ:"+coreConcepts.size());
+		bw.write("ä½¿ç”¨è€…æ¨¡å‹æ¦‚å¿µæ•¸:"+coreConcepts.size());
 		bw.newLine();
 		
-		//¨Ï¥Î©órecall­È­pºâ¤½¦¡¬° (double) tp / all_p®É;
-		/*int all_p = 0; //¬ö¿ıÃÒ¦Vªº¼Æ¶q¤å¥ó¡A¥H«K­pºârecall
+		//ä½¿ç”¨æ–¼recallå€¼è¨ˆç®—å…¬å¼ç‚º (double) tp / all_pæ™‚;
+		/*int all_p = 0; //ç´€éŒ„è­‰å‘çš„æ•¸é‡æ–‡ä»¶ï¼Œä»¥ä¾¿è¨ˆç®—recall
 		int recall_threshold = 1;
 		for (String f : dir.list()){
 			for(String c:cat){
@@ -558,17 +558,17 @@ public class CompareRelateness {
 				}
 			}
 		}
-		bw.write("¥¿¦V·§©ÀÁ`¼Æ:"+all_p);
+		bw.write("æ­£å‘æ¦‚å¿µç¸½æ•¸:"+all_p);
 		bw.newLine();*/
 		
 		for (File files : dir.listFiles()){
 			if(files.isFile()){
 				String f = files.getName();
-				System.out.print("¤å¥ó "+ f + " ¤ñ¹ï¤¤\n");
+				System.out.print("æ–‡ä»¶ "+ f + " æ¯”å°ä¸­\n");
 			//==rrr==
-			Tom_bw.write("¥»¤å¦WºÙ¬° : "+f);
+			Tom_bw.write("æœ¬æ–‡åç¨±ç‚º : "+f);
 			Tom_bw.newLine();
-			Tom_bw.write("¥»¤å¥óÃş§O¬°"+f.split("_")[0]);
+			Tom_bw.write("æœ¬æ–‡ä»¶é¡åˆ¥ç‚º"+f.split("_")[0]);
 			Tom_bw.newLine();
 			Tom_bw.flush();
 			//==rrr==
@@ -576,10 +576,10 @@ public class CompareRelateness {
 			int links = 0;
 			getConcept(f, testDir);
 			
-			bw.write(f+"·§©À¼Æ:"+concept.size());
+			bw.write(f+"æ¦‚å¿µæ•¸:"+concept.size());
 			bw.newLine();
 			
-			bw.write("¥»¤å¥óÃş§O¬°"+f.split("_")[0]);
+			bw.write("æœ¬æ–‡ä»¶é¡åˆ¥ç‚º"+f.split("_")[0]);
 			bw.newLine();
 			bw.flush();
 			
@@ -598,7 +598,7 @@ public class CompareRelateness {
 			
 			long t1 = System.currentTimeMillis();
 			
-			//¹ï©ó¨Ï¥ÎªÌ¼Ò«¬¤¤ªº¨C­Ó·§©À¸s
+			//å°æ–¼ä½¿ç”¨è€…æ¨¡å‹ä¸­çš„æ¯å€‹æ¦‚å¿µç¾¤
 			for(String core : coreConcepts){
 				String cores[] = core.split(",");
 				dc=0;
@@ -609,14 +609,14 @@ public class CompareRelateness {
 						coreslength=coreslength+term_vertice_times.get(s);
 					}
 				}
-				if(coreslength==0){ //term_vertice_times¨S³]©w®É
+				if(coreslength==0){ //term_vertice_timesæ²’è¨­å®šæ™‚
 					coreslength = cores.length;
 				}
 							
 				if(relateness)
 					break;
 				
-				//¹ï©ó¤å¥óªº¨C­Ó·§©À¸s
+				//å°æ–¼æ–‡ä»¶çš„æ¯å€‹æ¦‚å¿µç¾¤
 				for(String c : concept){
 					dc++;					
 					String concepts[] = c.split(",");
@@ -624,11 +624,11 @@ public class CompareRelateness {
 					threshold = (int) (coreslength * concepts.length*relateness_threshold);
 					links = 0;
 					//==rrr==
-					Tom_bw.write("¥»¤å²Ä"+dc+"­Ó·§©À»P¼Ò«¬²Ä"+uc+"­Ó·§©ÀªºªùÂe­È¬°-->"+threshold);
+					Tom_bw.write("æœ¬æ–‡ç¬¬"+dc+"å€‹æ¦‚å¿µèˆ‡æ¨¡å‹ç¬¬"+uc+"å€‹æ¦‚å¿µçš„é–€æª»å€¼ç‚º-->"+threshold);
 					Tom_bw.newLine();
 					Tom_bw.flush();
 					//==rrr==
-					//¨Ï¥ÎªÌ¼Ò«¬ªº¨ä¤¤ªºcore»P¤å¥óªº¨ä¤¤ªºconcept¨â¨â­pºâNGD¡B±o¨ìº¡¨¬ªùÂeªº³s½u¼Æ
+					//ä½¿ç”¨è€…æ¨¡å‹çš„å…¶ä¸­çš„coreèˆ‡æ–‡ä»¶çš„å…¶ä¸­çš„conceptå…©å…©è¨ˆç®—NGDã€å¾—åˆ°æ»¿è¶³é–€æª»çš„é€£ç·šæ•¸
 					for(String s: cores){
 						for(String w: concepts){
 							System.out.println(s+","+w);
@@ -637,24 +637,24 @@ public class CompareRelateness {
 							double b = ServerUtil.getHits("\""+w+"\"");
 							
 							double mValue = ServerUtil.getHits("+\""+s+"\" +\""+w+"\"");
-							//System.err.println("´ú¸Õ¤å¥ó»P¨Ï¥ÎªÌ¼Ò²Õ·§©À¤ñ¹ï Query: +\""+s+"\" +\""+w+"\"");
+							//System.err.println("æ¸¬è©¦æ–‡ä»¶èˆ‡ä½¿ç”¨è€…æ¨¡çµ„æ¦‚å¿µæ¯”å° Query: +\""+s+"\" +\""+w+"\"");
 												
 							double NGD = NGD_calculate.NGD_cal(a,b,mValue);
 							
-							if(NGD<=simMin){ //term_vertice_times¨S³]©w®É
+							if(NGD<=simMin){ //term_vertice_timesæ²’è¨­å®šæ™‚
 								if(coreslength==cores.length){
 									links++;
-									Tom_bw.write(s+","+w+",¼W¥[²Ö¿n³s½u¼Æ:"+"1");
+									Tom_bw.write(s+","+w+",å¢åŠ ç´¯ç©é€£ç·šæ•¸:"+"1");
 									Tom_bw.newLine();
 									Tom_bw.write("NGD = "+NGD);
 								}else{
 									links = links + term_vertice_times.get(s);
 									//==rrr==
-									Tom_bw.write(s+","+w+",¼W¥[²Ö¿n³s½u¼Æ:"+term_vertice_times.get(s));
+									Tom_bw.write(s+","+w+",å¢åŠ ç´¯ç©é€£ç·šæ•¸:"+term_vertice_times.get(s));
 									//==rrr==
 								}
 								Tom_bw.newLine();
-								Tom_bw.write("¥Ø«elinks¬°:"+links);
+								Tom_bw.write("ç›®å‰linksç‚º:"+links);
 								Tom_bw.newLine();
 								Tom_bw.flush();
 							}
@@ -667,7 +667,7 @@ public class CompareRelateness {
 					if(links >= threshold){
 						relateness = true;
 						//==rrr==
-						Tom_bw.write("¥»¤å²Ä"+dc+"­Ó·§©À"+threshold+"»P¼Ò«¬²Ä"+uc+"­Ó·§©À"+links+"§P©w¬°¬ÛÃö");
+						Tom_bw.write("æœ¬æ–‡ç¬¬"+dc+"å€‹æ¦‚å¿µ"+threshold+"èˆ‡æ¨¡å‹ç¬¬"+uc+"å€‹æ¦‚å¿µ"+links+"åˆ¤å®šç‚ºç›¸é—œ");
 						Tom_bw.newLine();
 						Tom_bw.flush();
 						//==rrr==
@@ -677,7 +677,7 @@ public class CompareRelateness {
 					else
 						relateness = false;
 					//==rrr==
-					Tom_bw.write("¥»¤å²Ä"+dc+"­Ó·§©À"+threshold+"»P¼Ò«¬²Ä"+uc+"­Ó·§©À"+links+"§P©w¬°«D¬ÛÃö");
+					Tom_bw.write("æœ¬æ–‡ç¬¬"+dc+"å€‹æ¦‚å¿µ"+threshold+"èˆ‡æ¨¡å‹ç¬¬"+uc+"å€‹æ¦‚å¿µ"+links+"åˆ¤å®šç‚ºéç›¸é—œ");
 					Tom_bw.newLine();
 					Tom_bw.flush();
 					//==rrr==
@@ -695,7 +695,7 @@ public class CompareRelateness {
 			bw.newLine();
 			bw.flush();
 			
-			boolean act_relateness = false; //¹ê»Ú¤W¬O§_¸ÓÃş§O
+			boolean act_relateness = false; //å¯¦éš›ä¸Šæ˜¯å¦è©²é¡åˆ¥
 			
 			for(String c:cat){
 				if(f.split("_")[0].equals(c)){
@@ -704,61 +704,61 @@ public class CompareRelateness {
 			}
 				
 			if(act_relateness){
-				bw.write("¹ê»Ú¤W¬°¬ÛÃö");
+				bw.write("å¯¦éš›ä¸Šç‚ºç›¸é—œ");
 				bw.newLine();
 				bw.flush();
 				//==rrr==
-				Tom_bw.write("¹ê»Ú¤W¬°¬ÛÃö");
+				Tom_bw.write("å¯¦éš›ä¸Šç‚ºç›¸é—œ");
 				Tom_bw.newLine();
 				Tom_bw.flush();
 				//==rrr==
 				if(relateness){
 					tp++;
-					bw.write("§P©w¬°¬ÛÃö");
+					bw.write("åˆ¤å®šç‚ºç›¸é—œ");
 					bw.newLine();
 					bw.flush();
 					//==rrr==
-					Tom_bw.write("§P©w¬°¬ÛÃö");
+					Tom_bw.write("åˆ¤å®šç‚ºç›¸é—œ");
 					Tom_bw.newLine();
 					Tom_bw.flush();
 					//==rrr==
 				}else{
 					fn++;
-					bw.write("§P©w¬°«D¬ÛÃö");
+					bw.write("åˆ¤å®šç‚ºéç›¸é—œ");
 					bw.newLine();
 					bw.flush();
 					//==rrr==
-					Tom_bw.write("§P©w¬°«D¬ÛÃö");
+					Tom_bw.write("åˆ¤å®šç‚ºéç›¸é—œ");
 					Tom_bw.newLine();
 					Tom_bw.flush();
 					//==rrr==
 				}
 			}else{
-				bw.write("¹ê»Ú¤W¬°«D¬ÛÃö");
+				bw.write("å¯¦éš›ä¸Šç‚ºéç›¸é—œ");
 				bw.newLine();
 				bw.flush();
 				//==rrr==
-				Tom_bw.write("¹ê»Ú¤W¬°«D¬ÛÃö");
+				Tom_bw.write("å¯¦éš›ä¸Šç‚ºéç›¸é—œ");
 				Tom_bw.newLine();
 				Tom_bw.flush();
 				//==rrr==
 				if(relateness){
 					fp++;
-					bw.write("§P©w¬°¬ÛÃö");
+					bw.write("åˆ¤å®šç‚ºç›¸é—œ");
 					bw.newLine();
 					bw.flush();
 					//==rrr==
-					Tom_bw.write("§P©w¬°¬ÛÃö");
+					Tom_bw.write("åˆ¤å®šç‚ºç›¸é—œ");
 					Tom_bw.newLine();
 					Tom_bw.flush();
 					//==rrr==
 				}else{
 					tn++;
-					bw.write("§P©w¬°«D¬ÛÃö");
+					bw.write("åˆ¤å®šç‚ºéç›¸é—œ");
 					bw.newLine();
 					bw.flush();
 					//==rrr==
-					Tom_bw.write("§P©w¬°«D¬ÛÃö");
+					Tom_bw.write("åˆ¤å®šç‚ºéç›¸é—œ");
 					Tom_bw.newLine();
 					Tom_bw.flush();
 					//==rrr==
@@ -808,7 +808,7 @@ public class CompareRelateness {
 		return fmeasure;
 	}
 	
-	//¤£»İ­ncenterfile
+	//ä¸éœ€è¦centerfile
 	public double caculRetateness(String topicDir,
 			String writeFile, String testDir, String cat[], boolean changeSimMin) throws IOException{
 		
@@ -816,7 +816,7 @@ public class CompareRelateness {
 		double precision = 0;
 		double recall = 0;
 		double fmeasure = 0;
-		boolean relateness = false; //¨t²Î§P©w¬OÄİ©ó¸ÓÃş
+		boolean relateness = false; //ç³»çµ±åˆ¤å®šæ˜¯å±¬æ–¼è©²é¡
 		
 		new File(topicDir).mkdirs();
 		
@@ -832,7 +832,7 @@ public class CompareRelateness {
 			e.printStackTrace();
 		}
 		
-		bw.write("¨Ï¥ÎªÌ¼Ò«¬·§©À¼Æ:"+coreConcepts.size());
+		bw.write("ä½¿ç”¨è€…æ¨¡å‹æ¦‚å¿µæ•¸:"+coreConcepts.size());
 		bw.newLine();
 		
 		for (String f : dir.list()){
@@ -841,12 +841,12 @@ public class CompareRelateness {
 			int links = 0;
 			getConcept(f, testDir);
 			
-			bw.write(f+"·§©À¼Æ:"+concept.size());
+			bw.write(f+"æ¦‚å¿µæ•¸:"+concept.size());
 			bw.newLine();
 			
 			int uc=0, dc=0;
 			
-			//¹ï©ó¨Ï¥ÎªÌ¼Ò«¬¤¤ªº¨C­Ó·§©À¸s
+			//å°æ–¼ä½¿ç”¨è€…æ¨¡å‹ä¸­çš„æ¯å€‹æ¦‚å¿µç¾¤
 			for(String core : coreConcepts){
 				String cores[] = core.split(",");
 				dc=0;
@@ -855,7 +855,7 @@ public class CompareRelateness {
 				if(relateness)
 					break;
 				
-				//¹ï©ó¤å¥óªº¨C­Ó·§©À¸s
+				//å°æ–¼æ–‡ä»¶çš„æ¯å€‹æ¦‚å¿µç¾¤
 				for(String c : concept){
 					dc++;
 					
@@ -864,7 +864,7 @@ public class CompareRelateness {
 					threshold = (int) (cores.length * concepts.length*relateness_threshold);
 					links = 0;
 					
-					//¨Ï¥ÎªÌ¼Ò«¬ªº¨ä¤¤ªºcore»P¤å¥óªº¨ä¤¤ªºconcept¨â¨â­pºâNGD¡B±o¨ìº¡¨¬ªùÂeªº³s½u¼Æ
+					//ä½¿ç”¨è€…æ¨¡å‹çš„å…¶ä¸­çš„coreèˆ‡æ–‡ä»¶çš„å…¶ä¸­çš„conceptå…©å…©è¨ˆç®—NGDã€å¾—åˆ°æ»¿è¶³é–€æª»çš„é€£ç·šæ•¸
 					for(String s: cores){
 						for(String w: concepts){
 							System.out.println(s+","+w);
@@ -901,7 +901,7 @@ public class CompareRelateness {
 			bw.newLine();
 			bw.flush();
 			
-			boolean act_relateness = false; //¹ê»Ú¤W¬O§_¸ÓÃş§O
+			boolean act_relateness = false; //å¯¦éš›ä¸Šæ˜¯å¦è©²é¡åˆ¥
 			
 			for(String c:cat)
 				if(f.split("_")[0].equals(c))
@@ -981,7 +981,7 @@ public class CompareRelateness {
 				
 				double NGD = NGD_calculate.NGD_cal(a, b, mValue);
 				
-				//§ï¦¨¥u¦s<1
+				//æ”¹æˆåªå­˜<1
 				if(NGD < 1)
 					NGDs.put(wordlist.get(i)+","+wordlist.get(j), NGD);
 				
@@ -1015,7 +1015,7 @@ public class CompareRelateness {
             }
         });
         
-        //¬ö¿ıµ²ªG©ó
+        //ç´€éŒ„çµæœæ–¼
         try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(path+"/"+conceptFile));
 			for (int i = 0; i < list_Data.size(); i++) {
@@ -1070,7 +1070,7 @@ public class CompareRelateness {
         
         list_Data.removeAll(toRemove_Data);
         
-      //¬ö¿ıµ²ªG
+      //ç´€éŒ„çµæœ
         try {
         	BufferedWriter bw = new BufferedWriter(new FileWriter(path+"/"+conceptFile));
 			for (int i = 0; i < list_Data.size(); i++) {

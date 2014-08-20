@@ -24,7 +24,7 @@ public class Drift_exp1_2 {
 	static int size = 2;
 
 	/**
-	 * ¬D¦P¤@¥DÃD N½gµ²¦X¯S¼x»Pbetweeness_threshold±Ó·P«×¤ÀªR
+	 * æŒ‘åŒä¸€ä¸»é¡Œ Nç¯‡çµåˆç‰¹å¾µèˆ‡betweeness_thresholdæ•æ„Ÿåº¦åˆ†æ
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -69,9 +69,9 @@ public class Drift_exp1_2 {
 			
 				
 			
-			//Åª¤J´ú¸Õ¸ê®Æ§¨¤¤ªºrank
+			//è®€å…¥æ¸¬è©¦è³‡æ–™å¤¾ä¸­çš„rank
 				for(File f :testdir.listFiles()){
-					System.out.print("¥Ø«e¤å¥ó¬° = "+f.getName()+"\n");
+					System.out.print("ç›®å‰æ–‡ä»¶ç‚º = "+f.getName()+"\n");
 					ngds = Go_Training3.featureExtract(f);
 					for(Entry<String,Double> e: ngds.entrySet()){
 						String pair = e.getKey();

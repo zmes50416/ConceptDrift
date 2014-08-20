@@ -35,8 +35,8 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 		double c1_tf = 0, c2_tf = 0, c3_tf = 0, c4_tf = 0, c5_tf = 0;
 		double c1_tfidf = 0, c2_tfidf = 0, c3_tfidf = 0, c4_tfidf = 0, c5_tfidf = 0;
 		double idf = 0;
-		int D = 5; //Á`¤å¥ó¼Æ
-		int d = 0; //¥]§t¬Y¦rªº¤å¥ó¼Æ
+		int D = 5; //ç¸½æ–‡ä»¶æ•¸
+		int d = 0; //åŒ…å«æŸå­—çš„æ–‡ä»¶æ•¸
 		double highest = 0;
 		int choose = 1;
 
@@ -61,7 +61,7 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 
 		while ((line = BufferedStream.readLine()) != null)
 		{
-			//ªì©l¤Æ
+			//åˆå§‹åŒ–
 			d = 0;
 			c1_nij = 0;
 			c2_nij = 0;
@@ -76,11 +76,11 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 			
 			while((c1 = Buffered_cache_ai.readLine()) != null)
 			{
-				flag = 0; //ªí¥Ü¨S¹ï¤¤
+				flag = 0; //è¡¨ç¤ºæ²’å°ä¸­
 				c1_wordcount++;
 				if(c1.split("=")[0].equals(line))
 				{
-					flag = 1; //ªí¥Ü¹ï¤¤
+					flag = 1; //è¡¨ç¤ºå°ä¸­
 					d++;
 					c1_nij = Integer.parseInt(c1.split("=")[3]);
 				}
@@ -88,11 +88,11 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 			
 			while((c2 = Buffered_cache_art.readLine()) != null)
 			{
-				flag = 0; //ªí¥Ü¨S¹ï¤¤
+				flag = 0; //è¡¨ç¤ºæ²’å°ä¸­
 				c2_wordcount++;
 				if(c2.split("=")[0].equals(line))
 				{
-					flag = 1; //ªí¥Ü¹ï¤¤
+					flag = 1; //è¡¨ç¤ºå°ä¸­
 					d++;
 					c2_nij = Integer.parseInt(c2.split("=")[3]);
 				}
@@ -100,11 +100,11 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 			
 			while((c3 = Buffered_cache_biology.readLine()) != null)
 			{
-				flag = 0; //ªí¥Ü¨S¹ï¤¤
+				flag = 0; //è¡¨ç¤ºæ²’å°ä¸­
 				c3_wordcount++;
 				if(c3.split("=")[0].equals(line))
 				{
-					flag = 1; //ªí¥Ü¹ï¤¤
+					flag = 1; //è¡¨ç¤ºå°ä¸­
 					d++;
 					c3_nij = Integer.parseInt(c3.split("=")[3]);
 				}
@@ -112,11 +112,11 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 			
 			while((c4 = Buffered_cache_computer_science.readLine()) != null)
 			{
-				flag = 0; //ªí¥Ü¨S¹ï¤¤
+				flag = 0; //è¡¨ç¤ºæ²’å°ä¸­
 				c4_wordcount++;
 				if(c4.split("=")[0].equals(line))
 				{
-					flag = 1; //ªí¥Ü¹ï¤¤
+					flag = 1; //è¡¨ç¤ºå°ä¸­
 					d++;
 					c4_nij = Integer.parseInt(c4.split("=")[3]);
 				}
@@ -124,11 +124,11 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 			
 			while((c5 = Buffered_cache_ir.readLine()) != null)
 			{
-				flag = 0; //ªí¥Ü¨S¹ï¤¤
+				flag = 0; //è¡¨ç¤ºæ²’å°ä¸­
 				c5_wordcount++;
 				if(c5.split("=")[0].equals(line))
 				{
-					flag = 1; //ªí¥Ü¹ï¤¤
+					flag = 1; //è¡¨ç¤ºå°ä¸­
 					d++;
 					c5_nij = Integer.parseInt(c5.split("=")[3]);
 				}
@@ -180,10 +180,10 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 			System.out.println("c3_tfidf= " + c3_tfidf);
 			System.out.println("c4_tfidf= " + c4_tfidf);
 			System.out.println("c5_tfidf= " + c5_tfidf);
-			System.out.println("³Ì°ªªºTF-IDF¤À¼Æ" + highest);
-			System.out.println("¿ï¾Ü²Ä" + choose + "­ÓCache");
+			System.out.println("æœ€é«˜çš„TF-IDFåˆ†æ•¸" + highest);
+			System.out.println("é¸æ“‡ç¬¬" + choose + "å€‹Cache");
 			
-			//­«·sÅª¨úcache
+			//é‡æ–°è®€å–cache
 			cache_ai = new FileReader("Cache/ai.txt");
 			Buffered_cache_ai = new BufferedReader(cache_ai);
 			cache_art = new FileReader("Cache/art.txt");
@@ -200,11 +200,11 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 		//f.delete();
 
 		bw = new BufferedWriter(new FileWriter("Cache_choose/" + no + "_" + "cache_choose1.txt"));
-		//¥ı§âCache1µù±¼
+		//å…ˆæŠŠCache1è¨»æ‰
 		//bw2 = new BufferedWriter(new FileWriter("Cache/cache1.txt", true));
 		bw.write(String.valueOf(choose));
 		bw.newLine();
-		bw.flush(); // ²MªÅ½w½Ä°Ï
+		bw.flush(); // æ¸…ç©ºç·©è¡å€
 		bw.close();
 		
 		System.out.println(System.currentTimeMillis() - runstartTime);
@@ -218,7 +218,7 @@ public class cache_choose extends HTMLEditorKit.ParserCallback
 
 	public static void main(String args[]) throws IOException, ParseException {
 
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		main(1);
 		System.out.println(System.currentTimeMillis() - StartTime);
 	}

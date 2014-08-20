@@ -16,8 +16,8 @@ import tw.edu.ncu.sia.util.ServerUtil;
 
 
 public class Drift_exp4 {
-	static double betweeness_threshold = 0.35; //¥h±¼¦h¤Ö³s½u
-	static double core_threshold = 0.75; //¨ú¦h¤Ö·í§@®Ö¤ß
+	static double betweeness_threshold = 0.35; //å»æ‰å¤šå°‘é€£ç·š
+	static double core_threshold = 0.75; //å–å¤šå°‘ç•¶ä½œæ ¸å¿ƒ
 	static double relateness_threshhold = 0.525;
 	
 	static int chunck =15;	
@@ -34,8 +34,8 @@ public class Drift_exp4 {
 	
 
 	/**
-	 * ¤@­Ó¥DÃD¦s¦b¤U¡A¾Ç²ß¤@¥DÃD¡B±µµÛ§Ñ°O¤@¥DÃD
-	 * ¨C¦¸½Õ¾ãªºµ²ªG
+	 * ä¸€å€‹ä¸»é¡Œå­˜åœ¨ä¸‹ï¼Œå­¸ç¿’ä¸€ä¸»é¡Œã€æ¥è‘—å¿˜è¨˜ä¸€ä¸»é¡Œ
+	 * æ¯æ¬¡èª¿æ•´çš„çµæœ
 	 */
 	public static void main(String[] args) {
 		
@@ -59,7 +59,7 @@ public class Drift_exp4 {
 			trainDir_unrelate = "exp4/chunck"+i+"/training/unrelated";
 			testDir = "exp4/chunck"+i+"/testing";
 			
-			//ªì©l¤Æ
+			//åˆå§‹åŒ–
 			if(i==1){
 				String objTopic[] = {learningCat[0]};
 				HashSet<String> set = Go_Training3.generateTrainSet(5, trainDir_relate, learningCat[0]);
@@ -78,7 +78,7 @@ public class Drift_exp4 {
 				}
 				
 				
-			//¶¥¬q¤@ 	
+			//éšæ®µä¸€ 	
 			}else if (i<=changeChunck1){
 				String objTopic[] = {learningCat[0]};
 				
@@ -107,7 +107,7 @@ public class Drift_exp4 {
 
 				
 			}
-			//¶¥¬q¤G ¤@¥DÃD¦s¦b¤U ¾Ç²ß¥t¤@¥DÃD
+			//éšæ®µäºŒ ä¸€ä¸»é¡Œå­˜åœ¨ä¸‹ å­¸ç¿’å¦ä¸€ä¸»é¡Œ
 			else if(i>changeChunck1 && i<=changeChunck2){
 				String objTopic[] = {learningCat[0], learningCat[1]};
 				
@@ -144,7 +144,7 @@ public class Drift_exp4 {
 				
 				
 			}
-			//¶¥¬q¤T ¨â¥DÃD±¡ªp¤U §Ñ°O¤@¥DÃD
+			//éšæ®µä¸‰ å…©ä¸»é¡Œæƒ…æ³ä¸‹ å¿˜è¨˜ä¸€ä¸»é¡Œ
 			else if(i>changeChunck2 && i<=chunck){
 				String objTopic[] = {learningCat[0]};
 				

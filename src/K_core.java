@@ -38,8 +38,8 @@ public class K_core {
 
 	public void K_core_cal(int no) throws FileNotFoundException {
 		this.no = no;
-		br = new BufferedReader(new FileReader("Rank/"+no + "_" + "Rank.txt"));//Åª¥X¸g¹L±Æ§ÇªºNGD
-		br2 = new BufferedReader(new FileReader("Stem/"+no + "_" + "stem.txt"));//Åª¥X¦rµü
+		br = new BufferedReader(new FileReader("Rank/"+no + "_" + "Rank.txt"));//è®€å‡ºç¶“éæ’åºçš„NGD
+		br2 = new BufferedReader(new FileReader("Stem/"+no + "_" + "stem.txt"));//è®€å‡ºå­—è©
 		try {
 			double sum = 0;
 			while ((line = br.readLine()) != null) {
@@ -51,9 +51,9 @@ public class K_core {
 				String key = line.split(",")[0];
 				String hits = line.split(",")[1];
 				int degree = getDegree(key);
-				coreMap.put(key, degree);//¬ö¿ıK-core­È
-				degreeMap.put(key, degree);//¬ö¿ı³sµ²«×
-				hitMap.put(key,hits);//¬ö¿ı·j´Mµ²ªG
+				coreMap.put(key, degree);//ç´€éŒ„K-coreå€¼
+				degreeMap.put(key, degree);//ç´€éŒ„é€£çµåº¦
+				hitMap.put(key,hits);//ç´€éŒ„æœå°‹çµæœ
 			}
 			
 			sort_data = new ArrayList<Map.Entry<String, Integer>>(coreMap
@@ -66,9 +66,9 @@ public class K_core {
 							return (int) ((o1.getValue() - o2.getValue()));
 						}
 					});
-			//«ö·Óªì©ldegree­È±Æ§Ç
+			//æŒ‰ç…§åˆå§‹degreeå€¼æ’åº
 			getK_code_value();
-			//­pºâkcore­È
+			//è¨ˆç®—kcoreå€¼
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,8 +84,8 @@ public class K_core {
 					&& Double.parseDouble(t.split(",")[2]) < simMin) {
 				degree++;
 				weight=weight+Double.parseDouble(t.split(",")[2]);
-			}//¥u¦³¤p©óªùÂe­Èªº¤~·|«Ø¥ß³sµ²
-		}//­pºâ¦U¸`ÂI(¦rµü)ªº³sµ²«×(degree)
+			}//åªæœ‰å°æ–¼é–€æª»å€¼çš„æ‰æœƒå»ºç«‹é€£çµ
+		}//è¨ˆç®—å„ç¯€é»(å­—è©)çš„é€£çµåº¦(degree)
 		System.out.println(node+":"+degree);
 		return degree;
 	}
@@ -106,7 +106,7 @@ public class K_core {
 					if (coreMap.containsKey(t.split(",")[1])) {
 						if (node.getValue() < coreMap.get(t.split(",")[1])) {
 							temp = coreMap.get(t.split(",")[1]) - 1;
-							coreMap.put(t.split(",")[1], temp);//±N¥Ø«e¼Æ­È¤j©ó¦Û¤vªº¾F©~-1
+							coreMap.put(t.split(",")[1], temp);//å°‡ç›®å‰æ•¸å€¼å¤§æ–¼è‡ªå·±çš„é„°å±…-1
 							System.out.println(t.split(",")[1] + " value-1");
 						}
 					}
@@ -120,7 +120,7 @@ public class K_core {
 							System.out.println(t.split(",")[0] + " value-1");
 						}
 					}
-				}//ÀËµø¬O§_¦³¤j©ó¦Û¤v³sµ²«×ªº¾F©~(½Ğ¥h¬İK-coreªºµêÀÀ½X)
+				}//æª¢è¦–æ˜¯å¦æœ‰å¤§æ–¼è‡ªå·±é€£çµåº¦çš„é„°å±…(è«‹å»çœ‹K-coreçš„è™›æ“¬ç¢¼)
 				
 				sort_data = new ArrayList<Map.Entry<String, Integer>>(coreMap
 						.entrySet());
@@ -148,12 +148,12 @@ public class K_core {
 		BufferedWriter bw2;
 		String query="";
 		try {
-			bw = new BufferedWriter(new FileWriter("K_core/"+no + "_" + "k_core.txt"));//¼g¤Jk-core¹Bºâµ²ªG
-			bw2 = new BufferedWriter(new FileWriter("Main_word/"+no + "_" + "main_word.txt"));//¼g¤J®Ö¤ß¯S¼x
+			bw = new BufferedWriter(new FileWriter("K_core/"+no + "_" + "k_core.txt"));//å¯«å…¥k-coreé‹ç®—çµæœ
+			bw2 = new BufferedWriter(new FileWriter("Main_word/"+no + "_" + "main_word.txt"));//å¯«å…¥æ ¸å¿ƒç‰¹å¾µ
 			
 			for (Entry<String, Integer> core : outputList) {
 
-				bw.write(core.toString()+"="+degreeMap.get(core.toString().split("=")[0]));//MANETS=5=8(¦rµü=Kcore­È=degree­È)
+				bw.write(core.toString()+"="+degreeMap.get(core.toString().split("=")[0]));//MANETS=5=8(å­—è©=Kcoreå€¼=degreeå€¼)
 			
 				if(Integer.parseInt(core.toString().split("=")[1])>=max_core)
 				{
@@ -165,15 +165,15 @@ public class K_core {
 					bw2.newLine();
 					bw2.flush(); 
 					
-				}//¥u¨úk-core­È³Ì¤jªº¤@¸s¬°®Ö¤ß¯S¼x
+				}//åªå–k-coreå€¼æœ€å¤§çš„ä¸€ç¾¤ç‚ºæ ¸å¿ƒç‰¹å¾µ
 				
 				bw.newLine();
 				bw.flush();
-				//´«¦æ¥H¤Î²MªÅ½w½Ä°Ï
+				//æ›è¡Œä»¥åŠæ¸…ç©ºç·©è¡å€
 				
 			}
 			bw.close(); 
-			bw2.close(); // Ãö³¬BufferedWriterª«¥ó
+			bw2.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 			System.out.println(query);
 			System.out.println(avgSim);
 		} catch (IOException f) {
@@ -191,7 +191,7 @@ public class K_core {
 		K_core kcore = new K_core();
 		System.out.println("Enter threshold:");
 //		kcore.simMin = input.nextDouble(); 
-		kcore.K_core_cal(no);//­pºâK-core­È
+		kcore.K_core_cal(no);//è¨ˆç®—K-coreå€¼
 		
 		try {
 			KcoreGUI gui;
@@ -204,6 +204,6 @@ public class K_core {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}//Ã¸¹Ï
+		}//ç¹ªåœ–
 	}
 }

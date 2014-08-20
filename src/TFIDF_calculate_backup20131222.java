@@ -34,20 +34,20 @@ public class TFIDF_calculate_backup20131222 {
 	 */
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
-		System.out.print("sTFIDF¶}©l\n");
+		System.out.print("sTFIDFé–‹å§‹\n");
 		String filename="";
 		type_doc_cum=0;
 		this_doc_term=0;
 		boolean firsttime;
 		boolean onlyterm;
-		//===¾ã¸s³B²z°Ï¶ô===
-		//new File("sTFIDF_process").mkdirs(); //¿é¥X¸ê®Æ§¨
-		File dir = new File("sTFIDF_process/org_data/"); //¨Ó·½¸ê®Æ§¨
+		//===æ•´ç¾¤è™•ç†å€å¡Š===
+		//new File("sTFIDF_process").mkdirs(); //è¼¸å‡ºè³‡æ–™å¤¾
+		File dir = new File("sTFIDF_process/org_data/"); //ä¾†æºè³‡æ–™å¤¾
 		String types[] = {"acq","cocoa","coffee","crude","earn","sugar","trade"};
 		//String types[] = {"trade"};
-		//¦UÃş§O¦rµü²Î­p
+		//å„é¡åˆ¥å­—è©çµ±è¨ˆ
 		for(String s : types){
-			System.out.print(s+"²Î­p\n");
+			System.out.print(s+"çµ±è¨ˆ\n");
 			One_Type_Term(dir,"sTFIDF_score/", s, false);
 			TF_term_times.clear();
 			TF_term_docs.clear();
@@ -56,11 +56,11 @@ public class TFIDF_calculate_backup20131222 {
 			type_doc_cum=0;
 			this_doc_term=0;
 		}
-		//­ÓÃş§OsTFIDF¤À¼Æ­pºâ
+		//å€‹é¡åˆ¥sTFIDFåˆ†æ•¸è¨ˆç®—
 		/*firsttime = true;
 		onlyterm = true;
 		for(String s : types){
-			System.out.print(s+"-sTFIDF­pºâ\n");
+			System.out.print(s+"-sTFIDFè¨ˆç®—\n");
 			Many_Type_TFIDF("sTFIDF_process/Term_calculate/","sTFIDF_process/sTFIDF_calculate/",s,types,firsttime,onlyterm);
 			onlyterm = false;
 			Many_Type_TFIDF("sTFIDF_process/Term_calculate/","sTFIDF_process/sTFIDF_calculate/",s,types,firsttime,onlyterm);
@@ -71,13 +71,13 @@ public class TFIDF_calculate_backup20131222 {
 		}*/
 		
 		//filename = "trade_TFIDF_calculate";
-		//­­¨î¦rµü¼Æ
+		//é™åˆ¶å­—è©æ•¸
 		//File f = new File("sTFIDF_process/sTFIDF_calculate/"+filename+".txt");
 		//Limit_term_number(f,"sTFIDF_process/Term_Limit/",0.1,"score");
 		//filename = filename+"_limitscore0.1";
 		toRank("sTFIDF_process/Term_Limit/",filename);
-		//===¾ã¸s³B²z°Ï¶ô===
-		//===´ú¸Õ¤å¥ó³B²z°Ï¶ô===
+		//===æ•´ç¾¤è™•ç†å€å¡Š===
+		//===æ¸¬è©¦æ–‡ä»¶è™•ç†å€å¡Š===
 		//File dir2;
 		//onlyterm = true;
 		//for(String s : types){
@@ -96,14 +96,14 @@ public class TFIDF_calculate_backup20131222 {
 			//toRank("t/",filename);
 		//}
 		//}
-		//===´ú¸Õ¤å¥ó³B²z°Ï¶ô===
-		//===­­¨î´ú¸Õ¤å¥ó³Ì¤j·§©À¦rµü¼Æ³B²z°Ï¶ô===
+		//===æ¸¬è©¦æ–‡ä»¶è™•ç†å€å¡Š===
+		//===é™åˆ¶æ¸¬è©¦æ–‡ä»¶æœ€å¤§æ¦‚å¿µå­—è©æ•¸è™•ç†å€å¡Š===
 		/*File dir3 = new File("Tom_test_temp");
 		for (File files : dir3.listFiles()){
 			filename = files.getName().split("_")[0]+"_"+files.getName().split("_")[1];
 			copyfile(new File("Rank/"+filename+"_Term_calculate_Rank.txt"),new File("exp3_o_30test_r3_sTFIDFbc/0.75_testing/trade_1/"+filename+"_Rank.txt"));
 		}*/
-		//===­­¨î´ú¸Õ¤å¥ó³Ì¤j·§©À¦rµü¼Æ³B²z°Ï¶ô===
+		//===é™åˆ¶æ¸¬è©¦æ–‡ä»¶æœ€å¤§æ¦‚å¿µå­—è©æ•¸è™•ç†å€å¡Š===
 		System.out.print("End\n");
 	}
 	
@@ -116,12 +116,12 @@ public class TFIDF_calculate_backup20131222 {
 		BufferedReader m_r1;
 		String line,v1,filename="";
 		int term_times,temp_use;
-		Pattern p = Pattern.compile("[(),\"\\?!:;=]"); //¹LÂo¦rµüªº¤@¨ÇÂø½è
+		Pattern p = Pattern.compile("[(),\"\\?!:;=]"); //éæ¿¾å­—è©çš„ä¸€äº›é›œè³ª
 		File[] fileslist;
-		System.out.print("¨Ó·½ÀÉ®×"+source_dir.getName()+"\n");
+		System.out.print("ä¾†æºæª”æ¡ˆ"+source_dir.getName()+"\n");
 		if(source_dir.isDirectory()){
-			fileslist = source_dir.listFiles(); //¸ê®Æ§¨¼Ò¦¡
-		}else{ //³æÀÉ¼Ò¦¡
+			fileslist = source_dir.listFiles(); //è³‡æ–™å¤¾æ¨¡å¼
+		}else{ //å–®æª”æ¨¡å¼
 			fileslist = new File[1];
 			fileslist[0] = source_dir;
 			filename=source_dir.getName().split("_")[0]+"_"+source_dir.getName().split("_")[1];
@@ -133,7 +133,7 @@ public class TFIDF_calculate_backup20131222 {
 				One_Type_Term(files,resultDir,thistype,onlyterm);
 			}else if(files.isFile()){
 				if(files.getName().split("_")[0].equals(thistype)||thistype.equals("no")){
-					System.out.print("Åª¨úÀÉ®×"+files.getName()+"\n");
+					System.out.print("è®€å–æª”æ¡ˆ"+files.getName()+"\n");
 					type_doc_cum++;
 					m_r1 = new BufferedReader(new FileReader(files));
 					while((line=m_r1.readLine())!=null){
@@ -164,14 +164,14 @@ public class TFIDF_calculate_backup20131222 {
 					//TF_term_score.put(s,TF_term_score.get(s)+Double.valueOf(TF_term_times.get(s))/type_doc_cum);
 					TF_term_score.put(s,TF_term_score.get(s)+Double.valueOf(TF_term_times.get(s))/this_doc_term);
 				}else{
-					//Ãş§O¤¤¥­§¡¤@­Ó¤å¥ó¥i¥H±o¨ì´X­Ó¦r(Ãş§O¤À¼Æ¡A¥­¿ÅÃş§O¤å¥ó¦h¹è)
+					//é¡åˆ¥ä¸­å¹³å‡ä¸€å€‹æ–‡ä»¶å¯ä»¥å¾—åˆ°å¹¾å€‹å­—(é¡åˆ¥åˆ†æ•¸ï¼Œå¹³è¡¡é¡åˆ¥æ–‡ä»¶å¤šå¯¡)
 					//TF_term_score.put(s,Double.valueOf(TF_term_times.get(s))/type_doc_cum);
-					//¦¹¤å¥ó¤¤¥­§¡¤@­Ó¦r¥i¥H±o¨ì´X­Ó¦r(¤å¥ó¦Û¨­¤À¼Æ¡A¥­¿Å¤å¥óªø«×)
+					//æ­¤æ–‡ä»¶ä¸­å¹³å‡ä¸€å€‹å­—å¯ä»¥å¾—åˆ°å¹¾å€‹å­—(æ–‡ä»¶è‡ªèº«åˆ†æ•¸ï¼Œå¹³è¡¡æ–‡ä»¶é•·åº¦)
 					TF_term_score.put(s,Double.valueOf(TF_term_times.get(s))/this_doc_term);
 				}
 			}
 		}
-		//¨Ì¤À¼Æ°ª§C±Æ§Ç
+		//ä¾åˆ†æ•¸é«˜ä½æ’åº
 		List<Map.Entry<String, Double>> list_Data = 
 				new ArrayList<Map.Entry<String, Double>>(TF_term_score.entrySet());
 		Collections.sort(list_Data, new Comparator<Map.Entry<String, Double>>(){
@@ -193,16 +193,16 @@ public class TFIDF_calculate_backup20131222 {
 			}else{
 				ts_w1 = new BufferedWriter(new FileWriter(resultDir+filename+"_Term_calculate(withscore).txt"));
 			}
-			System.out.print("³æÀÉ¼Ò¦¡");
+			System.out.print("å–®æª”æ¨¡å¼");
 		}else{
 			if(onlyterm){
 				ts_w1 = new BufferedWriter(new FileWriter(resultDir+thistype+"_Term_calculate(onlyterm).txt"));
 			}else{
 				ts_w1 = new BufferedWriter(new FileWriter(resultDir+thistype+"_Term_calculate(withscore).txt"));
 			}
-			System.out.print("¸ê®Æ§¨¼Ò¦¡");
+			System.out.print("è³‡æ–™å¤¾æ¨¡å¼");
 		}
-		System.out.print("¿é¥X¤¤\n");
+		System.out.print("è¼¸å‡ºä¸­\n");
 		if(onlyterm){
 			for (Map.Entry<String, Double> entry : list_Data){
 				ts_w1.write(entry.getKey());
@@ -210,9 +210,9 @@ public class TFIDF_calculate_backup20131222 {
 				ts_w1.flush();
 			}
 		}else{
-			ts_w1.write(thistype+"Ãş§OÁ`¼Æ¬°,"+type_doc_cum); 
+			ts_w1.write(thistype+"é¡åˆ¥ç¸½æ•¸ç‚º,"+type_doc_cum); 
 			ts_w1.newLine();
-			ts_w1.write("¦r,¥X²{ÀW²v,¥X²{¥­§¡¤ÀÅu,¦¹Ãş§O¤¤¦@¦P¯S¼x¤À¼Æ"); 
+			ts_w1.write("å­—,å‡ºç¾é »ç‡,å‡ºç¾å¹³å‡åˆ†æ”¤,æ­¤é¡åˆ¥ä¸­å…±åŒç‰¹å¾µåˆ†æ•¸"); 
 			ts_w1.newLine();
 			ts_w1.flush();
 			for (Map.Entry<String, Double> entry : list_Data){
@@ -237,13 +237,13 @@ public class TFIDF_calculate_backup20131222 {
 		this_type_doc_cum = Integer.valueOf(line.split(",")[1]);
 		line=m_r1.readLine();
 		while((line=m_r1.readLine())!=null){
-			//°£¤WÃş§O¤å¥ó¼Æ¬O¬°¤F¥­¿ÅÃş§O¤å¥ó¼Æ¶qªº®t²§
+			//é™¤ä¸Šé¡åˆ¥æ–‡ä»¶æ•¸æ˜¯ç‚ºäº†å¹³è¡¡é¡åˆ¥æ–‡ä»¶æ•¸é‡çš„å·®ç•°
 			TF_term_score.put(line.split(",")[0], Double.valueOf(line.split(",")[3])/this_type_doc_cum);
 			Local_score.put(line.split(",")[0], Double.valueOf(line.split(",")[3]));
 			Local_score_sum = Local_score_sum + Double.valueOf(line.split(",")[3]);
 		}
 		m_r1.close();
-		if(firsttime){ //¥u°µ¤@¦¸²Î­p(²Ä¤@¦¸)
+		if(firsttime){ //åªåšä¸€æ¬¡çµ±è¨ˆ(ç¬¬ä¸€æ¬¡)
 			for(String one_type : types){
 				other_type_doc_cum=0;
 				m_r1 = new BufferedReader(new FileReader(source_dir+one_type+"_Term_calculate.txt"));
@@ -254,7 +254,7 @@ public class TFIDF_calculate_backup20131222 {
 					v1 = line.split(",")[0];
 					term_score = Double.valueOf(line.split(",")[3]);
 					if(TF_term_score_other.get(v1)==null){
-						//°£¤WÃş§O¤å¥ó¼Æ¬O¬°¤F¥­¿ÅÃş§O¤å¥ó¼Æ¶qªº®t²§
+						//é™¤ä¸Šé¡åˆ¥æ–‡ä»¶æ•¸æ˜¯ç‚ºäº†å¹³è¡¡é¡åˆ¥æ–‡ä»¶æ•¸é‡çš„å·®ç•°
 						TF_term_score_other.put(v1, term_score/other_type_doc_cum);
 					}else{
 						TF_term_score_other.put(v1, TF_term_score_other.get(v1)+(term_score/other_type_doc_cum));
@@ -267,10 +267,10 @@ public class TFIDF_calculate_backup20131222 {
 			/*if(TF_term_score_other.get(s)==null){
 				TF_term_score_other.put(s, TF_term_score.get(s));
 			}*/
-			//50%¥ş²y©Ê¤À¼Æ+50%°Ï°ì©Ê¤À¼Æ
+			//50%å…¨çƒæ€§åˆ†æ•¸+50%å€åŸŸæ€§åˆ†æ•¸
 			TF_term_score_fin.put(s, 0.5*(TF_term_score.get(s)/TF_term_score_other.get(s))+0.5*(Local_score.get(s)/Local_score_sum));
 		}
-		//¨Ì¤À¼Æ°ª§C±Æ§Ç
+		//ä¾åˆ†æ•¸é«˜ä½æ’åº
 		List<Map.Entry<String, Double>> list_Data = 
 				new ArrayList<Map.Entry<String, Double>>(TF_term_score_fin.entrySet());
 		Collections.sort(list_Data, new Comparator<Map.Entry<String, Double>>(){
@@ -289,7 +289,7 @@ public class TFIDF_calculate_backup20131222 {
 		
 		if(!onlyterm){
 			ts_w1 = new BufferedWriter(new FileWriter(resultDir+thistype+"_TFIDF_calculate.txt"));
-			ts_w1.write("¦r,¸ÓÃş§O¥­§¡¤À¼Æ,¨ä¾lÃş§O²Ö¿n¤À¼Æ,¸ÓÃş§O¦û¤À¤ñ¨Ò"); 
+			ts_w1.write("å­—,è©²é¡åˆ¥å¹³å‡åˆ†æ•¸,å…¶é¤˜é¡åˆ¥ç´¯ç©åˆ†æ•¸,è©²é¡åˆ¥ä½”åˆ†æ¯”ä¾‹"); 
 			ts_w1.newLine();
 			ts_w1.flush();
 		}else{
@@ -311,7 +311,7 @@ public class TFIDF_calculate_backup20131222 {
 		BufferedWriter ts_w1;
 		BufferedReader m_r1;
 		String line,v1;
-		new File(resultDir).mkdirs(); //¿é¥X¸ê®Æ§¨
+		new File(resultDir).mkdirs(); //è¼¸å‡ºè³‡æ–™å¤¾
 		m_r1 = new BufferedReader(new FileReader(source_dir));
 		ts_w1 = new BufferedWriter(new FileWriter(resultDir+source_dir.getName().split("\\.")[0]+"_limit"+mothed+limit+".txt"));
 		line=m_r1.readLine();
@@ -339,17 +339,17 @@ public class TFIDF_calculate_backup20131222 {
 	}
 	
 	public static void tofilter(String src, String filename) throws IOException{
-		//µü©Ê¼Ğ°O¡A°O±o§âonlyterm¼Ò¦¡ªºsTFIDF¤À¼ÆÀÉ®×½Æ»s¨ìpreprocess¸ê®Æ§¨
-		System.out.print(filename+"µü©Ê¼Ğ°O¶}©l"+"\n");
+		//è©æ€§æ¨™è¨˜ï¼Œè¨˜å¾—æŠŠonlytermæ¨¡å¼çš„sTFIDFåˆ†æ•¸æª”æ¡ˆè¤‡è£½åˆ°preprocessè³‡æ–™å¤¾
+		System.out.print(filename+"è©æ€§æ¨™è¨˜é–‹å§‹"+"\n");
 		copyfile(new File(src+filename+".txt") , new File("preprocess"+"/"+filename+".txt"));
 		Qtag.tagging(filename);
-		//µü©Ê¹LÂo¡B·j´Mµ²ªG¼Æ¹LÂo¹Lµ{¡A°O±o§âonlyterm¼Ò¦¡ªºQtagÀÉ®×½Æ»s¨ìkeyword_output_freq¸ê®Æ§¨¡A¨Ã¥B±Nµ{¦¡§ï¦¨¥u¦³³æ¦r
+		//è©æ€§éæ¿¾ã€æœå°‹çµæœæ•¸éæ¿¾éç¨‹ï¼Œè¨˜å¾—æŠŠonlytermæ¨¡å¼çš„Qtagæª”æ¡ˆè¤‡è£½åˆ°keyword_output_freqè³‡æ–™å¤¾ï¼Œä¸¦ä¸”å°‡ç¨‹å¼æ”¹æˆåªæœ‰å–®å­—
 		copyfile(new File("Qtag/"+filename+"_qtag.txt") , new File("keyword_output_freq"+"/"+filename+"_keyword_output_freq.txt"));
-		System.out.print(filename+"µü©Ê¹LÂo"+"\n");
+		System.out.print(filename+"è©æ€§éæ¿¾"+"\n");
 		POS_filter.filter(filename);
-		System.out.print(filename+"·j´Mµ²ªG¼Æ¶}©l"+"\n");
+		System.out.print(filename+"æœå°‹çµæœæ•¸é–‹å§‹"+"\n");
 		new Lucene_Search1().doit(filename);
-		System.out.print(filename+"·j´Mµ²ªG¼Æ¹LÂo¶}©l"+"\n");
+		System.out.print(filename+"æœå°‹çµæœæ•¸éæ¿¾é–‹å§‹"+"\n");
 		google_filter1.search_filter(filename);
 		new Lucene_Search2().doit(filename);
 		google_filter2.search_filter(filename);
@@ -358,7 +358,7 @@ public class TFIDF_calculate_backup20131222 {
 	
 	public static void toRank(String src, String filename) throws IOException{
 		tofilter(src,filename);
-		System.out.print(filename+"NGD¹Bºâ¶}©l"+"\n");
+		System.out.print(filename+"NGDé‹ç®—é–‹å§‹"+"\n");
 		NGD_calculate.NGD(filename);
 		Result_Rank.ranking(filename);
 	}

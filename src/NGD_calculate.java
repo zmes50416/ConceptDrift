@@ -11,9 +11,9 @@ import java.util.LinkedHashSet;
 public class NGD_calculate {
 
 	public static void NGD(String no) {
-		System.out.println("³B²zÀÉ®×"+no+"¤¤...");
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"ä¸­...");
 		try {
-			//²Õ¦X¦r³¡¤À
+			//çµ„åˆå­—éƒ¨åˆ†
 			FileReader FileStream1;
 
 			FileStream1 = new FileReader("citeulike/citeulike_Number_of_pair/" + no + "_"
@@ -51,7 +51,7 @@ public class NGD_calculate {
 					double y = Double.parseDouble(String.valueOf(datas[j])
 							.split(",")[1]);
 					double m = 0;
-					//²Õ¦X¦r³¡¤À
+					//çµ„åˆå­—éƒ¨åˆ†
 					for (String o : pairlist) {
 						if (o.contains("\"" + key1 + "\"+\"" + key2 + "\"")
 								|| o.contains("\"" + key2 + "\"+\"" + key1
@@ -95,7 +95,7 @@ public class NGD_calculate {
 
 					bw.write(objs_out);
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
 
 				} catch (IOException f) {
 					// TODO Auto-generated catch block
@@ -103,7 +103,7 @@ public class NGD_calculate {
 				}
 
 			}
-			bw.close(); // Ãö³¬BufferedWriterª«¥ó
+			bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -112,7 +112,7 @@ public class NGD_calculate {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("ÀÉ®×"+no+"³B²z§¹²¦");
+		System.out.println("æª”æ¡ˆ"+no+"è™•ç†å®Œç•¢");
 	}
 	
 	static double NGD_cal(double x, double y, double m) {
@@ -121,19 +121,19 @@ public class NGD_calculate {
 		double logM=0.0;
 		
 		logM = Math.log10(m);
-		//·íX=0ªº®É­Ô­n³B²zLog(0)ªº°ÝÃD¡A¦b¦¹¥ý§ï¦¨m¬°1¡AÅýLogM=0
+		//ç•¶X=0çš„æ™‚å€™è¦è™•ç†Log(0)çš„å•é¡Œï¼Œåœ¨æ­¤å…ˆæ”¹æˆmç‚º1ï¼Œè®“LogM=0
 
-		//9.906¬OGoogleªº
+		//9.906æ˜¯Googleçš„
 		//double logN = 5.507;
 		double logN = 6.627;
-		//4.64¬OLucnenªº
+		//4.64æ˜¯Lucnençš„
 		//double logN = 4.64;
 
 		double NGD = (Math.max(logX, logY) - logM)
 				/ (logN - Math.min(logX, logY));
 		
 		if (m == 0)
-			NGD = 1;//Á×§KµL­­¤j
+			NGD = 1;//é¿å…ç„¡é™å¤§
 		if (NGD > 1)
 			NGD = 1;
 		if (NGD < 0)

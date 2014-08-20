@@ -20,7 +20,7 @@ public class Copy_train_test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//String baseDir = "../ConceptDrift_Tom/exp4/";
-		String baseDir = "exp_modle_test1_NGDt0.4_¾Çªø¤èªk/";
+		String baseDir = "exp_modle_test1_NGDt0.4_å­¸é•·æ–¹æ³•/";
 		String fromDir = "exp_modle_test1_NGDt0.4/";
 		int check = 10;
 		//new File(baseDir).mkdirs();
@@ -36,7 +36,7 @@ public class Copy_train_test {
 				list.add(f);
 			}
 			for(int j=0;j<list.size();j++){
-				//System.out.println("·Ç³Æ½Æ»s"+"Rank" + "/" + list.get(j).getName()+"¨ì"+trainDir_relate1 + "/" + list.get(j).getName());
+				//System.out.println("æº–å‚™è¤‡è£½"+"Rank" + "/" + list.get(j).getName()+"åˆ°"+trainDir_relate1 + "/" + list.get(j).getName());
 				//copyfile(list.get(j), new File(trainDir_relate1 + "/" + list.get(j).getName()));
 				//copyfile(new File("Rank" + "/" + list.get(j).getName().split("_")[0] + "_" + list.get(j).getName().split("_")[1] + "_Rank.txt"), new File(trainDir_relate1 + "/" + list.get(j).getName().split("_")[0] + "_" + list.get(j).getName().split("_")[1] + "_Rank.txt"));
 				copyfile(new File("../ConceptDrift_Tom/NGD_Tolerance_0.4" + "/" +list.get(j).getName().split("_")[0] + "_" + list.get(j).getName().split("_")[1] + "_TolNGD.txt"), new File(trainDir_relate1 + "/" + list.get(j).getName().split("_")[0] + "_" + list.get(j).getName().split("_")[1] + "_Rank.txt"));

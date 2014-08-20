@@ -58,13 +58,13 @@ public class POS_filter {
 			System.out.println("key1:" + key1 + " " + tag1);
 			System.out.println("key2:" + key2 + " " + tag2);
 			System.out.println("key3:" + key3 + " " + tag3);
-			//³æ¦r¹LÂo¡A®Ú¾ÚD. Tufis and O. Mason©ó1998´£¥XªºQtag
+			//å–®å­—éæ¿¾ï¼Œæ ¹æ“šD. Tufis and O. Masonæ–¼1998æå‡ºçš„Qtag
 			if(tag1.equals("NN") || tag1.equals("NP") ||tag1.equals("JJ")){
 				set.add(key1);
 				System.out.println("add:" + key1);
 			}
-			//²Õ¦X¦r¹LÂo
-			/*if (key1.equals(key2)) {//³Ì«á¤@­Ó¦r
+			//çµ„åˆå­—éæ¿¾
+			/*if (key1.equals(key2)) {//æœ€å¾Œä¸€å€‹å­—
 				if ((tag1.equals("NN") || tag1.equals("NNS") || tag1
 						.equals("NP"))
 						&& key1.length() > 2) {
@@ -72,7 +72,7 @@ public class POS_filter {
 					// i++;
 					System.out.println("add:" + key1);
 				}
-			} else if (key2.equals(key3)) {//³Ì«á¨â­Ó¦r
+			} else if (key2.equals(key3)) {//æœ€å¾Œå…©å€‹å­—
 				if ((tag1.equals("NN") || tag1.equals("NP")
 						|| tag1.equals("NNS") || tag1.equals("NPS") || tag1
 						.equals("JJ"))
@@ -100,31 +100,31 @@ public class POS_filter {
 						&& key1.length() > 2) {
 					if ((key1.endsWith(",") || key1.endsWith("."))||(key2.startsWith(",") || key2.startsWith("."))) {
 						set.add(key1);
-						System.out.println("add:" + key1);//¦ê±µ¤@­Ó¦r
+						System.out.println("add:" + key1);//ä¸²æ¥ä¸€å€‹å­—
 					} else if ((tag2.equals("NN") || tag2.equals("NP")
 							|| tag2.equals("NPS") || tag2.equals("NNS"))
 							&& key2.length() > 2) {
 						if ((key2.endsWith(",") || key2.endsWith("."))||(key3.startsWith(",") || key3.startsWith("."))) {
 							set.add(key1 + "+" + key2);
 							System.out.println("add:" + key1 + "+" + key2);
-							i++;//¦ê±µ¨â­Ó¦r
+							i++;//ä¸²æ¥å…©å€‹å­—
 						} else if ((tag3.equals("NN") || tag3.equals("NP")
 								|| tag3.equals("NPS") || tag3.equals("NNS"))
 								&& key3.length() > 2) {
 							set.add(key1 + "+" + key2 + "+" + key3);
 							System.out.println("add:" + key1 + "+" + key2 + "+"
-									+ key3);//¦ê±µ¤T­Ó¦r
+									+ key3);//ä¸²æ¥ä¸‰å€‹å­—
 							i = i + 2;
 						} else {
 							set.add(key1 + "+" + key2);
-							System.out.println("add:" + key1 + "+" + key2);//¦ê±µ¨â­Ó¦r
+							System.out.println("add:" + key1 + "+" + key2);//ä¸²æ¥å…©å€‹å­—
 							i++;
 						}
 
 					}else
 					{
 						set.add(key1);
-						System.out.println("add:" + key1);//¦ê±µ¤@­Ó¦r
+						System.out.println("add:" + key1);//ä¸²æ¥ä¸€å€‹å­—
 					}
 
 				}
@@ -152,7 +152,7 @@ public class POS_filter {
 				bw.write("\"" + objs_out + "\"");
 				bw.newLine();
 
-				bw.flush(); // ²MªÅ½w½Ä°Ï
+				bw.flush(); // æ¸…ç©ºç·©è¡å€
 
 			} catch (IOException ex) {
 				// TODO Auto-generated catch block
@@ -161,7 +161,7 @@ public class POS_filter {
 
 		}
 
-		bw.close(); // Ãö³¬BufferedWriterª«¥ó
+		bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 	}
 
 

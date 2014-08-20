@@ -5,8 +5,8 @@ public class Tolerance_object {
 	 * @param args
 	 */
 	
-	String v1=""; //¨ú¥NªÌ
-	String v2=""; //³Q¨ú¥NªÌ
+	String v1=""; //å–ä»£è€…
+	String v2=""; //è¢«å–ä»£è€…
 	double ngd=0;
 	
 	public static void main(String[] args) {

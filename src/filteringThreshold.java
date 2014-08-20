@@ -11,8 +11,8 @@ import java.util.HashSet;
 
 /**
  * @yoshi
- *	¥Î¥H´ú¸Õ¥­§¡NGD ¬ÛÃö©ÊªùÂe­È
- *  for¾Çªø¤èªk
+ *	ç”¨ä»¥æ¸¬è©¦å¹³å‡NGD ç›¸é—œæ€§é–€æª»å€¼
+ *  forå­¸é•·æ–¹æ³•
  */
 public class filteringThreshold {	
 	

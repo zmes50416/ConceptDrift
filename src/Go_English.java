@@ -10,9 +10,9 @@ public class Go_English {
 	public static void main(String[] args) throws ParseException {
 		
 		
-		long AverageTime =0; // ­pºâ¥­§¡³B²z®É¶¡¨Ï¥Î
+		long AverageTime =0; // è¨ˆç®—å¹³å‡è™•ç†æ™‚é–“ä½¿ç”¨
 
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡	
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“	
 		try {
 			Scanner input=new Scanner(System.in);
 			System.out.println("Select document:");
@@ -33,7 +33,7 @@ public class Go_English {
 				case 1:
 					//new Qtag().tagging(j);
 				case 2:
-					//Term_freq_count.counting(j);//­pºâfreq 
+					//Term_freq_count.counting(j);//è¨ˆç®—freq 
 //					input.next();
 				case 3:
 					//POS_filter.filter(j);
@@ -41,31 +41,31 @@ public class Go_English {
 //					input.next();
 					
 				case 4:
-					//§Úªº¤ÀÃşcache
+					//æˆ‘çš„åˆ†é¡cache
 					//new Google_Search1_cache().doit(j);
 					
-					//§Úªºtimestamp cache
+					//æˆ‘çš„timestamp cache
 					//new Google_Search1_cache_timestamp().doit(j);
 					
-					//§Úªºcount cache
+					//æˆ‘çš„count cache
 					//new Google_Search1_cache_count().doit(j);
 					
-					//§ÚªºLucene search1
+					//æˆ‘çš„Lucene search1
 					//new Lucene_Search1().doit(j);
 					
-					//¤p¦yªº
+					//å°å°–çš„
 					//new Google_Search1().doit(j);
 					
 				case 5:
 					//google_filter1.search_filter(j);
 					
-					//§Úªº¤ÀÃşcache
+					//æˆ‘çš„åˆ†é¡cache
 					//new Google_Search2_cache().doit(j);
 					
-					//§ÚªºLucene search2
+					//æˆ‘çš„Lucene search2
 					//new Lucene_Search2().doit(j);
 					
-					//¤p¦yªº
+					//å°å°–çš„
 					//new Google_Search2().doit(j);
 					
 					//google_filter2.search_filter(j);
@@ -76,13 +76,13 @@ public class Go_English {
 				case 8:
 				    //Result_Rank.ranking(j);
 				case 9:
-					//¤p¦yªº
+					//å°å°–çš„
 					K_core kcore=new K_core();
 					kcore.K_core_cal(j);
 					KcoreGUI gui = new KcoreGUI();
 					gui.getData(j,kcore.simMin);
 					
-					//§ÚªºCC
+					//æˆ‘çš„CC
 					//distance dis = new distance();
 					//dis.cc_cal(j);
 					//distanceGUI gui = new distanceGUI();
@@ -99,8 +99,8 @@ public class Go_English {
 				e.printStackTrace();
 				//JOptionPane.showMessageDialog(null, "ERROR");
 			}
-			long ProcessTime = System.currentTimeMillis() - StartTime; // ­pºâ³B²z®É¶¡
-			//AverageTime += ProcessTime; // ²Ö¿n­pºâ®É¶¡
-			System.out.println("Á`ªá¶O®É¶¡¬°" + ProcessTime);
+			long ProcessTime = System.currentTimeMillis() - StartTime; // è¨ˆç®—è™•ç†æ™‚é–“
+			//AverageTime += ProcessTime; // ç´¯ç©è¨ˆç®—æ™‚é–“
+			System.out.println("ç¸½èŠ±è²»æ™‚é–“ç‚º" + ProcessTime);
 	}
 }

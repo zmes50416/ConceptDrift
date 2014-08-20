@@ -31,7 +31,7 @@ public class Lucene_Search2 extends HTMLEditorKit.ParserCallback {
 		}
 	}
 
-	// °O¿ı¬O§_±N¸ê®Æ¦L¥X
+	// è¨˜éŒ„æ˜¯å¦å°‡è³‡æ–™å°å‡º
 	private boolean inHeader = false;
 	private static String _sn = "";
 	String i1;
@@ -42,7 +42,7 @@ public class Lucene_Search2 extends HTMLEditorKit.ParserCallback {
 
 	public void doit(String no) throws IOException {
 		// try {
-		System.out.println("³B²zÀÉ®×"+no+"¤¤...");
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"ä¸­...");
 		File f = new File("citeulike/citeulike_Search2/" + no + "_" + "google_output2.txt");
 		f.delete();
 		
@@ -84,7 +84,7 @@ public class Lucene_Search2 extends HTMLEditorKit.ParserCallback {
 		bw.newLine();
 		bw.close();
 		BufferedStream.close();
-		System.out.println("³B²zÀÉ®×"+no+"³B²z§¹²¦");
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"è™•ç†å®Œç•¢");
 	}
 
 	public static void main(String i) throws IOException {
@@ -94,14 +94,14 @@ public class Lucene_Search2 extends HTMLEditorKit.ParserCallback {
 
 	public static void main(String args[]) throws IOException {
 
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		/*File F = new File("citeulike/citeulike_Pairs/");
 		for(File f : F.listFiles()){
 			//System.out.println(f.getName().split("_")[0]);
 			main(f.getName().split("_")[0]);
 		}*/
 		
-		//§ä¥X¯Ê¤Öªº¤å¥ó¨Ó³B²z
+		//æ‰¾å‡ºç¼ºå°‘çš„æ–‡ä»¶ä¾†è™•ç†
 		File F = new File("citeulike/citeulike_Pairs/");
 		for(File f : F.listFiles()){
 			File file = new File("citeulike/citeulike_Search2/"+f.getName().split("_")[0]+"_google_output2.txt");

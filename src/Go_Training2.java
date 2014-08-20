@@ -17,7 +17,7 @@ public class Go_Training2 {
 	 * @param args
 	 */
 	
-	//²£¥Í°V½m¸ê®Æ©ódir
+	//ç”¢ç”Ÿè¨“ç·´è³‡æ–™æ–¼dir
 	public static HashSet<String> generateTrainSet(int size, int low, int up, String dir){
 		BufferedReader br;
 		
@@ -36,7 +36,7 @@ public class Go_Training2 {
 				br = new BufferedReader(new FileReader("Rank/"+seq + "_" + "Rank.txt"));
 				
 				
-				//¥i­×§ï¦¨¶ZÂ÷«D1ªº«e1/n				
+				//å¯ä¿®æ”¹æˆè·é›¢é1çš„å‰1/n				
 				while((line = br.readLine()) != null && Double.parseDouble(line.split(",")[2])<1){
 					linkList.add(line);
 				}

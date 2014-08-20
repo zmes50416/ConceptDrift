@@ -19,7 +19,7 @@ public class Stem {
 	}
 
 	public static void stemming(String no) throws IOException {
-		System.out.println("³B²zÀÉ®×"+no+"¤¤...");
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"ä¸­...");
 		FileReader FileStream = new FileReader("citeulike/citeulike_Number_of_term/"+no + "_" + "number_of_term.txt");
 		BufferedReader BufferedStream = new BufferedReader(FileStream);
 		String e = "";
@@ -71,7 +71,7 @@ public class Stem {
 					
 					bw.write(objs_out);
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
 					
 
 				} catch (IOException f) {
@@ -81,8 +81,8 @@ public class Stem {
 
 			
 		}
-		bw.close(); // Ãö³¬BufferedWriterª«¥ó
-		System.out.println("³B²zÀÉ®×"+no+"³B²z§¹²¦");
+		bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
+		System.out.println("è™•ç†æª”æ¡ˆ"+no+"è™•ç†å®Œç•¢");
 	}
 
 	/**

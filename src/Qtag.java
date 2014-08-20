@@ -1,5 +1,5 @@
 /*
- * µü©Ê¼Ğ°O
+ * è©æ€§æ¨™è¨˜
 */
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -88,8 +88,8 @@ public class Qtag {
 			}
 			line = in.readLine();
 		}
-		bw.flush(); // ²MªÅ½w½Ä°Ï
-		bw.close(); // Ãö³¬BufferedWriterª«¥ó
+		bw.flush(); // æ¸…ç©ºç·©è¡å€
+		bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 
 	}
 }

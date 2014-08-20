@@ -44,27 +44,27 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 		}
 	}
 
-	// °O¿ı¬O§_±N¸ê®Æ¦L¥X
+	// è¨˜éŒ„æ˜¯å¦å°‡è³‡æ–™å°å‡º
 	private boolean inHeader = false;
 	static double mValue = 0;
 
 	public CompareAveNGD() {
 	}
 
-	// ±N Parse HTML «áªº¸ê®Æ¦L¥X
+	// å°‡ Parse HTML å¾Œçš„è³‡æ–™å°å‡º
 	public void handleText(char[] text, int position) {
 		if (inHeader) {
 
-			if (String.valueOf(text).contains("¬ù¦³ ")
-					|| String.valueOf(text).contains(" ¶µµ²ªG")) {
-				String value = String.valueOf(text).replaceAll(",", ""); // ¬ù¦³
+			if (String.valueOf(text).contains("ç´„æœ‰ ")
+					|| String.valueOf(text).contains(" é …çµæœ")) {
+				String value = String.valueOf(text).replaceAll(",", ""); // ç´„æœ‰
 				// 173,000
-				// ¶µµ²ªG
+				// é …çµæœ
 
 				double value1 = Double.parseDouble(value.split(" ")[value
 						.split(" ").length - 2]);
 				mValue = value1;
-			} else if (String.valueOf(text).contains("§ä¤£¨ì©M±zªº¬d¸ß")) {
+			} else if (String.valueOf(text).contains("æ‰¾ä¸åˆ°å’Œæ‚¨çš„æŸ¥è©¢")) {
 				mValue = 0;
 			}
 
@@ -75,14 +75,14 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 	public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
 			int position) {
 
-		// ¤ÀªR Tag ªº­«ÂI¦b³o¦æ
+		// åˆ†æ Tag çš„é‡é»åœ¨é€™è¡Œ
 		if (tag == HTML.Tag.DIV) {
 			Enumeration e = attributes.getAttributeNames();
 			while (e.hasMoreElements()) {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID && value.equals("resultStats")) {
 					this.inHeader = true;
 				}
@@ -93,7 +93,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID) {
 					this.inHeader = true;
 				}
@@ -120,7 +120,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 							"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-TW; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14"
 									+ "SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
 
-			// Åª¤Jºô­¶
+			// è®€å…¥ç¶²é 
 			BufferedInputStream in = new BufferedInputStream(urlConnection
 					.getInputStream());
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
@@ -131,10 +131,10 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("IP³QÂê¡A­«·s¨ú±oIP");
+			System.out.println("IPè¢«é–ï¼Œé‡æ–°å–å¾—IP");
 
-			IP_Operation.IP_change();// ´«IP
-			System.out.println("­«·s¨ú±o¦rµü(" + s + ")·j´Mµ²ªG");
+			IP_Operation.IP_change();// æ›IP
+			System.out.println("é‡æ–°å–å¾—å­—è©(" + s + ")æœå°‹çµæœ");
 			search_term(s);
 
 		}
@@ -192,7 +192,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 	public void caculBatchDistance(String topicDir, String centerFile,
 			String writeFile, String batch, int centerSize)
 			throws IOException {
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 
 		String[] s = new String[3];
 		getCenter(topicDir + centerFile, centerSize);
@@ -200,7 +200,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(topicDir
 				+ writeFile, true));
 		double total = 0;
-		//§ï¥ÎWIKI
+		//æ”¹ç”¨WIKI
 		try {
 			ServerUtil.initialize();
 		} catch (Exception e) {
@@ -246,7 +246,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 			System.out.println(f + ":" + avg1);
 			bw.write(f + ":" + avg1);
 			bw.newLine();
-			bw.flush(); // ²MªÅ½w½Ä°Ï
+			bw.flush(); // æ¸…ç©ºç·©è¡å€
 			total = total + avg1;
 		}
 		bw.close();
@@ -256,7 +256,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 	public double caculBatchDistance(String topicDir, String centerFile,
 			String writeFile, String chunk, target_topic t, int cenSize)
 			throws IOException {
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		String[] s = new String[3];
 		int data_index = 0;
 		double tp = 0;
@@ -272,7 +272,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 				+ writeFile, true));
 		double total = 0;
 		
-		//§ï¥ÎWIKI
+		//æ”¹ç”¨WIKI
 		try {
 			ServerUtil.initialize();
 		} catch (Exception e) {
@@ -293,7 +293,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 					s[2] = "\"" + s[0] + "\",\"" + s[1] + "\"";
 					//search_term(s[2].replace(",", "+"));
 					
-					//§ï¥ÎWIKI
+					//æ”¹ç”¨WIKI
 					SolrQuery query = new SolrQuery();
 					query.setQuery("+\""+s[0]+"\" +\""+s[1]+"\"");
 					System.err.println("Query: +\""+s[0]+"\" +\""+s[1]+"\"");
@@ -333,7 +333,7 @@ public class CompareAveNGD extends HTMLEditorKit.ParserCallback {
 					+ " tn:" + tn + " fn:" + fn);
 			bw.write(f + ":" + avg1);
 			bw.newLine();
-			bw.flush(); // ²MªÅ½w½Ä°Ï
+			bw.flush(); // æ¸…ç©ºç·©è¡å€
 			total = total + avg1;
 		}
 		precision = tp / (tp + fp);

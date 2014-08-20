@@ -28,11 +28,11 @@ public class Term_Freq_and_POS_filterx {
 	
 	public static void counting() {
 		File dir = new File( "Qtag/");
-		System.out.println("ÀW²v­pºâ»PºÏ©Ê¹LÂoµ{§Ç¶}©l");
-		System.out.println("¨Ó·½¸ê®Æ§X¬°"+dir.getName());
+		System.out.println("é »ç‡è¨ˆç®—èˆ‡ç£æ€§éæ¿¾ç¨‹åºé–‹å§‹");
+		System.out.println("ä¾†æºè³‡æ–™åŒ£ç‚º"+dir.getName());
 		File[] fileslist = dir.listFiles();
 		for (File files : fileslist){
-			System.out.println("³B²z¤å¥ó"+files.getName()+"¤¤...");
+			System.out.println("è™•ç†æ–‡ä»¶"+files.getName()+"ä¸­...");
 			loadMap(files);
 		}
 		/*File f = new File("Qtag/003_qtag.txt");
@@ -54,7 +54,7 @@ public class Term_Freq_and_POS_filterx {
 					filename=file.getName().split("_")[0];
 				}else{
 					char[] filename_temp = file.getName().split("_")[i].toCharArray();
-					if(!Character.isDigit(filename_temp[0])){ //¦pªG²Ä¤@­Ó¦r¤¸¬O¼Æ¦r¥Nªí¨ìÀÉ¦Wµ²§À¤F
+					if(!Character.isDigit(filename_temp[0])){ //å¦‚æœç¬¬ä¸€å€‹å­—å…ƒæ˜¯æ•¸å­—ä»£è¡¨åˆ°æª”åçµå°¾äº†
 						filename=filename+"_"+file.getName().split("_")[i];
 					}else{
 						filename=filename+"_"+file.getName().split("_")[i];
@@ -63,15 +63,15 @@ public class Term_Freq_and_POS_filterx {
 				}
 			}
 			int lineNumber = 0;
-			String key1 = ""; //¦rµü1
-			String tag1 = ""; //¦rµü1ªºµü©Ê
-			String key2 = ""; //¦rµü1
-			String tag2 = ""; //¦rµü1ªºµü©Ê
-			String key3 = ""; //¦rµü1
-			String tag3 = ""; //¦rµü1ªºµü©Ê
-			LinkedHashSet<String> set = new LinkedHashSet<String>(); //Àx¦s²Å¦Xµü©Ê¹LÂoªº¦rµü
+			String key1 = ""; //å­—è©1
+			String tag1 = ""; //å­—è©1çš„è©æ€§
+			String key2 = ""; //å­—è©1
+			String tag2 = ""; //å­—è©1çš„è©æ€§
+			String key3 = ""; //å­—è©1
+			String tag3 = ""; //å­—è©1çš„è©æ€§
+			LinkedHashSet<String> set = new LinkedHashSet<String>(); //å„²å­˜ç¬¦åˆè©æ€§éæ¿¾çš„å­—è©
 			BufferedWriter bw;
-			ArrayList list = new ArrayList(); //Àx¦sqtag¤å¥ó¤º®e
+			ArrayList list = new ArrayList(); //å„²å­˜qtagæ–‡ä»¶å…§å®¹
 			bw = new BufferedWriter(new FileWriter("Keyword_output_freq/"+filename+"_"+"keyword_output_freq.txt",false));
 			while((line = in.readLine()) != null){
 				list.add(line);
@@ -79,20 +79,20 @@ public class Term_Freq_and_POS_filterx {
 			Object[] datas = list.toArray();
 			for(int i = 0; i < datas.length; i++){
 				int j, k;
-				if(i == datas.length-1){ //³Ì«á¤@­Ó¦r
+				if(i == datas.length-1){ //æœ€å¾Œä¸€å€‹å­—
 					j = i;
 				}else{
 					j = i + 1;
 				}
-				if(j == datas.length-1){ //³Ì«á¨â­Ó¦r
+				if(j == datas.length-1){ //æœ€å¾Œå…©å€‹å­—
 					k = j;
 				}else{
 					k = j + 1;
 				}
-				if(i==0){ //²Ä¤@­Ó¦r
+				if(i==0){ //ç¬¬ä¸€å€‹å­—
 					key1 = ((String) datas[i]).split(", ")[0].toUpperCase();
 					tag1 = ((String) datas[i]).split(", ")[1];
-				}else if(i==1){ //²Ä¤G­Ó¦r
+				}else if(i==1){ //ç¬¬äºŒå€‹å­—
 					key1 = ((String) datas[i]).split(", ")[0].toUpperCase();
 					tag1 = ((String) datas[i]).split(", ")[1];
 
@@ -112,12 +112,12 @@ public class Term_Freq_and_POS_filterx {
 				System.out.println("key2:" + key2 + " " + tag2);
 				System.out.println("key3:" + key3 + " " + tag3);
 				
-				//²Õ¦X¦r¹LÂo
-				if(key1.equals(key2)){ //³Ì«á¤@­Ó¦r
+				//çµ„åˆå­—éæ¿¾
+				if(key1.equals(key2)){ //æœ€å¾Œä¸€å€‹å­—
 					if ((tag1.equals("NN") || tag1.equals("NNS") || tag1.equals("NP")) && key1.length()>2){
 						word = key1;
 					}
-				}else if(key2.equals(key3)){ //³Ì«á¨â­Ó¦r
+				}else if(key2.equals(key3)){ //æœ€å¾Œå…©å€‹å­—
 					if ((tag1.equals("NN") || tag1.equals("NP") || tag1.equals("NNS") || tag1.equals("NPS") || tag1.equals("JJ")) && key1.length()>2){
 						if ((key1.endsWith(",") || key1.endsWith("."))||(key2.startsWith(",") || key2.startsWith("."))) {
 							word = key1;
@@ -131,16 +131,16 @@ public class Term_Freq_and_POS_filterx {
 				}else{
 					if((tag1.equals("NN") || tag1.equals("NP") || tag1.equals("NNS") || tag1.equals("JJ")) && key1.length()>2){
 						if ((key1.endsWith(",") || key1.endsWith("."))||(key2.startsWith(",") || key2.startsWith("."))) {
-							word = key1; //¦ê±µ¤@­Ó¦r
+							word = key1; //ä¸²æ¥ä¸€å€‹å­—
 						}else if((tag2.equals("NN") || tag2.equals("NP") || tag2.equals("NPS") || tag2.equals("NNS")) && key2.length()>2){
 							if((key2.endsWith(",") || key2.endsWith("."))|| (key3.startsWith(",") || key3.startsWith("."))){
-								word = key1 + "+" + key2; //¦ê±µ¨â­Ó¦r
+								word = key1 + "+" + key2; //ä¸²æ¥å…©å€‹å­—
 								i++;
 							}else if((tag3.equals("NN") || tag3.equals("NP") || tag3.equals("NPS") || tag3.equals("NNS")) && key3.length()>2){
-								word = key1 + "+" + key2 + "+" + key3; //¦ê±µ¤T­Ó¦r
+								word = key1 + "+" + key2 + "+" + key3; //ä¸²æ¥ä¸‰å€‹å­—
 								i = i+2;
 							}else{
-								word = key1 + "+" + key2; //¦ê±µ¨â­Ó¦r
+								word = key1 + "+" + key2; //ä¸²æ¥å…©å€‹å­—
 								i++;
 							}
 						}else{
@@ -153,10 +153,10 @@ public class Term_Freq_and_POS_filterx {
 					System.out.println("add:" + word);
 					frequency = (String) concordance.get(word);
 					if(frequency == null){
-						frequency = "1"; //­Y¸Ó¦r¨S¥X²{«h¦¸¼Æ¬°0
+						frequency = "1"; //è‹¥è©²å­—æ²’å‡ºç¾å‰‡æ¬¡æ•¸ç‚º0
 					}else{
 						int n = Integer.parseInt(frequency);
-						++n; //­Y¥X²{«h++
+						++n; //è‹¥å‡ºç¾å‰‡++
 						frequency = "" + n;
 					}
 					concordance.put(word, frequency);
@@ -166,7 +166,7 @@ public class Term_Freq_and_POS_filterx {
 					word="";
 				}
 			}
-			bw.close(); // Ãö³¬BufferedWriterª«¥ó
+			bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 			bw = new BufferedWriter(new FileWriter("POS_filter/"+filename + "_" + "filter_output1.txt", false));
 			String objs_out = "";
 			Object[] objs = set.toArray();

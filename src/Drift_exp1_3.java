@@ -27,7 +27,7 @@ public class Drift_exp1_3 {
 	static int times = 5;
 
 	/**
-	 * ¦h¥DÃD¡B½Æ¼Æ¤å¥ó»Pbetweeness_threshold±Ó·P«×¤ÀªR
+	 * å¤šä¸»é¡Œã€è¤‡æ•¸æ–‡ä»¶èˆ‡betweeness_thresholdæ•æ„Ÿåº¦åˆ†æ
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -63,7 +63,7 @@ public class Drift_exp1_3 {
 				Go_Training3.generateTrainSet(maindir,size,topic_count, testdir.getPath());
 			
 			
-				//Åª¨ú´ú¸Õ¸ê®Æ§¨¨C­Ó¤å¥óªº¤å¥ó¯S¼x
+				//è®€å–æ¸¬è©¦è³‡æ–™å¤¾æ¯å€‹æ–‡ä»¶çš„æ–‡ä»¶ç‰¹å¾µ
 				for(File f :testdir.listFiles()){
 					ngds = Go_Training3.featureExtract(f);
 					for(Entry<String,Double> e: ngds.entrySet()){

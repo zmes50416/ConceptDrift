@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public class Drift_exp {
 
-	//¤p¦yµ{¦¡
+	//å°å°–ç¨‹å¼
 	public static void main(String args[]) {
 		int train_chunk_index = 0;
 		int test_chunk_index = 0;
@@ -90,7 +90,7 @@ public class Drift_exp {
 			Go_Training.generateCandidate(newfile,true);
 			Go_Training.getTermScore();
 			Go_Training.Top_N();
-			//­«·s§ó·s»y·N¤¤¤ß
+			//é‡æ–°æ›´æ–°èªæ„ä¸­å¿ƒ
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

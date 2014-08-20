@@ -17,8 +17,8 @@ import tw.edu.ncu.sia.util.ServerUtil;
 
 
 public class Drift_exp4_withDetect {
-	static double betweeness_threshold = 0.35; //¥h±¼¦h¤Ö³s½u
-	static double core_threshold = 0.75; //¨ú¦h¤Ö·í§@®Ö¤ß
+	static double betweeness_threshold = 0.35; //å»æ‰å¤šå°‘é€£ç·š
+	static double core_threshold = 0.75; //å–å¤šå°‘ç•¶ä½œæ ¸å¿ƒ
 	static double relateness_threshhold = 0.525;
 	
 	static int chunck =15;	
@@ -42,8 +42,8 @@ public class Drift_exp4_withDetect {
 
 	
 	/**
-	 * ¤@­Ó¥DÃD¦s¦b¤U¡A¾Ç²ß¤@¥DÃD¡B±µµÛ§Ñ°O¤@¥DÃD
-	 * °»´ú¨ì¤~½Õ¾ãªºµ²ªG
+	 * ä¸€å€‹ä¸»é¡Œå­˜åœ¨ä¸‹ï¼Œå­¸ç¿’ä¸€ä¸»é¡Œã€æ¥è‘—å¿˜è¨˜ä¸€ä¸»é¡Œ
+	 * åµæ¸¬åˆ°æ‰èª¿æ•´çš„çµæœ
 	 */
 	public static void main(String[] args) {
 		
@@ -79,7 +79,7 @@ public class Drift_exp4_withDetect {
 			mainDir = "exp4_withDetet/chunck"+i+"/";
 			
 			
-			//ªì©l¤Æ ©³¤Uµù¸Ñ¬O¬°¤F¨Ï¥Î¤@¼Ëªº°V½m¡B´ú¸Õ¤å¥ó ¨Ï¥Î¤@¼Ëªº¸ê®Æ°È¥²­×§ïCompareRelateness.javaªºgetConcept()
+			//åˆå§‹åŒ– åº•ä¸‹è¨»è§£æ˜¯ç‚ºäº†ä½¿ç”¨ä¸€æ¨£çš„è¨“ç·´ã€æ¸¬è©¦æ–‡ä»¶ ä½¿ç”¨ä¸€æ¨£çš„è³‡æ–™å‹™å¿…ä¿®æ”¹CompareRelateness.javaçš„getConcept()
 			if(i==1){
 				String objTopic[] = {learningCat[0]};
 			//	HashSet<String> set = Go_Training3.generateTrainSet(5, trainDir_relate, learningCat[0]);
@@ -124,7 +124,7 @@ public class Drift_exp4_withDetect {
 					e.printStackTrace();
 				}
 				
-			//¶¥¬q¤@ 	
+			//éšæ®µä¸€ 	
 			}else if (i<=changeChunck1){
 				String objTopic[] = {learningCat[0]};
 				
@@ -167,7 +167,7 @@ public class Drift_exp4_withDetect {
 				
 				
 				
-				//·§©ÀÄÆ²¾
+				//æ¦‚å¿µé£„ç§»
 				if(PHT>Lambda){
 						
 					HashSet<String> set = Go_Training3.generateTrainSet(2, trainDir_relate, objTopic[0]);
@@ -186,7 +186,7 @@ public class Drift_exp4_withDetect {
 				}
 				
 			}
-			//¶¥¬q¤G ¤@¥DÃD¦s¦b¤U ¾Ç²ß¥t¤@¥DÃD
+			//éšæ®µäºŒ ä¸€ä¸»é¡Œå­˜åœ¨ä¸‹ å­¸ç¿’å¦ä¸€ä¸»é¡Œ
 			else if(i>changeChunck1 && i<=changeChunck2){
 				String objTopic[] = {learningCat[0], learningCat[1]};
 				
@@ -227,7 +227,7 @@ public class Drift_exp4_withDetect {
 					e.printStackTrace();
 				}
 				
-				//·§©ÀÄÆ²¾
+				//æ¦‚å¿µé£„ç§»
 				if(PHT>Lambda){
 						
 					for(String t: objTopic){
@@ -248,7 +248,7 @@ public class Drift_exp4_withDetect {
 				}
 				
 			}
-			//¶¥¬q¤T ¨â¥DÃD±¡ªp¤U §Ñ°O¤@¥DÃD
+			//éšæ®µä¸‰ å…©ä¸»é¡Œæƒ…æ³ä¸‹ å¿˜è¨˜ä¸€ä¸»é¡Œ
 			else if(i>changeChunck2 && i<=chunck){
 				String objTopic[] = {learningCat[0]};
 				
@@ -279,7 +279,7 @@ public class Drift_exp4_withDetect {
 				
 				double PHT = sumMt - minMT;
 				
-				//·§©ÀÄÆ²¾
+				//æ¦‚å¿µé£„ç§»
 				if(PHT>Lambda){
 					
 					HashSet<String> set = Go_Training3.generateTrainSet(1, trainDir_relate, learningCat[0]);

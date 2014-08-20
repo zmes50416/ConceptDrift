@@ -40,9 +40,9 @@ public class google_filter1 {
 			// String key = null;
 			String value1 = null;
 			if (count < datas.length) {
-				if (line.contains("¬ù¦³ ") || line.contains(" ¶µµ²ªG")) {
+				if (line.contains("ç´„æœ‰ ") || line.contains(" é …çµæžœ")) {
 
-					String value = line.replaceAll(",", ""); // ¬ù¦³ 173,000 ¶µµ²ªG
+					String value = line.replaceAll(",", ""); // ç´„æœ‰ 173,000 é …çµæžœ
 
 					value1 = value.split(" ")[value.split(" ").length - 2];
 					// set.add(value1);
@@ -78,15 +78,15 @@ public class google_filter1 {
 //			} else {
 //				k = 9;r
 //			}
-			//¤W¤U­­
+			//ä¸Šä¸‹é™
 			double upper = 4;  //google 8  wiki 4
 			double lower = 2;  //google 5  wiki 1
 //			System.out.println("K=" + k);
 			
-			//®Ú¾Ú·j´Mµ²ªG¹LÂo¦rµü
-			//wiki­n¦Ò¼{¦^¶Ç­È¤£¯à¬°0
+			//æ ¹æ“šæœå°‹çµæžœéŽæ¿¾å­—è©ž
+			//wikiè¦è€ƒæ…®å›žå‚³å€¼ä¸èƒ½ç‚º0
 			if (lower <= value.length() && Long.valueOf(value)!=0) {
-			//googleª©
+			//googleç‰ˆ
 			//if (lower <= value.length()) {
 				if (!key.contains("+")) {
 					if (value.length() <= upper) {
@@ -109,7 +109,7 @@ public class google_filter1 {
 						System.out.println(arry1[i] + " out");
 					}
 				}else
-				{//¥i¥H³]©w¤£¦P­Ó¦rµü²Õ¦¨ªºª¬ªp¤£¦PªùÂe
+				{//å¯ä»¥è¨­å®šä¸åŒå€‹å­—è©žçµ„æˆçš„ç‹€æ³ä¸åŒé–€æª»
 					if (value.length() <= upper) {
 						System.out.println(arry1[i] + " add");
 						String arry_out = (String) arry1[i];
@@ -157,7 +157,7 @@ public class google_filter1 {
 		for (int i = 0; i < objline.length; i++) {
 			bw.write((String) objline[i]);
 			bw.newLine();
-			bw.flush(); // ²MªÅ½w½Ä°Ï
+			bw.flush(); // æ¸…ç©ºç·©è¡å€
 		}
 		Object[] obj = filtered_key.toArray();
 		bw = new BufferedWriter(new FileWriter("citeulike/citeulike_Pairs/"+no + "_" + "pairs.txt", false));
@@ -166,7 +166,7 @@ public class google_filter1 {
 				System.out.println(obj[i] + "+" + obj[j]);
 				bw.write(obj[i] + "+" + obj[j]);
 				bw.newLine();
-				bw.flush(); // ²MªÅ½w½Ä°Ï
+				bw.flush(); // æ¸…ç©ºç·©è¡å€
 			}
 		}
 

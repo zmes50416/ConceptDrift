@@ -16,42 +16,42 @@ public class Tom_threshold_exp3 {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Tom_threshold_exp3 TTE3 = new Tom_threshold_exp3();
-		//TTE3.forecasting_NGDorSIM("Tom¹êÅç/¥DÃDºò±KªùÂe­È¹êÅç/exp_6_TCR_close/");
-		TTE3.forecasting_cosine("Tom¹êÅç/¥DÃDºò±KªùÂe­È¹êÅç/exp_6_TCR_close/");
+		//TTE3.forecasting_NGDorSIM("Tomå¯¦é©—/ä¸»é¡Œç·Šå¯†é–€æª»å€¼å¯¦é©—/exp_6_TCR_close/");
+		TTE3.forecasting_cosine("Tomå¯¦é©—/ä¸»é¡Œç·Šå¯†é–€æª»å€¼å¯¦é©—/exp_6_TCR_close/");
 	}
 	
 	public void forecasting_NGDorSIM(String exp_dir){
 		try {
-			//Àx¦s¤ÀªRµo²{¨âÃä¤§¶¡¥u¦³¨âÂI¦³¬Û³sªºµ²ªG
+			//å„²å­˜åˆ†æç™¼ç¾å…©é‚Šä¹‹é–“åªæœ‰å…©é»æœ‰ç›¸é€£çš„çµæœ
 			BufferedWriter bw2 = new BufferedWriter(new FileWriter(exp_dir+"TR_2con_result_SIM.txt"));
-			//Àx¦s¤ÀªRµo²{¨âÃä¤§¶¡¤TÂI³£¦³¬Û³sªºµ²ªG
+			//å„²å­˜åˆ†æç™¼ç¾å…©é‚Šä¹‹é–“ä¸‰é»éƒ½æœ‰ç›¸é€£çš„çµæœ
 			BufferedWriter bw3 = new BufferedWriter(new FileWriter(exp_dir+"TR_3con_result_SIM.txt"));
-			//Åª¨úTRÀÉ
+			//è®€å–TRæª”
 			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
 			int con2_num=0, con3_num=0;
 			double sum_con2=0, sum_con3=0;
-			int how_many_topic = Integer.valueOf(br.readLine()); //±oª¾¥Ø«e¥DÃD¼Æ
+			int how_many_topic = Integer.valueOf(br.readLine()); //å¾—çŸ¥ç›®å‰ä¸»é¡Œæ•¸
 			String topics;
 			String line;
 			double topic_relation;
 			double sum_topics_relation=0;
-			HashMap<String,Double> TR = new HashMap<String,Double>(); //Åª¨ú¥X¨Óªº¥DÃDÃö«Y
-			HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD­pºâ«áªº¥DÃDÃö«Y
-			HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //¦U¥DÃDªº¥X²{
-			ArrayList<String> topic_list = new ArrayList<String>(); //topic¦Cªí
+			HashMap<String,Double> TR = new HashMap<String,Double>(); //è®€å–å‡ºä¾†çš„ä¸»é¡Œé—œä¿‚
+			HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGDè¨ˆç®—å¾Œçš„ä¸»é¡Œé—œä¿‚
+			HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //å„ä¸»é¡Œçš„å‡ºç¾
+			ArrayList<String> topic_list = new ArrayList<String>(); //topicåˆ—è¡¨
 			
 			while((line=br.readLine())!=null){
 				topics = line.split(",")[0];
 				//System.out.println("line="+line);
-				//±NÁÙ¨S¥[¶itopic¦Cªíªº¦rµü¥[¤J
+				//å°‡é‚„æ²’åŠ é€²topicåˆ—è¡¨çš„å­—è©åŠ å…¥
 				if(!topic_list.contains(topics.split("-")[0])){
 					topic_list.add(topics.split("-")[0]);
 				}
 				if(!topic_list.contains(topics.split("-")[1])){
 					topic_list.add(topics.split("-")[1]);
 				}
-				//²Ö­p¥DÃDªº¥X²{¦¸¼Æ
-				if(topics.split("-")[0].equals(topics.split("-")[1])){ //¦Û¤v¹ï¨ì¦Û¤v´N¥u¦s¤@¦¸¼Æ­È¡AÁ×§K­«½Æ²Ö¥[
+				//ç´¯è¨ˆä¸»é¡Œçš„å‡ºç¾æ¬¡æ•¸
+				if(topics.split("-")[0].equals(topics.split("-")[1])){ //è‡ªå·±å°åˆ°è‡ªå·±å°±åªå­˜ä¸€æ¬¡æ•¸å€¼ï¼Œé¿å…é‡è¤‡ç´¯åŠ 
 					//System.out.println(topics.split("-")[0]+"++");
 					if(sum_topic_freq.get(topics.split("-")[0])!=null){
 						sum_topic_freq.put(topics.split("-")[0], sum_topic_freq.get(topics.split("-")[0])+Double.valueOf(line.split(",")[1]));
@@ -79,28 +79,28 @@ public class Tom_threshold_exp3 {
 			}
 			br.close();
 			
-			System.out.println("©Ò¦³¥DÃDªºÁ`¥X²{¦¸¼Æ¬°"+sum_topics_relation);
+			System.out.println("æ‰€æœ‰ä¸»é¡Œçš„ç¸½å‡ºç¾æ¬¡æ•¸ç‚º"+sum_topics_relation);
 			for(String s: sum_topic_freq.keySet()){
-				System.out.println(s+"ªº¥X²{¦¸¼Æ¬°"+sum_topic_freq.get(s));
+				System.out.println(s+"çš„å‡ºç¾æ¬¡æ•¸ç‚º"+sum_topic_freq.get(s));
 			}
 			
-			//­pºâ¦U¥DÃDÃö«YªºNGD­È¡A
+			//è¨ˆç®—å„ä¸»é¡Œé—œä¿‚çš„NGDå€¼ï¼Œ
 			for(String two_topic: TR.keySet()){
-				//¦pªG¬ö¿ıªº¬O«D¦Û¤v¥DÃDªºÃö«Y´N»İ­n­pºâ¨â¬Û²§¥DÃD¶¡ªºNGD¶ZÂ÷
+				//å¦‚æœç´€éŒ„çš„æ˜¯éè‡ªå·±ä¸»é¡Œçš„é—œä¿‚å°±éœ€è¦è¨ˆç®—å…©ç›¸ç•°ä¸»é¡Œé–“çš„NGDè·é›¢
 				if(!two_topic.split("-")[0].equals(two_topic.split("-")[1])){
-					double x=sum_topic_freq.get(two_topic.split("-")[0]); //²Ä¤@­Ó¥DÃDªº¥X²{¦¸¼Æ
+					double x=sum_topic_freq.get(two_topic.split("-")[0]); //ç¬¬ä¸€å€‹ä¸»é¡Œçš„å‡ºç¾æ¬¡æ•¸
 					System.out.println(two_topic.split("-")[0]+"="+x);
-					double y=sum_topic_freq.get(two_topic.split("-")[1]); //²Ä¤G­Ó¥DÃDªº¥X²{¦¸¼Æ
+					double y=sum_topic_freq.get(two_topic.split("-")[1]); //ç¬¬äºŒå€‹ä¸»é¡Œçš„å‡ºç¾æ¬¡æ•¸
 					System.out.println(two_topic.split("-")[1]+"="+y);
-					double xy=TR.get(two_topic); //²Ä¤@¡B¤G¥DÃDªº¦@²{¦¸¼Æ
+					double xy=TR.get(two_topic); //ç¬¬ä¸€ã€äºŒä¸»é¡Œçš„å…±ç¾æ¬¡æ•¸
 					System.out.println(two_topic+"="+xy);
 					
-					//NGD¤èªk
+					//NGDæ–¹æ³•
 					/*double NGD=(Math.max(x, y) - xy) / (sum_topics_relation - Math.min(x, y));
 					System.out.println("sum_topics_relation="+sum_topics_relation);
 					System.out.println("NGD="+NGD);
 					if (xy == 0){
-						//NGD = 1;//Á×§KµL­­¤j
+						//NGD = 1;//é¿å…ç„¡é™å¤§
 					}
 					if (NGD > 1){
 						//NGD = 1;
@@ -109,18 +109,18 @@ public class Tom_threshold_exp3 {
 						//NGD = 0;
 					}*/
 										
-					//Â²³æ­«Å|¤ñ¨Ò¤èªk(SIM)
+					//ç°¡å–®é‡ç–Šæ¯”ä¾‹æ–¹æ³•(SIM)
 					double NGD=(2*xy)/(x+y);
 					
 					TR_NGD.put(two_topic, NGD);
-					System.out.println("Ãä"+two_topic+"ªº¤À§G¬Û¦ü«×­È¬°"+NGD);
+					System.out.println("é‚Š"+two_topic+"çš„åˆ†ä½ˆç›¸ä¼¼åº¦å€¼ç‚º"+NGD);
 				}
 			}
 			
-			//¹w´ú¨BÆJ¡A­pºâ¨â¨âÃä¤§¶¡ªº¶ZÂ÷¥[Á`¡A¦pªGÁ`¶ZÂ÷¤p©óªùÂe­È¡A¬Ûªñªº¨âÂI§Y·|²£¥Í³s±µªºÃä
-			String edge1_v1, edge1_v2; //²Ä¤@­ÓÃäªº²Ä¤@­Ó¸`ÂI, ²Ä¤@­ÓÃäªº²Ä¤G­Ó¸`ÂI
-			String edge2_v1, edge2_v2; //²Ä¤G­ÓÃäªº²Ä¤@­Ó¸`ÂI, ²Ä¤G­ÓÃäªº²Ä¤G­Ó¸`ÂI
-			String maybe_edge3; //¥i¯àªº²Ä¤T­ÓÃä
+			//é æ¸¬æ­¥é©Ÿï¼Œè¨ˆç®—å…©å…©é‚Šä¹‹é–“çš„è·é›¢åŠ ç¸½ï¼Œå¦‚æœç¸½è·é›¢å°æ–¼é–€æª»å€¼ï¼Œç›¸è¿‘çš„å…©é»å³æœƒç”¢ç”Ÿé€£æ¥çš„é‚Š
+			String edge1_v1, edge1_v2; //ç¬¬ä¸€å€‹é‚Šçš„ç¬¬ä¸€å€‹ç¯€é», ç¬¬ä¸€å€‹é‚Šçš„ç¬¬äºŒå€‹ç¯€é»
+			String edge2_v1, edge2_v2; //ç¬¬äºŒå€‹é‚Šçš„ç¬¬ä¸€å€‹ç¯€é», ç¬¬äºŒå€‹é‚Šçš„ç¬¬äºŒå€‹ç¯€é»
+			String maybe_edge3; //å¯èƒ½çš„ç¬¬ä¸‰å€‹é‚Š
 			boolean door = false;
 			boolean con = false;
 			for(String edge1: TR_NGD.keySet()){
@@ -130,14 +130,14 @@ public class Tom_threshold_exp3 {
 					con=false;
 					maybe_edge3="";
 					if(edge1.equals(edge2)){
-						door = true; //´î¤Ö­«½Æ­pºâªº¥i¯à
+						door = true; //æ¸›å°‘é‡è¤‡è¨ˆç®—çš„å¯èƒ½
 					}
-					if(door && !edge1.equals(edge2)){ //¦Û¤v¸ò¦Û¤v¤£¥Î­pºâ
+					if(door && !edge1.equals(edge2)){ //è‡ªå·±è·Ÿè‡ªå·±ä¸ç”¨è¨ˆç®—
 						edge2_v1 = edge2.split("-")[0];
 						edge2_v2 = edge2.split("-")[1];
-						//¨â­ÓÃä¤¤¦³¨ä¤¤¤@­Ó¸`ÂI¬O¤¬¬Û³s±µªº¡A¤~¬d¬İ¥t¥~¨âÂI¬O§_¦³¬Û³s
+						//å…©å€‹é‚Šä¸­æœ‰å…¶ä¸­ä¸€å€‹ç¯€é»æ˜¯äº’ç›¸é€£æ¥çš„ï¼Œæ‰æŸ¥çœ‹å¦å¤–å…©é»æ˜¯å¦æœ‰ç›¸é€£
 						if(edge2_v1.equals(edge1_v1)){
-							//²Õ¦¨²Ä¤T­ÓÃä
+							//çµ„æˆç¬¬ä¸‰å€‹é‚Š
 							maybe_edge3 = make_edge3(edge2_v2,edge1_v2);
 							con=true;
 						}else if(edge2_v1.equals(edge1_v2)){
@@ -151,8 +151,8 @@ public class Tom_threshold_exp3 {
 							con=true;
 						}
 						if(con){
-							if(TR_NGD.containsKey(maybe_edge3)){ //²Ä¤TÃä¬O§_¦­¤w¦s¦b
-								//¬ö¿ı¤TÃä¨â¨â¬Û¥[ªø«×	
+							if(TR_NGD.containsKey(maybe_edge3)){ //ç¬¬ä¸‰é‚Šæ˜¯å¦æ—©å·²å­˜åœ¨
+								//ç´€éŒ„ä¸‰é‚Šå…©å…©ç›¸åŠ é•·åº¦	
 								bw3.write("edge1+edge2 = "+edge1+"+"+edge2+","+String.valueOf(TR_NGD.get(edge1)+TR_NGD.get(edge2)));
 								bw3.newLine();
 								sum_con3 = sum_con3 + TR_NGD.get(edge1)+TR_NGD.get(edge2);
@@ -165,7 +165,7 @@ public class Tom_threshold_exp3 {
 								sum_con3 = sum_con3 + TR_NGD.get(edge2)+TR_NGD.get(maybe_edge3);
 								con3_num = con3_num + 3;
 							}else{
-								//¬ö¿ı¤TÃä¨â¨â¬Û¥[ªø«×	
+								//ç´€éŒ„ä¸‰é‚Šå…©å…©ç›¸åŠ é•·åº¦	
 								bw2.write("edge1+edge2 = "+edge1+"+"+edge2+","+String.valueOf(TR_NGD.get(edge1)+TR_NGD.get(edge2)));
 								bw2.newLine();
 								bw2.flush();
@@ -177,18 +177,18 @@ public class Tom_threshold_exp3 {
 				}
 				door=false;
 			}
-			bw2.write("²Å¦X¨âÃä¤§¶¡¥u¦³¨âÂI¦³¬Û³sªºµ²ªGªºÃäÁ`ªø¬° "+sum_con2);
+			bw2.write("ç¬¦åˆå…©é‚Šä¹‹é–“åªæœ‰å…©é»æœ‰ç›¸é€£çš„çµæœçš„é‚Šç¸½é•·ç‚º "+sum_con2);
 			bw2.newLine();
-			bw2.write("Ãä¼Æ "+con2_num);
+			bw2.write("é‚Šæ•¸ "+con2_num);
 			bw2.newLine();
-			bw2.write("¥­§¡Ãäªø "+(sum_con2/con2_num));
+			bw2.write("å¹³å‡é‚Šé•· "+(sum_con2/con2_num));
 			bw2.newLine();
 			bw2.flush();
-			bw3.write("²Å¦X¨âÃä¤§¶¡¤TÂI³£¦³¬Û³sªºµ²ªGªºÃäÁ`ªø¬° "+sum_con3);
+			bw3.write("ç¬¦åˆå…©é‚Šä¹‹é–“ä¸‰é»éƒ½æœ‰ç›¸é€£çš„çµæœçš„é‚Šç¸½é•·ç‚º "+sum_con3);
 			bw3.newLine();
-			bw3.write("Ãä¼Æ "+con3_num);
+			bw3.write("é‚Šæ•¸ "+con3_num);
 			bw3.newLine();
-			bw3.write("¥­§¡Ãäªø "+(sum_con3/con3_num));
+			bw3.write("å¹³å‡é‚Šé•· "+(sum_con3/con3_num));
 			bw3.newLine();
 			bw3.flush();
 		} catch (FileNotFoundException e) {
@@ -217,19 +217,19 @@ public class Tom_threshold_exp3 {
 	
 	public void forecasting_cosine(String exp_dir){
 		try {
-			//Àx¦s¤ÀªRµo²{¨âÃä¤§¶¡¥u¦³¨âÂI¦³¬Û³sªºµ²ªG
+			//å„²å­˜åˆ†æç™¼ç¾å…©é‚Šä¹‹é–“åªæœ‰å…©é»æœ‰ç›¸é€£çš„çµæœ
 			BufferedWriter bw2 = new BufferedWriter(new FileWriter(exp_dir+"TR_2con_result_CONSINE.txt"));
-			//Àx¦s¤ÀªRµo²{¨âÃä¤§¶¡¤TÂI³£¦³¬Û³sªºµ²ªG
+			//å„²å­˜åˆ†æç™¼ç¾å…©é‚Šä¹‹é–“ä¸‰é»éƒ½æœ‰ç›¸é€£çš„çµæœ
 			BufferedWriter bw3 = new BufferedWriter(new FileWriter(exp_dir+"TR_3con_result_CONSINE.txt"));
 			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
-			int how_many_topic = Integer.valueOf(br.readLine()); //±oª¾¥Ø«e¥DÃD¼Æ
+			int how_many_topic = Integer.valueOf(br.readLine()); //å¾—çŸ¥ç›®å‰ä¸»é¡Œæ•¸
 			String topics;
 			String line;
 			double topic_relation;
-			HashMap<String,Double> TR = new HashMap<String,Double>(); //Åª¨ú¥X¨Óªº¥DÃDÃö«Y
-			HashMap<String,double[]> TR_vector = new HashMap<String,double[]>(); //¦U¥DÃD¦V¶q
-			HashMap<String,Double> TR_cosine = new HashMap<String,Double>(); //¦U¥DÃD¶¡¬Û¦ü«×
-			ArrayList<String> topic_list = new ArrayList<String>(); //topic¦Cªí
+			HashMap<String,Double> TR = new HashMap<String,Double>(); //è®€å–å‡ºä¾†çš„ä¸»é¡Œé—œä¿‚
+			HashMap<String,double[]> TR_vector = new HashMap<String,double[]>(); //å„ä¸»é¡Œå‘é‡
+			HashMap<String,Double> TR_cosine = new HashMap<String,Double>(); //å„ä¸»é¡Œé–“ç›¸ä¼¼åº¦
+			ArrayList<String> topic_list = new ArrayList<String>(); //topicåˆ—è¡¨
 			double vector[];
 			int con2_num=0, con3_num=0;
 			double sum_con2=0, sum_con3=0;
@@ -237,7 +237,7 @@ public class Tom_threshold_exp3 {
 			while((line=br.readLine())!=null){
 				topics = line.split(",")[0];
 				//System.out.println("line="+line);
-				//±NÁÙ¨S¥[¶itopic¦Cªíªº¦rµü¥[¤J
+				//å°‡é‚„æ²’åŠ é€²topicåˆ—è¡¨çš„å­—è©åŠ å…¥
 				if(!topic_list.contains(topics.split("-")[0])){
 					topic_list.add(topics.split("-")[0]);
 				}
@@ -252,7 +252,7 @@ public class Tom_threshold_exp3 {
 			int node_num = topic_list.size();
 			vector = new double[node_num];
 			
-			//«Ø¥ß¦U¥DÃDªº¦V¶q
+			//å»ºç«‹å„ä¸»é¡Œçš„å‘é‡
 			for(int i=0;i<node_num;i++){
 				for(int z=0;z<vector.length;z++){
 					vector[z]=0.0;
@@ -279,20 +279,20 @@ public class Tom_threshold_exp3 {
 				System.out.println("}");
 			}*/
 			
-			//­pºâ¦U¥DÃD¶¡¬Û¦ü«×
+			//è¨ˆç®—å„ä¸»é¡Œé–“ç›¸ä¼¼åº¦
 			ConceptDrift_Forecasting CDF = new ConceptDrift_Forecasting();
 			for(String two_topic: TR.keySet()){
-				//¦pªG¬ö¿ıªº¬O«D¦Û¤v¥DÃDªºÃö«Y´N»İ­n­pºâ¨â¬Û²§¥DÃD¶¡ªºNGD¶ZÂ÷
+				//å¦‚æœç´€éŒ„çš„æ˜¯éè‡ªå·±ä¸»é¡Œçš„é—œä¿‚å°±éœ€è¦è¨ˆç®—å…©ç›¸ç•°ä¸»é¡Œé–“çš„NGDè·é›¢
 				if(!two_topic.split("-")[0].equals(two_topic.split("-")[1])){
 					System.out.println(two_topic+" = "+CDF.similarityCalculator(TR_vector.get(two_topic.split("-")[0]),TR_vector.get(two_topic.split("-")[1]),"cosine"));
 					TR_cosine.put(two_topic,CDF.similarityCalculator(TR_vector.get(two_topic.split("-")[0]),TR_vector.get(two_topic.split("-")[1]),"cosine"));
 				}
 			}
 			
-			//¹w´ú¨BÆJ¡A­pºâ¨â¨âÃä¤§¶¡ªº¶ZÂ÷¥[Á`¡A¦pªGÁ`¶ZÂ÷¤p©óªùÂe­È¡A¬Ûªñªº¨âÂI§Y·|²£¥Í³s±µªºÃä
-			String edge1_v1, edge1_v2; //²Ä¤@­ÓÃäªº²Ä¤@­Ó¸`ÂI, ²Ä¤@­ÓÃäªº²Ä¤G­Ó¸`ÂI
-			String edge2_v1, edge2_v2; //²Ä¤G­ÓÃäªº²Ä¤@­Ó¸`ÂI, ²Ä¤G­ÓÃäªº²Ä¤G­Ó¸`ÂI
-			String maybe_edge3; //¥i¯àªº²Ä¤T­ÓÃä
+			//é æ¸¬æ­¥é©Ÿï¼Œè¨ˆç®—å…©å…©é‚Šä¹‹é–“çš„è·é›¢åŠ ç¸½ï¼Œå¦‚æœç¸½è·é›¢å°æ–¼é–€æª»å€¼ï¼Œç›¸è¿‘çš„å…©é»å³æœƒç”¢ç”Ÿé€£æ¥çš„é‚Š
+			String edge1_v1, edge1_v2; //ç¬¬ä¸€å€‹é‚Šçš„ç¬¬ä¸€å€‹ç¯€é», ç¬¬ä¸€å€‹é‚Šçš„ç¬¬äºŒå€‹ç¯€é»
+			String edge2_v1, edge2_v2; //ç¬¬äºŒå€‹é‚Šçš„ç¬¬ä¸€å€‹ç¯€é», ç¬¬äºŒå€‹é‚Šçš„ç¬¬äºŒå€‹ç¯€é»
+			String maybe_edge3; //å¯èƒ½çš„ç¬¬ä¸‰å€‹é‚Š
 			boolean door = false;
 			boolean con = false;
 			for(String edge1: TR_cosine.keySet()){
@@ -302,14 +302,14 @@ public class Tom_threshold_exp3 {
 					con=false;
 					maybe_edge3="";
 					if(edge1.equals(edge2)){
-						door = true; //´î¤Ö­«½Æ­pºâªº¥i¯à
+						door = true; //æ¸›å°‘é‡è¤‡è¨ˆç®—çš„å¯èƒ½
 					}
-					if(door && !edge1.equals(edge2)){ //¦Û¤v¸ò¦Û¤v¤£¥Î­pºâ
+					if(door && !edge1.equals(edge2)){ //è‡ªå·±è·Ÿè‡ªå·±ä¸ç”¨è¨ˆç®—
 						edge2_v1 = edge2.split("-")[0];
 						edge2_v2 = edge2.split("-")[1];
-						//¨â­ÓÃä¤¤¦³¨ä¤¤¤@­Ó¸`ÂI¬O¤¬¬Û³s±µªº¡A¤~¬d¬İ¥t¥~¨âÂI¬O§_¦³¬Û³s
+						//å…©å€‹é‚Šä¸­æœ‰å…¶ä¸­ä¸€å€‹ç¯€é»æ˜¯äº’ç›¸é€£æ¥çš„ï¼Œæ‰æŸ¥çœ‹å¦å¤–å…©é»æ˜¯å¦æœ‰ç›¸é€£
 						if(edge2_v1.equals(edge1_v1)){
-							//²Õ¦¨²Ä¤T­ÓÃä
+							//çµ„æˆç¬¬ä¸‰å€‹é‚Š
 							maybe_edge3 = make_edge3(edge2_v2,edge1_v2);
 							con=true;
 						}else if(edge2_v1.equals(edge1_v2)){
@@ -323,8 +323,8 @@ public class Tom_threshold_exp3 {
 							con=true;
 						}
 						if(con){
-							if(TR_cosine.containsKey(maybe_edge3)){ //²Ä¤TÃä¬O§_¦­¤w¦s¦b
-								//¬ö¿ı¤TÃä¨â¨â¬Û¥[ªø«×	
+							if(TR_cosine.containsKey(maybe_edge3)){ //ç¬¬ä¸‰é‚Šæ˜¯å¦æ—©å·²å­˜åœ¨
+								//ç´€éŒ„ä¸‰é‚Šå…©å…©ç›¸åŠ é•·åº¦	
 								bw3.write("edge1+edge2 = "+edge1+"+"+edge2+","+String.valueOf(TR_cosine.get(edge1)+TR_cosine.get(edge2)));
 								bw3.newLine();
 								sum_con3 = sum_con3 + TR_cosine.get(edge1)+TR_cosine.get(edge2);
@@ -337,7 +337,7 @@ public class Tom_threshold_exp3 {
 								sum_con3 = sum_con3 + TR_cosine.get(edge2)+TR_cosine.get(maybe_edge3);
 								con3_num = con3_num + 3;
 							}else{
-								//¬ö¿ı¤TÃä¨â¨â¬Û¥[ªø«×	
+								//ç´€éŒ„ä¸‰é‚Šå…©å…©ç›¸åŠ é•·åº¦	
 								bw2.write("edge1+edge2 = "+edge1+"+"+edge2+","+String.valueOf(TR_cosine.get(edge1)+TR_cosine.get(edge2)));
 								bw2.newLine();
 								bw2.flush();
@@ -349,18 +349,18 @@ public class Tom_threshold_exp3 {
 				}
 				door=false;
 			}
-			bw2.write("²Å¦X¨âÃä¤§¶¡¥u¦³¨âÂI¦³¬Û³sªºµ²ªGªºÃäÁ`ªø¬° "+sum_con2);
+			bw2.write("ç¬¦åˆå…©é‚Šä¹‹é–“åªæœ‰å…©é»æœ‰ç›¸é€£çš„çµæœçš„é‚Šç¸½é•·ç‚º "+sum_con2);
 			bw2.newLine();
-			bw2.write("Ãä¼Æ "+con2_num);
+			bw2.write("é‚Šæ•¸ "+con2_num);
 			bw2.newLine();
-			bw2.write("¥­§¡Ãäªø "+(sum_con2/con2_num));
+			bw2.write("å¹³å‡é‚Šé•· "+(sum_con2/con2_num));
 			bw2.newLine();
 			bw2.flush();
-			bw3.write("²Å¦X¨âÃä¤§¶¡¤TÂI³£¦³¬Û³sªºµ²ªGªºÃäÁ`ªø¬° "+sum_con3);
+			bw3.write("ç¬¦åˆå…©é‚Šä¹‹é–“ä¸‰é»éƒ½æœ‰ç›¸é€£çš„çµæœçš„é‚Šç¸½é•·ç‚º "+sum_con3);
 			bw3.newLine();
-			bw3.write("Ãä¼Æ "+con3_num);
+			bw3.write("é‚Šæ•¸ "+con3_num);
 			bw3.newLine();
-			bw3.write("¥­§¡Ãäªø "+(sum_con3/con3_num));
+			bw3.write("å¹³å‡é‚Šé•· "+(sum_con3/con3_num));
 			bw3.newLine();
 			bw3.flush();
 			

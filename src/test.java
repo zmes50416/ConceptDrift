@@ -28,7 +28,7 @@ public class test {
 	 */
 	public static void main(String[] args) throws IOException {
 		
-		HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD­pºâ«áªº¥DÃDÃö«Y
+		HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGDè¨ˆç®—å¾Œçš„ä¸»é¡Œé—œä¿‚
 		TR_NGD.put("z", 0.3);
 		TR_NGD.put("d", 0.4);
 		TR_NGD.put("a", 0.5);

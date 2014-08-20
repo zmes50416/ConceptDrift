@@ -35,8 +35,8 @@ public class distance
 	public void cc_cal(int no) throws FileNotFoundException
 	{
 		this.no = no;
-		br = new BufferedReader(new FileReader("Rank/"+no + "_" + "Rank.txt"));//Åª¥X¸g¹L±Æ§ÇªºNGD
-		br2 = new BufferedReader(new FileReader("Stem/"+no + "_" + "stem.txt"));//Åª¥X¦rµü
+		br = new BufferedReader(new FileReader("Rank/"+no + "_" + "Rank.txt"));//è®€å‡ºç¶“éæ’åºçš„NGD
+		br2 = new BufferedReader(new FileReader("Stem/"+no + "_" + "stem.txt"));//è®€å‡ºå­—è©
 		try {
 			double sum = 0;
 			while ((line = br.readLine()) != null) {
@@ -47,16 +47,16 @@ public class distance
 			while ((line = br2.readLine()) != null) {
 				String key = line.split(",")[0];
 				String hits = line.split(",")[1];
-				double cc = getCC(key); //¨ú±o³o­Ó¦rªº¤¤¶¡«×µ{«×
-				coreMap.put(key, cc);//¬ö¿ı¤¤¶¡«×µ{«×
-				degreeMap.put(key, cc);//¬ö¿ı³sµ²«×?
-				hitMap.put(key,hits);//¬ö¿ı·j´Mµ²ªG
+				double cc = getCC(key); //å–å¾—é€™å€‹å­—çš„ä¸­é–“åº¦ç¨‹åº¦
+				coreMap.put(key, cc);//ç´€éŒ„ä¸­é–“åº¦ç¨‹åº¦
+				degreeMap.put(key, cc);//ç´€éŒ„é€£çµåº¦?
+				hitMap.put(key,hits);//ç´€éŒ„æœå°‹çµæœ
 			}
 			
 			sort_data = new ArrayList<Map.Entry<String, Double>>(coreMap.entrySet());
 			Iterator<Map.Entry<String, Double>> iterator = sort_data.iterator();
 			
-			//«ö·Ócc­È±Æ§Ç(¤p->¤j)
+			//æŒ‰ç…§ccå€¼æ’åº(å°->å¤§)
 			Collections.sort(sort_data,
 					new Comparator<Map.Entry<String, Double>>() {
 						public int compare(Map.Entry<String, Double> o1,
@@ -65,13 +65,13 @@ public class distance
 						}
 					});
 			//System.out.println("--"+sort_data);
-			System.out.println("--"+sort_data.get(sort_data.size()-1).getValue()); //¦L¥XCCmax
+			System.out.println("--"+sort_data.get(sort_data.size()-1).getValue()); //å°å‡ºCCmax
 			
-			//¼g¤JCC­È¨ìÀÉ®×
+			//å¯«å…¥CCå€¼åˆ°æª”æ¡ˆ
 			BufferedWriter bw;
 			try
 			{
-				bw = new BufferedWriter(new FileWriter("CC/"+no + "_" + "cc.txt"));//¼g¤Jcc¹Bºâµ²ªG
+				bw = new BufferedWriter(new FileWriter("CC/"+no + "_" + "cc.txt"));//å¯«å…¥ccé‹ç®—çµæœ
 				while (iterator.hasNext()) {
 					Map.Entry<String, Double> entry = iterator.next();
 					System.out.println(entry.getKey() + "," + entry.getValue());
@@ -86,7 +86,7 @@ public class distance
 			{f.printStackTrace();}
 			
 			//getK_code_value();
-			//­pºâkcore­È
+			//è¨ˆç®—kcoreå€¼
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -101,8 +101,8 @@ public class distance
 			{
 				sig_distance += Double.parseDouble(t.split(",")[2]);
 				//weight=weight+Double.parseDouble(t.split(",")[2]);
-			}//¥u¦³¤p©óªùÂe­Èªº¤~·|«Ø¥ß³sµ²
-		}//­pºâ¦U¸`ÂI(¦rµü)ªº³sµ²«×(degree)
+			}//åªæœ‰å°æ–¼é–€æª»å€¼çš„æ‰æœƒå»ºç«‹é€£çµ
+		}//è¨ˆç®—å„ç¯€é»(å­—è©)çš„é€£çµåº¦(degree)
 		if(sig_distance!=0)
 			cc = (linkList.size()-1) / sig_distance;
 		else
@@ -119,7 +119,7 @@ public class distance
 		distance dis = new distance();
 		System.out.println("Enter threshold:");
 		//kcore.simMin = input.nextDouble(); 
-		dis.cc_cal(no);//­pºâK-core­È
+		dis.cc_cal(no);//è¨ˆç®—K-coreå€¼
 		
 		try {
 			distanceGUI gui;
@@ -131,6 +131,6 @@ public class distance
 			gui.setVisible(true);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}//Ã¸¹Ï
+		}//ç¹ªåœ–
 	}
 }

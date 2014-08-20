@@ -15,15 +15,15 @@ public class TOM_ComperRelateness {
 	/**
 	 * @param args
 	 */
-	/*double DecayFactor_top = 0.55; //¿ò§Ñ¦]¤l¤W­­
-	double DecayFactor_botton = 0.02; //¿ò§Ñ¦]¤l¤U­­
-	double DecayFactor_plus = 0.079; //¿ò§Ñ¦]¤l¥[³t²v
-	double DecayFactor_minus = 0.075; //¿ò§Ñ¦]¤l´î½w²v*/
-	double relateness_threshold = 0.4; //¬°0.525¤å¦Ğ¾Çªø¹êÅçµ²ªG
+	/*double DecayFactor_top = 0.55; //éºå¿˜å› å­ä¸Šé™
+	double DecayFactor_botton = 0.02; //éºå¿˜å› å­ä¸‹é™
+	double DecayFactor_plus = 0.079; //éºå¿˜å› å­åŠ é€Ÿç‡
+	double DecayFactor_minus = 0.075; //éºå¿˜å› å­æ¸›ç·©ç‡*/
+	double relateness_threshold = 0.4; //ç‚º0.525æ–‡ç¾½å­¸é•·å¯¦é©—çµæœ
 	double TP = 0, TN = 0, FP = 0, FN = 0;
-	int ConceptDrift_times = 0; //·§©ÀÄÆ²¾¦¸¼Æ
-	//update_doc¡Bmaybe_update_term¡Bsure_update_term³Ì«á¹êÅç«áµo²{®ÄªG¤£¦n¡A¦]¦¹¬ÛÃö¨BÆJ³£³Qµù¸Ñ±¼
-	//HashMap<Integer,HashMap<String,Double>> update_doc = new HashMap<Integer,HashMap<String,Double>> (); //µ¥«İ³Q§ó·sªº¤å¥ó¯S¼x
+	int ConceptDrift_times = 0; //æ¦‚å¿µé£„ç§»æ¬¡æ•¸
+	//update_docã€maybe_update_termã€sure_update_termæœ€å¾Œå¯¦é©—å¾Œç™¼ç¾æ•ˆæœä¸å¥½ï¼Œå› æ­¤ç›¸é—œæ­¥é©Ÿéƒ½è¢«è¨»è§£æ‰
+	//HashMap<Integer,HashMap<String,Double>> update_doc = new HashMap<Integer,HashMap<String,Double>> (); //ç­‰å¾…è¢«æ›´æ–°çš„æ–‡ä»¶ç‰¹å¾µ
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -37,18 +37,18 @@ public class TOM_ComperRelateness {
 		TC.Comper_topic_profile_doc("Tom_exp/",User_profile_test,doc_test,0.2);
 	}
 	
-	//¥DÃD¬M®gµ{§Ç¡A°Ñ¼Æ¬°¹êÅç¸ê®Æ§X¦WºÙ, ¨Ï¥ÎªÌ¼Ò«¬, ¤å¥ó¼Ò«¬, ngdªùÂe­È, ¾Ş§@Ãş§O("train"©Î"test")
+	//ä¸»é¡Œæ˜ å°„ç¨‹åºï¼Œåƒæ•¸ç‚ºå¯¦é©—è³‡æ–™åŒ£åç¨±, ä½¿ç”¨è€…æ¨¡å‹, æ–‡ä»¶æ¨¡å‹, ngdé–€æª»å€¼, æ“ä½œé¡åˆ¥("train"æˆ–"test")
 	public HashMap<Integer,Integer> Comper_topic_profile_doc_only(String exp_dir, HashMap<Integer,HashMap<String,Double>> profile, HashMap<Integer,HashMap<String,Double>> doc, double doc_ngd, String operate){
-		int doc_topic_num = 0; //¬Y¤@¤å¥ó¥DÃDªº¦rµü¼Æ¶q
-		int profile_topic_num = 0; //¬Y¤@¼Ò«¬¥DÃDªº¦rµü¼Æ¶q
-		double profile_topic_tf_sum = 0; //¬Y¤@¼Ò«¬¥DÃDªºÁ`TF­È
-		double threshold = 0; //ngdªùÂe­È
-		double link_num = 0; //¬Y¤@¤å¥ó¥DÃD»P¼Ò«¬¥DÃDªº±K¤Á³s½u¼Æ¶q
-		int how_many_topic = 0; //¼Ò«¬ªº¥DÃD¼Æ
-		HashMap<Integer,Integer> topic_mapping = new HashMap<Integer,Integer>(); //¥DÃD¬M®gµ²ªG
-		//update_doc¡Bmaybe_update_term¡Bsure_update_term³Ì«á¹êÅç«áµo²{®ÄªG¤£¦n¡A¦]¦¹¬ÛÃö¨BÆJ³£³Qµù¸Ñ±¼
-		/*HashMap<String,Double> maybe_update_term = new HashMap<String,Double>(); //¤åÀË¥DÃDi¦³¥i¯à³Q«O¦s¤U¨Óªº¦rµü
-		HashMap<String,Double> sure_update_term = new HashMap<String,Double>(); //¤åÀË¥DÃDi·|³Q«O¦s¤U¨Óªº¦rµü*/
+		int doc_topic_num = 0; //æŸä¸€æ–‡ä»¶ä¸»é¡Œçš„å­—è©æ•¸é‡
+		int profile_topic_num = 0; //æŸä¸€æ¨¡å‹ä¸»é¡Œçš„å­—è©æ•¸é‡
+		double profile_topic_tf_sum = 0; //æŸä¸€æ¨¡å‹ä¸»é¡Œçš„ç¸½TFå€¼
+		double threshold = 0; //ngdé–€æª»å€¼
+		double link_num = 0; //æŸä¸€æ–‡ä»¶ä¸»é¡Œèˆ‡æ¨¡å‹ä¸»é¡Œçš„å¯†åˆ‡é€£ç·šæ•¸é‡
+		int how_many_topic = 0; //æ¨¡å‹çš„ä¸»é¡Œæ•¸
+		HashMap<Integer,Integer> topic_mapping = new HashMap<Integer,Integer>(); //ä¸»é¡Œæ˜ å°„çµæœ
+		//update_docã€maybe_update_termã€sure_update_termæœ€å¾Œå¯¦é©—å¾Œç™¼ç¾æ•ˆæœä¸å¥½ï¼Œå› æ­¤ç›¸é—œæ­¥é©Ÿéƒ½è¢«è¨»è§£æ‰
+		/*HashMap<String,Double> maybe_update_term = new HashMap<String,Double>(); //æ–‡æª¢ä¸»é¡Œiæœ‰å¯èƒ½è¢«ä¿å­˜ä¸‹ä¾†çš„å­—è©
+		HashMap<String,Double> sure_update_term = new HashMap<String,Double>(); //æ–‡æª¢ä¸»é¡Œiæœƒè¢«ä¿å­˜ä¸‹ä¾†çš„å­—è©*/
 		//update_doc.clear();
 		
 		try {
@@ -61,40 +61,40 @@ public class TOM_ComperRelateness {
 		FileWriter FWrite;
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
-			how_many_topic = Integer.valueOf(br.readLine()); //¼Ò«¬ªº¥DÃD¼Æ
+			how_many_topic = Integer.valueOf(br.readLine()); //æ¨¡å‹çš„ä¸»é¡Œæ•¸
 			br.close();
 			
-			FWrite = new FileWriter(exp_dir+"Comper_topic_profile_doc.txt",true); //true ®É,¬° Append¼Ò¦¡
+			FWrite = new FileWriter(exp_dir+"Comper_topic_profile_doc.txt",true); //true æ™‚,ç‚º Appendæ¨¡å¼
 			BufferedWriter Comper_log = new BufferedWriter(FWrite);
 			
-			/*¥H¤U¥ı¦B«Ê¦s¡A¦]¬°­pºâTFIDF¤Ó¹L³Â·Ğ¡A¹ï©ó¨t²Î¥i¥H¯à³y¦¨¬Û·í¤jªº¹Bºâ­t¾á¡A©óµû¦ô«á¦A¨M©w¬O§_¨Ï¥Î¡C(¥¼¼g§¹)
-			//¦]¬°¬M®g§Ú­Ì¤£¬Oª½±µ±Ä¨ú¾Çªøªº¦rµü­Ó¼Æªº³s½u¼Æ¡A¦Ó¬O¦U¦rµü¦b³o­ÓTFIDF¤À¼Æ¡A³o¼Ë§ó¯à§Q¥Î¥DÃD¯S¦â¦rµü¡A©Ò¥H­n¥ı§ó·s¦U¦rµüªº¤À¼Æ
-			//§ó·s¼Ò«¬®É¤]­n¶¶ÅÜ§ó·s¸Ó¦rµüªº¿ò§Ñ¦]¤l¡A¥ıÅª¨ú¿ò§Ñ¦]¤lªº¬ö¿ı¤å¥ó PS. TDF = Term Decay Factor
+			/*ä»¥ä¸‹å…ˆå†°å°å­˜ï¼Œå› ç‚ºè¨ˆç®—TFIDFå¤ªééº»ç…©ï¼Œå°æ–¼ç³»çµ±å¯ä»¥èƒ½é€ æˆç›¸ç•¶å¤§çš„é‹ç®—è² æ“”ï¼Œæ–¼è©•ä¼°å¾Œå†æ±ºå®šæ˜¯å¦ä½¿ç”¨ã€‚(æœªå¯«å®Œ)
+			//å› ç‚ºæ˜ å°„æˆ‘å€‘ä¸æ˜¯ç›´æ¥æ¡å–å­¸é•·çš„å­—è©å€‹æ•¸çš„é€£ç·šæ•¸ï¼Œè€Œæ˜¯å„å­—è©åœ¨é€™å€‹TFIDFåˆ†æ•¸ï¼Œé€™æ¨£æ›´èƒ½åˆ©ç”¨ä¸»é¡Œç‰¹è‰²å­—è©ï¼Œæ‰€ä»¥è¦å…ˆæ›´æ–°å„å­—è©çš„åˆ†æ•¸
+			//æ›´æ–°æ¨¡å‹æ™‚ä¹Ÿè¦é †è®Šæ›´æ–°è©²å­—è©çš„éºå¿˜å› å­ï¼Œå…ˆè®€å–éºå¿˜å› å­çš„ç´€éŒ„æ–‡ä»¶ PS. TDF = Term Decay Factor
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TDF.txt"));
 				String line="";
-				//¬ö¿ı¦rµüªº½s¸¹¡Aµ¥µ¥«K©ó´£¥XÅv­«»P§ó·s®É¶¡ÂI
-				HashMap<String,Integer> terms_info = new HashMap<String,Integer>(); //¦rµü
-				int update_time = Integer.valueOf(br.readLine()); //¥Ø«e¬°¤îªº§ó·s½s¸¹
-				ArrayList<Double> term_decayfactor = new ArrayList<Double>(); //¦rµü¿ò§Ñ¦]¤l°}¦C
-				ArrayList<Integer> term_update_time = new ArrayList<Integer>(); //¦rµü§ó·s®É¶¡ÂI°}¦C
-				ArrayList<Double> term_sum_score = new ArrayList<Double>(); //¦rµü¦b¼Ò«¬¤ºªºÁ`¤À(¤£¤À¥DÃD²Î­p)
-				int term_src=0; //¼È®Éªº¦rµü½s¸¹¡A«K©ó³sµ²term_decayfactor»Pterm_update_time¸Ó¦rµüªº¹ï¬M¦ì¸m
+				//ç´€éŒ„å­—è©çš„ç·¨è™Ÿï¼Œç­‰ç­‰ä¾¿æ–¼æå‡ºæ¬Šé‡èˆ‡æ›´æ–°æ™‚é–“é»
+				HashMap<String,Integer> terms_info = new HashMap<String,Integer>(); //å­—è©
+				int update_time = Integer.valueOf(br.readLine()); //ç›®å‰ç‚ºæ­¢çš„æ›´æ–°ç·¨è™Ÿ
+				ArrayList<Double> term_decayfactor = new ArrayList<Double>(); //å­—è©éºå¿˜å› å­é™£åˆ—
+				ArrayList<Integer> term_update_time = new ArrayList<Integer>(); //å­—è©æ›´æ–°æ™‚é–“é»é™£åˆ—
+				ArrayList<Double> term_sum_score = new ArrayList<Double>(); //å­—è©åœ¨æ¨¡å‹å…§çš„ç¸½åˆ†(ä¸åˆ†ä¸»é¡Œçµ±è¨ˆ)
+				int term_src=0; //æš«æ™‚çš„å­—è©ç·¨è™Ÿï¼Œä¾¿æ–¼é€£çµterm_decayfactorèˆ‡term_update_timeè©²å­—è©çš„å°æ˜ ä½ç½®
 				while((line=br.readLine())!=null){
 					terms_info.put(line.split(",")[0], term_src);
 					term_decayfactor.add(Double.valueOf(line.split(",")[1]));
 					term_update_time.add(Integer.valueOf(line.split(",")[2]));
 					term_src++;
 				}
-				//§ó·sTDF¸Ì©Ò¦³¦rµü¸ê°T»P¨Ï¥ÎªÌ¼Ò«¬¦rµü¤À¼Æ
+				//æ›´æ–°TDFè£¡æ‰€æœ‰å­—è©è³‡è¨Šèˆ‡ä½¿ç”¨è€…æ¨¡å‹å­—è©åˆ†æ•¸
 				for(String s: terms_info.keySet()){
-					double sum_decayfactor = 1; //²Ö­pªº¿ò§Ñ¦]¤l¡A«á­±Åı¤À¼Æª½±µ¦¨¤W³o­Ó¿ò§Ñ¦]¤l§Y¥i
+					double sum_decayfactor = 1; //ç´¯è¨ˆçš„éºå¿˜å› å­ï¼Œå¾Œé¢è®“åˆ†æ•¸ç›´æ¥æˆä¸Šé€™å€‹éºå¿˜å› å­å³å¯
 					for(int j=term_update_time.get(terms_info.get(s)); j < update_time; j++){
 						sum_decayfactor = sum_decayfactor*(1-term_decayfactor.get(terms_info.get(s)));
 						term_decayfactor = update_Term_Decay_Factor(terms_info,term_decayfactor,"minus",s);
 					}
 				}
-				//¹ï©Ò¦³¦rµü§ó·s¤À¼Æ¡A¶¶«K²Ö­p­Ó¦rµüªº
+				//å°æ‰€æœ‰å­—è©æ›´æ–°åˆ†æ•¸ï¼Œé †ä¾¿ç´¯è¨ˆå€‹å­—è©çš„
 			}catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -104,25 +104,25 @@ public class TOM_ComperRelateness {
 			}
 			*/
 			
-			//¤å¥óªº©Ò¦³¥DÃD»P¨Ï¥ÎªÌ¼Ò«¬ªº©Ò¦³¥DÃD¶i¦æNGD­pºâ¡A§ä¥X¤¬¬Û¹ïÀ³ªº¥DÃD
+			//æ–‡ä»¶çš„æ‰€æœ‰ä¸»é¡Œèˆ‡ä½¿ç”¨è€…æ¨¡å‹çš„æ‰€æœ‰ä¸»é¡Œé€²è¡ŒNGDè¨ˆç®—ï¼Œæ‰¾å‡ºäº’ç›¸å°æ‡‰çš„ä¸»é¡Œ
 			for(int i: doc.keySet()){
 				doc_topic_num = doc.get(i).size();
 				//maybe_update_term.clear();
 				//sure_update_term.clear();
-				//¤£½×¤å¥ó¥DÃD©Î¬O¼Ò«¬¥DÃDªº³Ì§C½s¸¹³£¬O1¡A¦]¦¹ªì©l¬M®g³]0¡A¦b³Ì«á¦^¶ÇÁÙ¬O0ªº¸Ü¥Nªí¥Ü¦¹¤å¥ó¥DÃD¬°¼Ò«¬¤º¨S¦³ªº·s¥DÃD
+				//ä¸è«–æ–‡ä»¶ä¸»é¡Œæˆ–æ˜¯æ¨¡å‹ä¸»é¡Œçš„æœ€ä½ç·¨è™Ÿéƒ½æ˜¯1ï¼Œå› æ­¤åˆå§‹æ˜ å°„è¨­0ï¼Œåœ¨æœ€å¾Œå›å‚³é‚„æ˜¯0çš„è©±ä»£è¡¨ç¤ºæ­¤æ–‡ä»¶ä¸»é¡Œç‚ºæ¨¡å‹å…§æ²’æœ‰çš„æ–°ä¸»é¡Œ
 				topic_mapping.put(i, 0);
-				//Àx¦s¤å¥ó¥DÃDi¹ï¬M¨ìªº³Ì¤j¬ÛÃö«×
+				//å„²å­˜æ–‡ä»¶ä¸»é¡Œiå°æ˜ åˆ°çš„æœ€å¤§ç›¸é—œåº¦
 				double bigest_sim = 0;
 				
 				for(int j: profile.keySet()){
 					link_num = 0;
 					profile_topic_num = profile.get(j).size();
-					Comper_log.write("¤å¥ó¥DÃD"+i+" ¦rµü¼Æ¬°"+doc_topic_num+"­Ó");
+					Comper_log.write("æ–‡ä»¶ä¸»é¡Œ"+i+" å­—è©æ•¸ç‚º"+doc_topic_num+"å€‹");
 					Comper_log.newLine();
-					Comper_log.write("¼Ò«¬¥DÃD"+j+" ¦rµü¼Æ¬°"+profile_topic_num+"­Ó");
+					Comper_log.write("æ¨¡å‹ä¸»é¡Œ"+j+" å­—è©æ•¸ç‚º"+profile_topic_num+"å€‹");
 					Comper_log.newLine();
-					//System.out.println("¤å¥ó¥DÃD"+i+" ¦rµü¼Æ¬°"+doc_topic_num+"­Ó");
-					//System.out.println("¼Ò«¬¥DÃD"+j+" ¦rµü¼Æ¬°"+profile_topic_num+"­Ó");
+					//System.out.println("æ–‡ä»¶ä¸»é¡Œ"+i+" å­—è©æ•¸ç‚º"+doc_topic_num+"å€‹");
+					//System.out.println("æ¨¡å‹ä¸»é¡Œ"+j+" å­—è©æ•¸ç‚º"+profile_topic_num+"å€‹");
 					profile_topic_tf_sum = 0;
 					for(String profile_term: profile.get(j).keySet()){
 						double term_tf = profile.get(j).get(profile_term);
@@ -133,91 +133,91 @@ public class TOM_ComperRelateness {
 						//boolean term_doc_term_inmaybe = false;
 						for(String profile_term: profile.get(j).keySet()){
 							double term_tf = profile.get(j).get(profile_term);
-							//System.out.println(doc_term+","+profile_term+" ngd­pºâ");
+							//System.out.println(doc_term+","+profile_term+" ngdè¨ˆç®—");
 							double a = ServerUtil.getHits("\""+doc_term+"\"");
 							double b = ServerUtil.getHits("\""+profile_term+"\"");
-							//System.err.println("´ú¸Õ¤å¥ó»P¨Ï¥ÎªÌ¼Ò²Õ·§©À¤ñ¹ï Query: +\""+doc_term+"\" +\""+profile_term+"\"");
+							//System.err.println("æ¸¬è©¦æ–‡ä»¶èˆ‡ä½¿ç”¨è€…æ¨¡çµ„æ¦‚å¿µæ¯”å° Query: +\""+doc_term+"\" +\""+profile_term+"\"");
 							double mValue = ServerUtil.getHits("+\""+doc_term+"\" +\""+profile_term+"\"");
 							
 							double NGD = NGD_calculate.NGD_cal(a,b,mValue);
 							if(NGD<=doc_ngd){
-								//link_num = link_num + 1; //²Ö¿n³s½u¼Æ¤èªk
-								link_num = link_num + term_tf; //TF¤èªk
+								//link_num = link_num + 1; //ç´¯ç©é€£ç·šæ•¸æ–¹æ³•
+								link_num = link_num + term_tf; //TFæ–¹æ³•
 								//term_doc_term_inmaybe = true;
 							}
 						}
 						/*if(term_doc_term_inmaybe){
-							maybe_update_term.put(doc_term,TF); //°ß¦³ºò±Kªº¦rµü¦³¥i¯à³Q«O¦s¤U¨Ó
+							maybe_update_term.put(doc_term,TF); //å”¯æœ‰ç·Šå¯†çš„å­—è©æœ‰å¯èƒ½è¢«ä¿å­˜ä¸‹ä¾†
 						}*/
 					}
 					
-					//¤èªk2(²Ö¿n³s½u¼Æ¤èªk)§P©w¥i¥H¬M®gªº³s½uªùÂe­È¬°¤ñ¹ïªº¤å¥ó¥DÃDªº¦rµü¼Æ*¤ñ¹ïªº¼Ò«¬¥DÃD¦rµü¼Æ*¬ÛÃö§P©wªùÂe­È
+					//æ–¹æ³•2(ç´¯ç©é€£ç·šæ•¸æ–¹æ³•)åˆ¤å®šå¯ä»¥æ˜ å°„çš„é€£ç·šé–€æª»å€¼ç‚ºæ¯”å°çš„æ–‡ä»¶ä¸»é¡Œçš„å­—è©æ•¸*æ¯”å°çš„æ¨¡å‹ä¸»é¡Œå­—è©æ•¸*ç›¸é—œåˆ¤å®šé–€æª»å€¼
 					//threshold = doc_topic_num*profile_topic_num*relateness_threshold;
-					//¤èªk3(²Ö¿n³s½u¼Æ¤èªk)(¬Û¦ü«×¥­¤À©ó³s½uª©¥»)§P©w¥i¥H¬M®gªº³s½uªùÂe­È¬°¤ñ¹ïªº¤å¥ó¥DÃDªº¦rµü¼Æ*¤ñ¹ïªº¼Ò«¬¥DÃD¦rµü¼Æ*¬ÛÃö§P©wªùÂe­È
+					//æ–¹æ³•3(ç´¯ç©é€£ç·šæ•¸æ–¹æ³•)(ç›¸ä¼¼åº¦å¹³åˆ†æ–¼é€£ç·šç‰ˆæœ¬)åˆ¤å®šå¯ä»¥æ˜ å°„çš„é€£ç·šé–€æª»å€¼ç‚ºæ¯”å°çš„æ–‡ä»¶ä¸»é¡Œçš„å­—è©æ•¸*æ¯”å°çš„æ¨¡å‹ä¸»é¡Œå­—è©æ•¸*ç›¸é—œåˆ¤å®šé–€æª»å€¼
 					//threshold = (doc_topic_num*profile_topic_num*relateness_threshold)/(doc_topic_num*profile_topic_num);
 					//link_num = (link_num / (doc_topic_num*profile_topic_num));
 					
-					//¤èªk4(TF¤èªk)§P©w¥i¥H¬M®gªº³s½uªùÂe­È¬°¤ñ¹ïªº¤å¥ó¥DÃDªº¦rµü¼Æ*¤ñ¹ïªº¼Ò«¬¥DÃD¦rµüTF­ÈÁ`¦X*¬ÛÃö§P©wªùÂe­È
+					//æ–¹æ³•4(TFæ–¹æ³•)åˆ¤å®šå¯ä»¥æ˜ å°„çš„é€£ç·šé–€æª»å€¼ç‚ºæ¯”å°çš„æ–‡ä»¶ä¸»é¡Œçš„å­—è©æ•¸*æ¯”å°çš„æ¨¡å‹ä¸»é¡Œå­—è©TFå€¼ç¸½åˆ*ç›¸é—œåˆ¤å®šé–€æª»å€¼
 					//threshold = doc_topic_num*profile_topic_tf_sum*relateness_threshold;
-					//¤èªk5(TF¤èªk)(¬Û¦ü«×¥­¤À©ó³s½uª©¥»)§P©w¥i¥H¬M®gªº³s½uªùÂe­È¬°¤ñ¹ïªº¤å¥ó¥DÃDªº¦rµü¼Æ*¤ñ¹ïªº¼Ò«¬¥DÃD¦rµüTF­ÈÁ`¦X*¬ÛÃö§P©wªùÂe­È
+					//æ–¹æ³•5(TFæ–¹æ³•)(ç›¸ä¼¼åº¦å¹³åˆ†æ–¼é€£ç·šç‰ˆæœ¬)åˆ¤å®šå¯ä»¥æ˜ å°„çš„é€£ç·šé–€æª»å€¼ç‚ºæ¯”å°çš„æ–‡ä»¶ä¸»é¡Œçš„å­—è©æ•¸*æ¯”å°çš„æ¨¡å‹ä¸»é¡Œå­—è©TFå€¼ç¸½åˆ*ç›¸é—œåˆ¤å®šé–€æª»å€¼
 					threshold = (doc_topic_num*profile_topic_tf_sum*relateness_threshold)/(doc_topic_num*profile_topic_num);
 					link_num = link_num / (doc_topic_num*profile_topic_num);
 					
-					//¤èªk1(¾Çªø¹êÅç³Ì¨Î­È¤èªk)§P©w¥i¥H¬M®gªº³s½uªùÂe­È¬°0.525¡A¦¹¤èªk¬O§Q¥Î (³s½uÁÈ±oÁ`­È/(¤å¥ó¥DÃDªº¦rµü¼Æ*¤ñ¹ïªº¼Ò«¬¥DÃD¦rµüTF­ÈÁ`¦X)) ªº¤ñ¨Ò¨Óºâ¡A¸g¾Çªø¹êÅç±o¨ìªºªùÂe­È
+					//æ–¹æ³•1(å­¸é•·å¯¦é©—æœ€ä½³å€¼æ–¹æ³•)åˆ¤å®šå¯ä»¥æ˜ å°„çš„é€£ç·šé–€æª»å€¼ç‚º0.525ï¼Œæ­¤æ–¹æ³•æ˜¯åˆ©ç”¨ (é€£ç·šè³ºå¾—ç¸½å€¼/(æ–‡ä»¶ä¸»é¡Œçš„å­—è©æ•¸*æ¯”å°çš„æ¨¡å‹ä¸»é¡Œå­—è©TFå€¼ç¸½åˆ)) çš„æ¯”ä¾‹ä¾†ç®—ï¼Œç¶“å­¸é•·å¯¦é©—å¾—åˆ°çš„é–€æª»å€¼
 					//threshold = relateness_threshold;
 					//link_num = (link_num / (doc_topic_num*profile_topic_num));
 					
-					//¤èªk6(²Ö¿n³s½u¼Æ¤èªk)(©µÄò¤èªk2+ÃB¥~¬ğ¥X¤ñ¨Òª©¥»)­pºâÁÈ±o³s½u¼Æ¶W¥XªùÂe­Èªº¼Æ­È¹ï©óªùÂe­Èªº¤ñ¨Ò
-					//¤èªk7(TF¤èªk)(©µÄò¤èªk3+ÃB¥~¬ğ¥X¤ñ¨Òª©¥»)­pºâÁÈ±o³s½u¼Æ¶W¥XªùÂe­Èªº¼Æ­È¹ï©óªùÂe­Èªº¤ñ¨Ò
-					//¤èªk8(TF¤èªk)(©µÄò¤èªk4+ÃB¥~¬ğ¥X¤ñ¨Òª©¥»)­pºâÁÈ±o³s½u¼Æ¶W¥XªùÂe­Èªº¼Æ­È¹ï©óªùÂe­Èªº¤ñ¨Ò
-					//¤èªk9(TF¤èªk)(©µÄò¤èªk5+ÃB¥~¬ğ¥X¤ñ¨Òª©¥»)­pºâÁÈ±o³s½u¼Æ¶W¥XªùÂe­Èªº¼Æ­È¹ï©óªùÂe­Èªº¤ñ¨Ò
-					//(¦pªG¿ï¤èªk1~5½Ğµù¸Ñ¤U­±7¦æµ{¦¡½X)--(³s½uÁÈ±oÁ`­È-ªùÂe­È)/(ªùÂe­È)¡A³Ì¤j¶W¥X¤ñ¨Òªº¤~·|¦¨¬°¬M®g¥DÃD
+					//æ–¹æ³•6(ç´¯ç©é€£ç·šæ•¸æ–¹æ³•)(å»¶çºŒæ–¹æ³•2+é¡å¤–çªå‡ºæ¯”ä¾‹ç‰ˆæœ¬)è¨ˆç®—è³ºå¾—é€£ç·šæ•¸è¶…å‡ºé–€æª»å€¼çš„æ•¸å€¼å°æ–¼é–€æª»å€¼çš„æ¯”ä¾‹
+					//æ–¹æ³•7(TFæ–¹æ³•)(å»¶çºŒæ–¹æ³•3+é¡å¤–çªå‡ºæ¯”ä¾‹ç‰ˆæœ¬)è¨ˆç®—è³ºå¾—é€£ç·šæ•¸è¶…å‡ºé–€æª»å€¼çš„æ•¸å€¼å°æ–¼é–€æª»å€¼çš„æ¯”ä¾‹
+					//æ–¹æ³•8(TFæ–¹æ³•)(å»¶çºŒæ–¹æ³•4+é¡å¤–çªå‡ºæ¯”ä¾‹ç‰ˆæœ¬)è¨ˆç®—è³ºå¾—é€£ç·šæ•¸è¶…å‡ºé–€æª»å€¼çš„æ•¸å€¼å°æ–¼é–€æª»å€¼çš„æ¯”ä¾‹
+					//æ–¹æ³•9(TFæ–¹æ³•)(å»¶çºŒæ–¹æ³•5+é¡å¤–çªå‡ºæ¯”ä¾‹ç‰ˆæœ¬)è¨ˆç®—è³ºå¾—é€£ç·šæ•¸è¶…å‡ºé–€æª»å€¼çš„æ•¸å€¼å°æ–¼é–€æª»å€¼çš„æ¯”ä¾‹
+					//(å¦‚æœé¸æ–¹æ³•1~5è«‹è¨»è§£ä¸‹é¢7è¡Œç¨‹å¼ç¢¼)--(é€£ç·šè³ºå¾—ç¸½å€¼-é–€æª»å€¼)/(é–€æª»å€¼)ï¼Œæœ€å¤§è¶…å‡ºæ¯”ä¾‹çš„æ‰æœƒæˆç‚ºæ˜ å°„ä¸»é¡Œ
 					//link_num = (link_num-threshold)/threshold;
-					Comper_log.write("¤å¥ó¥DÃD"+i+"»P¼Ò«¬¥DÃD"+j+"ªº¬ÛÃöªùÂe­È¬° "+threshold);
+					Comper_log.write("æ–‡ä»¶ä¸»é¡Œ"+i+"èˆ‡æ¨¡å‹ä¸»é¡Œ"+j+"çš„ç›¸é—œé–€æª»å€¼ç‚º "+threshold);
 					Comper_log.newLine();
-					Comper_log.write("¤å¥ó¥DÃD"+i+"»P¼Ò«¬¥DÃD"+j+"¤§ºò±K³s½u¬° "+link_num);
+					Comper_log.write("æ–‡ä»¶ä¸»é¡Œ"+i+"èˆ‡æ¨¡å‹ä¸»é¡Œ"+j+"ä¹‹ç·Šå¯†é€£ç·šç‚º "+link_num);
 					Comper_log.newLine();
-					//System.out.println("¤å¥ó¥DÃD"+i+"»P¼Ò«¬¥DÃD"+j+"ªº¬ÛÃöªùÂe­È¬° "+threshold);
-					//System.out.println("¤å¥ó¥DÃD"+i+"»P¼Ò«¬¥DÃD"+j+"¤§ºò±K³s½u¬° "+link_num);
+					//System.out.println("æ–‡ä»¶ä¸»é¡Œ"+i+"èˆ‡æ¨¡å‹ä¸»é¡Œ"+j+"çš„ç›¸é—œé–€æª»å€¼ç‚º "+threshold);
+					//System.out.println("æ–‡ä»¶ä¸»é¡Œ"+i+"èˆ‡æ¨¡å‹ä¸»é¡Œ"+j+"ä¹‹ç·Šå¯†é€£ç·šç‚º "+link_num);
 					if(link_num>threshold){
 						//if(link_num>bigest_sim){
 						if(((link_num-threshold)/threshold)>bigest_sim){
-							Comper_log.write("¤å¥ó¥DÃD"+i+" ¼È©w ¬M®g©ó¼Ò«¬¥DÃD "+j);
+							Comper_log.write("æ–‡ä»¶ä¸»é¡Œ"+i+" æš«å®š æ˜ å°„æ–¼æ¨¡å‹ä¸»é¡Œ "+j);
 							Comper_log.newLine();
 							//sure_update_term.clear();
-							//sure_update_term = new HashMap(maybe_update_term); //³Ì²×·|³Q«O¯d¤U¨Óªº¦rµü·|¸òÀH¬ÛÃö©Ê³Ì¤jªº¨º­Ó¥DÃDªº¤ñ¹ï¦¨ªG
+							//sure_update_term = new HashMap(maybe_update_term); //æœ€çµ‚æœƒè¢«ä¿ç•™ä¸‹ä¾†çš„å­—è©æœƒè·Ÿéš¨ç›¸é—œæ€§æœ€å¤§çš„é‚£å€‹ä¸»é¡Œçš„æ¯”å°æˆæœ
 							topic_mapping.put(i, j);
 							//bigest_sim = link_num;
 							bigest_sim = ((link_num-threshold)/threshold);
 						}
 					}
 					
-					//(¦pªG¿ï¤èªk6~9½Ğµù¸Ñ¤U­±4¦æµ{¦¡½X)¦pªG±K¤Á³s½u¼Æ¶q¤j©óªùÂe­È´N¬ö¿ı¤U¨Ó³o¹ïÀ³ªº¥DÃD¡A§Ú­Ì·|¿ï³Ì°ªªº¡A°O¿ı©ñ¬O¬°mapping(¤å¥ó¥DÃD½s¸¹,¼Ò«¬¥DÃD½s¸¹)
+					//(å¦‚æœé¸æ–¹æ³•6~9è«‹è¨»è§£ä¸‹é¢4è¡Œç¨‹å¼ç¢¼)å¦‚æœå¯†åˆ‡é€£ç·šæ•¸é‡å¤§æ–¼é–€æª»å€¼å°±ç´€éŒ„ä¸‹ä¾†é€™å°æ‡‰çš„ä¸»é¡Œï¼Œæˆ‘å€‘æœƒé¸æœ€é«˜çš„ï¼Œè¨˜éŒ„æ”¾æ˜¯ç‚ºmapping(æ–‡ä»¶ä¸»é¡Œç·¨è™Ÿ,æ¨¡å‹ä¸»é¡Œç·¨è™Ÿ)
 					/*if(link_num>threshold && link_num>bigest_sim){
 						topic_mapping.put(i, j);
 						bigest_sim = link_num;
 					}*/
 				}
-				if(topic_mapping.get(i)==0){ //¦pªG¬O0¥Nªí¥Ü·s¥DÃD¡A§Ú­Ì­n§â·s¥DÃD¥[¶i¥h
-					System.out.println("µo²{·s¥DÃD");
+				if(topic_mapping.get(i)==0){ //å¦‚æœæ˜¯0ä»£è¡¨ç¤ºæ–°ä¸»é¡Œï¼Œæˆ‘å€‘è¦æŠŠæ–°ä¸»é¡ŒåŠ é€²å»
+					System.out.println("ç™¼ç¾æ–°ä¸»é¡Œ");
 					if(operate=="test"){
-						Comper_log.write("µo²{·s¥DÃD¡A´ú¸Õ¤¤Â_");
+						Comper_log.write("ç™¼ç¾æ–°ä¸»é¡Œï¼Œæ¸¬è©¦ä¸­æ–·");
 						Comper_log.newLine();
 						/*topic_mapping.put(i, how_many_topic+1);
 						how_many_topic++;*/
-						break; //¦]¬°¹ï©ó´ú¸Õ¤å¥ó¦Ó¨¥¦pªG¦³·s¥DÃD´N¬O¥Nªí«D¨Ï¥ÎªÌ¬ÛÃö¤å³¹¡A¦]¦¹¤£¥²¦A­pºâ
+						break; //å› ç‚ºå°æ–¼æ¸¬è©¦æ–‡ä»¶è€Œè¨€å¦‚æœæœ‰æ–°ä¸»é¡Œå°±æ˜¯ä»£è¡¨éä½¿ç”¨è€…ç›¸é—œæ–‡ç« ï¼Œå› æ­¤ä¸å¿…å†è¨ˆç®—
 					}else if(operate=="train"){
-						Comper_log.write("µo²{·s¥DÃD");
+						Comper_log.write("ç™¼ç¾æ–°ä¸»é¡Œ");
 						Comper_log.newLine();
 						topic_mapping.put(i, how_many_topic+1);
-						//update_doc.put(i, new HashMap(doc.get(i))); //·s¥DÃD±N«O¯d¤U©Ò¦³¦rµü
+						//update_doc.put(i, new HashMap(doc.get(i))); //æ–°ä¸»é¡Œå°‡ä¿ç•™ä¸‹æ‰€æœ‰å­—è©
 						how_many_topic++;
 					}
 				}else{
-					Comper_log.write("ÂÂ¥DÃD");
+					Comper_log.write("èˆŠä¸»é¡Œ");
 					Comper_log.newLine();
-					System.out.println("ÂÂ¥DÃD");
-					//update_doc.put(i, new HashMap(sure_update_term)); //ÂÂ¥DÃD±N«O¯d¤U»P¬M³]¥DÃDºò±Kªº¦rµü
+					System.out.println("èˆŠä¸»é¡Œ");
+					//update_doc.put(i, new HashMap(sure_update_term)); //èˆŠä¸»é¡Œå°‡ä¿ç•™ä¸‹èˆ‡æ˜ è¨­ä¸»é¡Œç·Šå¯†çš„å­—è©
 				}
 			}
 			Comper_log.close();
@@ -243,7 +243,7 @@ public class TOM_ComperRelateness {
 			e.printStackTrace();
 		}*/
 		
-		HashMap<Integer,Integer> topic_mapping = new HashMap<Integer,Integer>(); //¥DÃD¬M®gµ²ªG
+		HashMap<Integer,Integer> topic_mapping = new HashMap<Integer,Integer>(); //ä¸»é¡Œæ˜ å°„çµæœ
 		topic_mapping = Comper_topic_profile_doc_only(exp_dir,profile,doc,doc_ngd, "train");
 		update_topic_relation(exp_dir,topic_mapping);
 		return topic_mapping;
@@ -251,15 +251,15 @@ public class TOM_ComperRelateness {
 	
 	public void update_topic_relation(String exp_dir,HashMap<Integer,Integer> topic_mapping){
 		
-		//¥Ø«eµ¥¦h¦Ò¼{¨ì¤@­Ó¤å¥ó¦³¨â­Ó¥DÃD¡A¦]¦¹¥i¯à¤å¥ó¥]§t¤F³æ­Ó¥DÃD©Î¨âªº¥DÃD¹ï¬M¨ì¦P¤@­Ó©Î¤£¦Pªº¼Ò«¬¥DÃD
+		//ç›®å‰ç­‰å¤šè€ƒæ…®åˆ°ä¸€å€‹æ–‡ä»¶æœ‰å…©å€‹ä¸»é¡Œï¼Œå› æ­¤å¯èƒ½æ–‡ä»¶åŒ…å«äº†å–®å€‹ä¸»é¡Œæˆ–å…©çš„ä¸»é¡Œå°æ˜ åˆ°åŒä¸€å€‹æˆ–ä¸åŒçš„æ¨¡å‹ä¸»é¡Œ
 		try {
-			//Åª¨ú¥DÃDÃö«Y¤å¥ó PS. TR = Topic Relation
+			//è®€å–ä¸»é¡Œé—œä¿‚æ–‡ä»¶ PS. TR = Topic Relation
 			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
 			String line;
-			int how_many_topic = Integer.valueOf(br.readLine()); //±oª¾¥Ø«e¥DÃD¼Æ
+			int how_many_topic = Integer.valueOf(br.readLine()); //å¾—çŸ¥ç›®å‰ä¸»é¡Œæ•¸
 			String topics;
 			double topic_relation;
-			HashMap<String,Double> TR = new HashMap<String,Double>(); //Åª¨ú¥X¨Óªº¥DÃDÃö«Y
+			HashMap<String,Double> TR = new HashMap<String,Double>(); //è®€å–å‡ºä¾†çš„ä¸»é¡Œé—œä¿‚
 			while((line=br.readLine())!=null){
 				topics = line.split(",")[0];
 				topic_relation = Double.valueOf(line.split(",")[1]);
@@ -268,12 +268,12 @@ public class TOM_ComperRelateness {
 			//System.out.println("-->>"+topic_mapping.get(0));
 			String this_update;
 			if(topic_mapping.size()==1){
-				//¤å¥ó¥u¥]§t¤@­Ó¥DÃD
+				//æ–‡ä»¶åªåŒ…å«ä¸€å€‹ä¸»é¡Œ
 				if(topic_mapping.get(1)>how_many_topic){
 					how_many_topic = topic_mapping.get(1);
 				}
 				this_update = topic_mapping.get(1)+"-"+topic_mapping.get(1);
-				//§ó·s­P­ì¦³¥DÃDÃö²Ó¸ê®Æ¤¤
+				//æ›´æ–°è‡´åŸæœ‰ä¸»é¡Œé—œç´°è³‡æ–™ä¸­
 				if(TR.get(this_update)==null){
 					ConceptDrift_times++;
 					TR.put(this_update, 1.0);
@@ -281,12 +281,12 @@ public class TOM_ComperRelateness {
 					TR.put(this_update, TR.get(this_update)+1);
 				}
 			}else{
-				//¤å¥ó¥]§t¦h­Ó¥DÃD¡AÅı¼Æ¦r¤pªº±Æ«e­±
-				int doc_topic_num = topic_mapping.size(); //±oª¾¤å¥ó¤º¥DÃD¼Æ¶q
-				//¨â¨â°t¹ïªº¸Ü°õ¦æ¦¸¼Æ¬° (¥DÃD¼Æ¶q*(¥DÃD¼Æ¶q-1))/2
-				//¤£½×¤å¥ó¥DÃD©Î¬O¼Ò«¬¥DÃDªº³Ì§C½s¸¹³£¬O1¡A©Ò¥Hj±q1¶}©l¤@ª½¨ì³Ì«á¤@­Óªº«e¤@­Ó(¦]¬°­n»PzÅÜ¼Æ¨â¨â°t¹ï)
+				//æ–‡ä»¶åŒ…å«å¤šå€‹ä¸»é¡Œï¼Œè®“æ•¸å­—å°çš„æ’å‰é¢
+				int doc_topic_num = topic_mapping.size(); //å¾—çŸ¥æ–‡ä»¶å…§ä¸»é¡Œæ•¸é‡
+				//å…©å…©é…å°çš„è©±åŸ·è¡Œæ¬¡æ•¸ç‚º (ä¸»é¡Œæ•¸é‡*(ä¸»é¡Œæ•¸é‡-1))/2
+				//ä¸è«–æ–‡ä»¶ä¸»é¡Œæˆ–æ˜¯æ¨¡å‹ä¸»é¡Œçš„æœ€ä½ç·¨è™Ÿéƒ½æ˜¯1ï¼Œæ‰€ä»¥jå¾1é–‹å§‹ä¸€ç›´åˆ°æœ€å¾Œä¸€å€‹çš„å‰ä¸€å€‹(å› ç‚ºè¦èˆ‡zè®Šæ•¸å…©å…©é…å°)
 				for(int j=1;j<doc_topic_num;j++){
-					//zÅÜ¼Æ¬°jªº¤U¤@­Ó¶}©l¤@ª½¨ì³Ì«á¤@­Ó
+					//zè®Šæ•¸ç‚ºjçš„ä¸‹ä¸€å€‹é–‹å§‹ä¸€ç›´åˆ°æœ€å¾Œä¸€å€‹
 					for(int z=j+1;z<=doc_topic_num;z++){
 						if(topic_mapping.get(j)<topic_mapping.get(z)){
 							if(topic_mapping.get(z)>how_many_topic){
@@ -299,7 +299,7 @@ public class TOM_ComperRelateness {
 							}
 							this_update = topic_mapping.get(z)+"-"+topic_mapping.get(j);
 						}
-						//§ó·s¦Ü­ì¦³¥DÃDÃö²Ó¸ê®Æ¤¤
+						//æ›´æ–°è‡³åŸæœ‰ä¸»é¡Œé—œç´°è³‡æ–™ä¸­
 						if(TR.get(this_update)==null){
 							ConceptDrift_times++;
 							TR.put(this_update, 1.0);
@@ -310,13 +310,13 @@ public class TOM_ComperRelateness {
 				}
 			}
 			
-			//¿é¥X·sªº¥DÃDÃö«Y¤å¥ó
+			//è¼¸å‡ºæ–°çš„ä¸»é¡Œé—œä¿‚æ–‡ä»¶
 			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TR.txt"));
-			bw.write(""+Integer.valueOf(how_many_topic)); //¥Ø«e¥DÃD¼Æ
+			bw.write(""+Integer.valueOf(how_many_topic)); //ç›®å‰ä¸»é¡Œæ•¸
 			bw.newLine();
 			bw.flush();
 			for(String s: TR.keySet()){
-				//¦s©ñ®æ¦¡¬° ¥DÃD1-¥DÃD2,Ãö«Yµ{«×,¦¹¦¸§ó·s½s¸¹
+				//å­˜æ”¾æ ¼å¼ç‚º ä¸»é¡Œ1-ä¸»é¡Œ2,é—œä¿‚ç¨‹åº¦,æ­¤æ¬¡æ›´æ–°ç·¨è™Ÿ
 				bw.write(s+","+TR.get(s));
 				bw.newLine();
 				bw.flush();
@@ -331,28 +331,28 @@ public class TOM_ComperRelateness {
 		}
 	}
 	
-	//±µ¦¬ªº°Ñ¼Æ¬° String¹êÅç¸ê®Æ§X, hashmap¤å¥ó»P¼Ò«¬¥DÃDªº¬M®g, String¤å¥óªº¼ĞÅÒ¥DÃD, ArrayList<String>¨t²Î¥Ø«e«O¦³ªº¼ĞÅÒ¥DÃD
+	//æ¥æ”¶çš„åƒæ•¸ç‚º Stringå¯¦é©—è³‡æ–™åŒ£, hashmapæ–‡ä»¶èˆ‡æ¨¡å‹ä¸»é¡Œçš„æ˜ å°„, Stringæ–‡ä»¶çš„æ¨™ç±¤ä¸»é¡Œ, ArrayList<String>ç³»çµ±ç›®å‰ä¿æœ‰çš„æ¨™ç±¤ä¸»é¡Œ
 	public String Comper_relateness_profile_doc(String exp_dir,HashMap<Integer,Integer> topic_mapping, String doc_label, ArrayList<String> profile_label){
-		String label_result; //Àx¦s¼ĞÅÒµª®×
-		String label_system="0"; //Àx¦s¨t²Î§PÂ_µ²ªG
-		String doc_system_label=""; //¨t²ÎÀ°¤å¥óÂà´«ªº¼ĞÅÒ
+		String label_result; //å„²å­˜æ¨™ç±¤ç­”æ¡ˆ
+		String label_system="0"; //å„²å­˜ç³»çµ±åˆ¤æ–·çµæœ
+		String doc_system_label=""; //ç³»çµ±å¹«æ–‡ä»¶è½‰æ›çš„æ¨™ç±¤
 		
 		if(profile_label.contains(doc_label)){
-			label_result="T"; //¤å¥ó¼ĞÅÒªº¥DÃD¦s¦b©ó¨t²Î¤¤
+			label_result="T"; //æ–‡ä»¶æ¨™ç±¤çš„ä¸»é¡Œå­˜åœ¨æ–¼ç³»çµ±ä¸­
 		}else{
-			label_result="F"; //¤å¥ó¼ĞÅÒªº¥DÃD¤£¦s¦b©ó¨t²Î¤¤
+			label_result="F"; //æ–‡ä»¶æ¨™ç±¤çš„ä¸»é¡Œä¸å­˜åœ¨æ–¼ç³»çµ±ä¸­
 		}
-		System.out.println("¼ĞÃ±»{¬°¬O"+label_result);
+		System.out.println("æ¨™ç°½èªç‚ºæ˜¯"+label_result);
 		
-		//Åª¨ú¥DÃDÃö«Y¤å¥ó PS. TR = Topic Relation
+		//è®€å–ä¸»é¡Œé—œä¿‚æ–‡ä»¶ PS. TR = Topic Relation
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
 			String line;
-			HashMap<String,Double> TR = new HashMap<String,Double>(); //Åª¨ú¥X¨Óªº¥DÃDÃö«Y
+			HashMap<String,Double> TR = new HashMap<String,Double>(); //è®€å–å‡ºä¾†çš„ä¸»é¡Œé—œä¿‚
 			String topics;
 			double topic_relation;
-			line=br.readLine(); //ÀY¤@­Ó¥DÃDÁ`¼Æ¸ê°T¦b¦¹±N¤£·|³Q¥Î¨ì¡A©Ò¥H¥ıÅª±¼
+			line=br.readLine(); //é ­ä¸€å€‹ä¸»é¡Œç¸½æ•¸è³‡è¨Šåœ¨æ­¤å°‡ä¸æœƒè¢«ç”¨åˆ°ï¼Œæ‰€ä»¥å…ˆè®€æ‰
 			while((line=br.readLine())!=null){
 				topics = line.split(",")[0];
 				topic_relation = Double.valueOf(line.split(",")[1]);
@@ -360,31 +360,31 @@ public class TOM_ComperRelateness {
 			}
 			br.close();
 			
-			/*//¾ÇªøªºÂ²³æ§P©w¤èªk(¾Çªø»P¥»¬ã¨s§P©w¤èªk½Ğ¿ï¾Ü¤@¤èª`¸Ñ)
-			int doc_topic_num = topic_mapping.size(); //±oª¾¤å¥ó¤º¥DÃD¼Æ¶q
+			/*//å­¸é•·çš„ç°¡å–®åˆ¤å®šæ–¹æ³•(å­¸é•·èˆ‡æœ¬ç ”ç©¶åˆ¤å®šæ–¹æ³•è«‹é¸æ“‡ä¸€æ–¹æ³¨è§£)
+			int doc_topic_num = topic_mapping.size(); //å¾—çŸ¥æ–‡ä»¶å…§ä¸»é¡Œæ•¸é‡
 			label_system="F";
-			System.out.println("¤å¥ó¥DÃD¼Æ¶qtopic_mapping.size()="+doc_topic_num);
+			System.out.println("æ–‡ä»¶ä¸»é¡Œæ•¸é‡topic_mapping.size()="+doc_topic_num);
 			for(int i=1;i<=doc_topic_num;i++){
 				if(topic_mapping.get(i)!=0){
 					label_system="T";
 				}
 			}*/
 			
-			//¥»¬ã¨s§P©w¤èªk(¾Çªø»P¥»¬ã¨s§P©w¤èªk½Ğ¿ï¾Ü¤@¤èª`¸Ñ)
-			//¦pªG¥DÃD¬M®gµo²{´ú¸Õ¤å¥ó¤¤¥]§t¦³·s¥DÃD¡A´N¤£¥i¯à¬O¬ÛÃö¤å¥ó¡A¦p¤£¥]·s¥DÃD¦b§PÂ_Ãö«Y¬O§_¦s¦b©ó¼Ò«¬¤¤
-			int doc_topic_num = topic_mapping.size(); //±oª¾¤å¥ó¤º¥DÃD¼Æ¶q
-			System.out.println("¤å¥ó¥DÃD¼Æ¶qtopic_mapping.size()="+doc_topic_num);
+			//æœ¬ç ”ç©¶åˆ¤å®šæ–¹æ³•(å­¸é•·èˆ‡æœ¬ç ”ç©¶åˆ¤å®šæ–¹æ³•è«‹é¸æ“‡ä¸€æ–¹æ³¨è§£)
+			//å¦‚æœä¸»é¡Œæ˜ å°„ç™¼ç¾æ¸¬è©¦æ–‡ä»¶ä¸­åŒ…å«æœ‰æ–°ä¸»é¡Œï¼Œå°±ä¸å¯èƒ½æ˜¯ç›¸é—œæ–‡ä»¶ï¼Œå¦‚ä¸åŒ…æ–°ä¸»é¡Œåœ¨åˆ¤æ–·é—œä¿‚æ˜¯å¦å­˜åœ¨æ–¼æ¨¡å‹ä¸­
+			int doc_topic_num = topic_mapping.size(); //å¾—çŸ¥æ–‡ä»¶å…§ä¸»é¡Œæ•¸é‡
+			System.out.println("æ–‡ä»¶ä¸»é¡Œæ•¸é‡topic_mapping.size()="+doc_topic_num);
 			if(doc_topic_num==1){
 				if(topic_mapping.get(1)==0){
-					System.out.println("¤å¥ó§t¦³·s¥DÃD");
+					System.out.println("æ–‡ä»¶å«æœ‰æ–°ä¸»é¡Œ");
 					label_system="F";
 				}else{
-					//¤å¥ó¥u¥]§t¤@­Ó¥DÃD
+					//æ–‡ä»¶åªåŒ…å«ä¸€å€‹ä¸»é¡Œ
 					doc_system_label = topic_mapping.get(1)+"-"+topic_mapping.get(1);
 					if(TR.get(doc_system_label)!=null){
 						label_system="T";
 					}else{
-						System.out.println("¼Ò«¬¤¤µL"+doc_system_label+"¥DÃDÃö«Y");
+						System.out.println("æ¨¡å‹ä¸­ç„¡"+doc_system_label+"ä¸»é¡Œé—œä¿‚");
 						label_system="F";
 					}
 				}
@@ -395,10 +395,10 @@ public class TOM_ComperRelateness {
 					}
 				}
 				if(!label_system.equals("F")){
-					//¨â¨â°t¹ïªº¸Ü°õ¦æ¦¸¼Æ¬° (¥DÃD¼Æ¶q*(¥DÃD¼Æ¶q-1))/2¡A¤å¥ó¥]§t¦h­Ó¥DÃD¡AÅı¼Æ¦r¤pªº±Æ«e­±
-					//¤£½×¤å¥ó¥DÃD©Î¬O¼Ò«¬¥DÃDªº³Ì§C½s¸¹³£¬O1¡A©Ò¥Hj±q1¶}©l¤@ª½¨ì³Ì«á¤@­Óªº«e¤@­Ó(¦]¬°­n»PzÅÜ¼Æ¨â¨â°t¹ï)
+					//å…©å…©é…å°çš„è©±åŸ·è¡Œæ¬¡æ•¸ç‚º (ä¸»é¡Œæ•¸é‡*(ä¸»é¡Œæ•¸é‡-1))/2ï¼Œæ–‡ä»¶åŒ…å«å¤šå€‹ä¸»é¡Œï¼Œè®“æ•¸å­—å°çš„æ’å‰é¢
+					//ä¸è«–æ–‡ä»¶ä¸»é¡Œæˆ–æ˜¯æ¨¡å‹ä¸»é¡Œçš„æœ€ä½ç·¨è™Ÿéƒ½æ˜¯1ï¼Œæ‰€ä»¥jå¾1é–‹å§‹ä¸€ç›´åˆ°æœ€å¾Œä¸€å€‹çš„å‰ä¸€å€‹(å› ç‚ºè¦èˆ‡zè®Šæ•¸å…©å…©é…å°)
 					for(int j=1;j<doc_topic_num;j++){
-						//zÅÜ¼Æ¬°jªº¤U¤@­Ó¶}©l¤@ª½¨ì³Ì«á¤@­Ó
+						//zè®Šæ•¸ç‚ºjçš„ä¸‹ä¸€å€‹é–‹å§‹ä¸€ç›´åˆ°æœ€å¾Œä¸€å€‹
 						for(int z=j+1;z<=doc_topic_num;z++){
 							if(topic_mapping.get(j)<topic_mapping.get(z)){
 								doc_system_label = topic_mapping.get(j)+"-"+topic_mapping.get(z);
@@ -406,13 +406,13 @@ public class TOM_ComperRelateness {
 								doc_system_label = topic_mapping.get(z)+"-"+topic_mapping.get(j);
 							}
 							if(TR.get(doc_system_label)==null){
-								System.out.println("¼Ò«¬¤¤µL"+doc_system_label+"¥DÃDÃö«Y");
+								System.out.println("æ¨¡å‹ä¸­ç„¡"+doc_system_label+"ä¸»é¡Œé—œä¿‚");
 								label_system="F";
-								break; //¦pµo²{¦³¥ô¦ó¤@­ÓÃö«Y¤£¦s¦b©ó¼Ò«¬¤¤´N¥Nªí¤£¬ÛÃö¡A°±¤îÄ~Äò§PÂ_
+								break; //å¦‚ç™¼ç¾æœ‰ä»»ä½•ä¸€å€‹é—œä¿‚ä¸å­˜åœ¨æ–¼æ¨¡å‹ä¸­å°±ä»£è¡¨ä¸ç›¸é—œï¼Œåœæ­¢ç¹¼çºŒåˆ¤æ–·
 							}
 						}
 						if(label_system.equals("F")){
-							break; //¦pµo²{¦³¥ô¦ó¤@­ÓÃö«Y¤£¦s¦b©ó¼Ò«¬¤¤´N¥Nªí¤£¬ÛÃö¡A°±¤îÄ~Äò§PÂ_
+							break; //å¦‚ç™¼ç¾æœ‰ä»»ä½•ä¸€å€‹é—œä¿‚ä¸å­˜åœ¨æ–¼æ¨¡å‹ä¸­å°±ä»£è¡¨ä¸ç›¸é—œï¼Œåœæ­¢ç¹¼çºŒåˆ¤æ–·
 						}
 					}
 				}
@@ -420,20 +420,20 @@ public class TOM_ComperRelateness {
 					label_system="T";
 				}
 			}
-			System.out.println("¨t²Î»{¬°¬O"+label_system);
+			System.out.println("ç³»çµ±èªç‚ºæ˜¯"+label_system);
 			
-			//³Ì²×¤å¥ó¬ÛÃö§P©w
+			//æœ€çµ‚æ–‡ä»¶ç›¸é—œåˆ¤å®š
 			if(label_result=="T"){
 				if(label_system=="T"){
-					return "TP"; //¼ĞÅÒµ²ªG»P¨t²Î§P©wµ²ªG³£¬OT
+					return "TP"; //æ¨™ç±¤çµæœèˆ‡ç³»çµ±åˆ¤å®šçµæœéƒ½æ˜¯T
 				}else{
-					return "FN"; //¨t²Î±NT§PÂ_¦¨F
+					return "FN"; //ç³»çµ±å°‡Tåˆ¤æ–·æˆF
 				}
 			}else{
 				if(label_system=="T"){
-					return "FP"; //¨t²Î±NF§PÂ_¦¨T
+					return "FP"; //ç³»çµ±å°‡Fåˆ¤æ–·æˆT
 				}else{
-					return "TN"; //¼ĞÅÒµ²ªG»P¨t²Î§P©wµ²ªG³£¬ON
+					return "TN"; //æ¨™ç±¤çµæœèˆ‡ç³»çµ±åˆ¤å®šçµæœéƒ½æ˜¯N
 				}
 			}
 		} catch (FileNotFoundException e) {
@@ -451,25 +451,25 @@ public class TOM_ComperRelateness {
 		}
 	}
 	
-	//¥NÂàµLoperate°Ñ¼Æªº©I¥s¡A³q±`¨Ï¥Î¬O¦]¬°¨Ï¥Îªº¬O·s¦rµü¡Aoperate¿é¤Jªº¬O¤°»ò¤£­«­n
+	//ä»£è½‰ç„¡operateåƒæ•¸çš„å‘¼å«ï¼Œé€šå¸¸ä½¿ç”¨æ˜¯å› ç‚ºä½¿ç”¨çš„æ˜¯æ–°å­—è©ï¼Œoperateè¼¸å…¥çš„æ˜¯ä»€éº¼ä¸é‡è¦
 	/*public ArrayList<Double> update_Term_Decay_Factor(HashMap<String,Integer> terms_info, ArrayList<Double> term_decayfactor, String update_term){
 		return update_Term_Decay_Factor(terms_info,term_decayfactor,"plus",update_term);
 	}
-	//§ó·s¿ò§Ñ¦]¤l¡A¿é¤J°Ñ¼Æ¬°¿ò§Ñ¦rµü»P½s¸¹¹ï¬M¸ê°T, ¥Ø«e¿ò§Ñ¦]¤l, ±ı¥[³t©Î´î³t, ¥Ø¼Ğ¦rµü½s¸¹, ·Ç³Æ§ó·sªº¦rµü½s¸¹
+	//æ›´æ–°éºå¿˜å› å­ï¼Œè¼¸å…¥åƒæ•¸ç‚ºéºå¿˜å­—è©èˆ‡ç·¨è™Ÿå°æ˜ è³‡è¨Š, ç›®å‰éºå¿˜å› å­, æ¬²åŠ é€Ÿæˆ–æ¸›é€Ÿ, ç›®æ¨™å­—è©ç·¨è™Ÿ, æº–å‚™æ›´æ–°çš„å­—è©ç·¨è™Ÿ
 	public ArrayList<Double> update_Term_Decay_Factor(HashMap<String,Integer> terms_info, ArrayList<Double> term_decayfactor, String operate, String update_term){
-		if(terms_info.get(update_term)!=null){ //¼Ò«¬ÂÂ¦³¦rµü
-			int this_time_term_src = terms_info.get(update_term); //³o¬O§ó·sªº¦rµü½s¸¹
-			System.out.println(update_term+"¬°¼Ò«¬ÂÂ¦³¦rµü¡A¥Ø«e¿ò§Ñ¦]¤l¬°"+term_decayfactor.get(this_time_term_src));
+		if(terms_info.get(update_term)!=null){ //æ¨¡å‹èˆŠæœ‰å­—è©
+			int this_time_term_src = terms_info.get(update_term); //é€™æ˜¯æ›´æ–°çš„å­—è©ç·¨è™Ÿ
+			System.out.println(update_term+"ç‚ºæ¨¡å‹èˆŠæœ‰å­—è©ï¼Œç›®å‰éºå¿˜å› å­ç‚º"+term_decayfactor.get(this_time_term_src));
 			if(operate=="minus"){
-				//´î¤Ö¿ò§Ñ¦]¤l
-				//¦pªG´î¤Ö¿ò§Ñ¦]¤l·|§C©ó¤U­­´N³]¬°¤U­­¡A§_«h´Nª½±µ»¼´î
+				//æ¸›å°‘éºå¿˜å› å­
+				//å¦‚æœæ¸›å°‘éºå¿˜å› å­æœƒä½æ–¼ä¸‹é™å°±è¨­ç‚ºä¸‹é™ï¼Œå¦å‰‡å°±ç›´æ¥éæ¸›
 				if((term_decayfactor.get(this_time_term_src)-DecayFactor_minus)<DecayFactor_botton){
 					term_decayfactor.set(this_time_term_src, DecayFactor_botton);
 				}else{
 					term_decayfactor.set(this_time_term_src, term_decayfactor.get(this_time_term_src)-DecayFactor_minus);
 				}
 			}else if(operate=="plus"){
-				//¦]¬°¥»¦¸¦¹¦rµü¤S¼W¥[¤F¤À¼Æ©Ò¥H¿ò§Ñ¦]¤l¸òµÛ´£°ª¡A¦pªG´£°ª«á¦]¤l·|°ª©ó¤W­­´N³]¬°¤W­­¡A§_«h´Nª½±µ¼W¥[
+				//å› ç‚ºæœ¬æ¬¡æ­¤å­—è©åˆå¢åŠ äº†åˆ†æ•¸æ‰€ä»¥éºå¿˜å› å­è·Ÿè‘—æé«˜ï¼Œå¦‚æœæé«˜å¾Œå› å­æœƒé«˜æ–¼ä¸Šé™å°±è¨­ç‚ºä¸Šé™ï¼Œå¦å‰‡å°±ç›´æ¥å¢åŠ 
 				if((term_decayfactor.get(this_time_term_src)+DecayFactor_plus)>DecayFactor_top){
 					term_decayfactor.set(this_time_term_src, DecayFactor_top);
 				}else{
@@ -477,7 +477,7 @@ public class TOM_ComperRelateness {
 				}
 			}
 		}else{
-			//System.out.println(update_term+"¬°¼Ò«¬·s¦rµü");
+			//System.out.println(update_term+"ç‚ºæ¨¡å‹æ–°å­—è©");
 			term_decayfactor.add(DecayFactor_plus);
 		}
 		return term_decayfactor;
@@ -487,12 +487,12 @@ public class TOM_ComperRelateness {
 		return ConceptDrift_times;
 	}
 	
-	//®Ä¯à¿Å¶q
+	//æ•ˆèƒ½è¡¡é‡
 	public void init_EfficacyMeasure(){
 		TP=0; TN=0; FP=0; FN=0;
 	}
 	public void set_EfficacyMeasure(String result){
-		System.out.println("¦¹¤å¥ó³Q§P©w¬°"+result);
+		System.out.println("æ­¤æ–‡ä»¶è¢«åˆ¤å®šç‚º"+result);
 		if(result=="TP"){
 			TP++;
 		}

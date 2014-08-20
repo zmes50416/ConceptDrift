@@ -26,14 +26,14 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 		}
 	}
 
-	// °O¿ı¬O§_±N¸ê®Æ¦L¥X
+	// è¨˜éŒ„æ˜¯å¦å°‡è³‡æ–™å°å‡º
 	private boolean inHeader = false;
 	private static int _sn = -1;
 
 	public Google_Search1() {
 	}
 
-	// ±N Parse HTML «áªº¸ê®Æ¦L¥X
+	// å°‡ Parse HTML å¾Œçš„è³‡æ–™å°å‡º
 	public void handleText(char[] text, int position) {
 		if (inHeader) {
 
@@ -42,21 +42,21 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 			try {
 				bw = new BufferedWriter(new FileWriter("Search1/" + _sn + "_"
 						+ "google_output1.txt", true));
-				if (String.valueOf(text).contains("¬ù¦³ ")
-						|| String.valueOf(text).contains(" ¶µµ²ªG")) {
+				if (String.valueOf(text).contains("ç´„æœ‰ ")
+						|| String.valueOf(text).contains(" é …çµæœ")) {
 					System.out.println(String.valueOf(text));
 					bw.write(String.valueOf(text));
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
-					bw.close(); // Ãö³¬BufferedWriterª«¥ó
-					// «Ø¥ß¹B¥Î½w½Ä°Ï¿é¥X¸ê®Æ¦Üdata.txtÀÉªºBufferedWriterª«¥ó
-					// ¡A¨Ã¥Ñbwª«¥ó°Ñ¦Ò¤Ş¥Î
-					// ±N¦r¦ê¼g¤JÀÉ®×
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
+					bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
+					// å»ºç«‹é‹ç”¨ç·©è¡å€è¼¸å‡ºè³‡æ–™è‡³data.txtæª”çš„BufferedWriterç‰©ä»¶
+					// ï¼Œä¸¦ç”±bwç‰©ä»¶åƒè€ƒå¼•ç”¨
+					// å°‡å­—ä¸²å¯«å…¥æª”æ¡ˆ
 
-				} else if (String.valueOf(text).contains("§ä¤£¨ì©M±zªº¬d¸ß")) {
+				} else if (String.valueOf(text).contains("æ‰¾ä¸åˆ°å’Œæ‚¨çš„æŸ¥è©¢")) {
 
-					bw.write("¬ù¦³ 0 ¶µµ²ªG\n");
-					bw.close(); // Ãö³¬BufferedWriterª«¥ó
+					bw.write("ç´„æœ‰ 0 é …çµæœ\n");
+					bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 					// l++;
 				}
 			} catch (IOException e) {
@@ -69,14 +69,14 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 	public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
 			int position) {
 
-		// ¤ÀªR Tag ªº­«ÂI¦b³o¦æ
+		// åˆ†æ Tag çš„é‡é»åœ¨é€™è¡Œ
 		if (tag == HTML.Tag.DIV) {
 			Enumeration e = attributes.getAttributeNames();
 			while (e.hasMoreElements()) {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID && value.equals("resultStats")) {
 					this.inHeader = true;
 				}
@@ -87,7 +87,7 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID) {
 					this.inHeader = true;
 				}
@@ -120,12 +120,12 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 		ParserGetter kit = new ParserGetter();
 		HTMLEditorKit.Parser parser = kit.getParser();
 		HTMLEditorKit.ParserCallback callback = new Google_Search1();
-		long runstartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long runstartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		System.out.println("process: " + i1);
-		// ¿é¤J±ı¤ÀªRªººô­¶
+		// è¼¸å…¥æ¬²åˆ†æçš„ç¶²é 
 //		String j = "http://www.google.com.tw/search?aq=f&sourceid=chrome&ie=Big5&q=";
 		String j = "http://www.google.com.tw/search?aq=f&sourceid=chrome&ie=UTF-8&q=";
-		String http = j + i1; //i1¬°±ı¬d¸ßªº¦r
+		String http = j + i1; //i1ç‚ºæ¬²æŸ¥è©¢çš„å­—
 		URL u;
 		try {
 			u = new URL(http);
@@ -140,7 +140,7 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 					.getInputStream());
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
 			parser.parse(r, callback, true);
-			Thread.sleep(0);// ¹j1¬í·j´M¤@¦¸
+			Thread.sleep(0);// éš”1ç§’æœå°‹ä¸€æ¬¡
 			System.out.println("finish: " + i1);
 			System.out.println(System.currentTimeMillis() - runstartTime);
 		} catch (MalformedURLException e) {
@@ -151,10 +151,10 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.out.println("IP³QÂê¡A­«·s¨ú±oIP");
+			System.out.println("IPè¢«é–ï¼Œé‡æ–°å–å¾—IP");
 			
-				IP_Operation.IP_change();//´«IP
-				System.out.println("­«·s¨ú±o¦rµü("+i1+")·j´Mµ²ªG");
+				IP_Operation.IP_change();//æ›IP
+				System.out.println("é‡æ–°å–å¾—å­—è©("+i1+")æœå°‹çµæœ");
 			search_term(i1);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -172,7 +172,7 @@ public class Google_Search1 extends HTMLEditorKit.ParserCallback {
 
 	public static void main(String args[]) throws IOException {
 
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		main(1);
 		System.out.println(System.currentTimeMillis() - StartTime);
 	}

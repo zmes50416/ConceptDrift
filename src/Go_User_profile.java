@@ -14,27 +14,27 @@ public class Go_User_profile {
 	/**
 	 * @param args
 	 */
-	/*//°ÊºA¿ò§Ñ¦]¤l¼Ò¦¡
-	double DecayFactor_top = 0.55; //¿ò§Ñ¦]¤l¤W­­
-	double DecayFactor_botton = 0.02; //¿ò§Ñ¦]¤l¤U­­
-	double DecayFactor_plus = 0.079; //¿ò§Ñ¦]¤l¥[³t­È
-	double DecayFactor_minus = 0.075; //¿ò§Ñ¦]¤l´î½w­È
-	double DecayFactor_init = DecayFactor_plus*2; //¿ò§Ñ¦]¤lªì©l­È*/
+	/*//å‹•æ…‹éºå¿˜å› å­æ¨¡å¼
+	double DecayFactor_top = 0.55; //éºå¿˜å› å­ä¸Šé™
+	double DecayFactor_botton = 0.02; //éºå¿˜å› å­ä¸‹é™
+	double DecayFactor_plus = 0.079; //éºå¿˜å› å­åŠ é€Ÿå€¼
+	double DecayFactor_minus = 0.075; //éºå¿˜å› å­æ¸›ç·©å€¼
+	double DecayFactor_init = DecayFactor_plus*2; //éºå¿˜å› å­åˆå§‹å€¼*/
 	
-	//©T©w¿ò§Ñ¦]¤l¼Ò¦¡ 0 0.285¡Atop¡Bbotton¡Binit³£­n½Õ¤@¼Ëªº¡A¨ä¥L³£0
-	double DecayFactor_top = 0.05; //¿ò§Ñ¦]¤l¤W­­
-	double DecayFactor_botton = 0.05; //¿ò§Ñ¦]¤l¤U­­
-	double DecayFactor_plus = 0; //¿ò§Ñ¦]¤l¥[³t­È
-	double DecayFactor_minus = 0; //¿ò§Ñ¦]¤l´î½w­È
-	double DecayFactor_init = 0.05; //¿ò§Ñ¦]¤lªì©l­È*/
+	//å›ºå®šéºå¿˜å› å­æ¨¡å¼ 0 0.285ï¼Œtopã€bottonã€initéƒ½è¦èª¿ä¸€æ¨£çš„ï¼Œå…¶ä»–éƒ½0
+	double DecayFactor_top = 0.05; //éºå¿˜å› å­ä¸Šé™
+	double DecayFactor_botton = 0.05; //éºå¿˜å› å­ä¸‹é™
+	double DecayFactor_plus = 0; //éºå¿˜å› å­åŠ é€Ÿå€¼
+	double DecayFactor_minus = 0; //éºå¿˜å› å­æ¸›ç·©å€¼
+	double DecayFactor_init = 0.05; //éºå¿˜å› å­åˆå§‹å€¼*/
 	
-	double sum_avg_docTF = 0; //²Ö­p¥­§¡³æ¤å¥óÁ`TF­È
-	double sum_avg_termTF = 0; //²Ö­p¥­§¡³æ¦rµüTF­È
-	double remove_rate = 0.6; //¿³½ì¥h°£¤ñ¨Ò
-	double interest_remove_rate = remove_rate; //¥DÃD¥h°£ªº²Ö­p¥­§¡³æ¤å¥óÁ`TF­È¤ñ¨Ò
-	double term_remove_rate = remove_rate; //¦rµü¥h°£ªº²Ö­p¥­§¡³æ¦rµüTF­È¤ñ¨Ò
+	double sum_avg_docTF = 0; //ç´¯è¨ˆå¹³å‡å–®æ–‡ä»¶ç¸½TFå€¼
+	double sum_avg_termTF = 0; //ç´¯è¨ˆå¹³å‡å–®å­—è©TFå€¼
+	double remove_rate = 0.6; //èˆˆè¶£å»é™¤æ¯”ä¾‹
+	double interest_remove_rate = remove_rate; //ä¸»é¡Œå»é™¤çš„ç´¯è¨ˆå¹³å‡å–®æ–‡ä»¶ç¸½TFå€¼æ¯”ä¾‹
+	double term_remove_rate = remove_rate; //å­—è©å»é™¤çš„ç´¯è¨ˆå¹³å‡å–®å­—è©TFå€¼æ¯”ä¾‹
 	static ArrayList<String> term_had_changed = new ArrayList<String>();
-	int ConceptDrift_times = 0; //·§©ÀÄÆ²¾¦¸¼Æ
+	int ConceptDrift_times = 0; //æ¦‚å¿µé£„ç§»æ¬¡æ•¸
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -48,62 +48,62 @@ public class Go_User_profile {
 		GU.add_user_profile_term("Tom_exp/",User_profile_test,doc_test,topic_test);
 	}
 	
-	//¿é¤J°Ñ¼Æ¬OString¹êÅç¸ê®Æ§X¡B­ì¨Ï¥ÎªÌ¼Ò«¬(¦rµü)¡B¤å¥ó¤º®e¸ê°T¡B¥DÃDªº¬M®g¡A¦^¶Çªº¨Æ§ó·s«áªº¨Ï¥Î³o¼Ò«¬(¦rµü)
+	//è¼¸å…¥åƒæ•¸æ˜¯Stringå¯¦é©—è³‡æ–™åŒ£ã€åŸä½¿ç”¨è€…æ¨¡å‹(å­—è©)ã€æ–‡ä»¶å…§å®¹è³‡è¨Šã€ä¸»é¡Œçš„æ˜ å°„ï¼Œå›å‚³çš„äº‹æ›´æ–°å¾Œçš„ä½¿ç”¨é€™æ¨¡å‹(å­—è©)
 	public HashMap<Integer,HashMap<String,Double>> add_user_profile_term(String exp_dir,HashMap<Integer,HashMap<String,Double>> User_profile_term, HashMap<Integer,HashMap<String,Double>> doc_term, HashMap<Integer,Integer> topic_mapping){
-		//±N­Ó¤å¥ó¥DÃDªº¦rµüTF¤À¼Æ¨Ì¾Ú±o¨ìªº¥DÃD¬M®gÃö«Y¦s¤J¨Ï¥ÎªÌ¼Ò«¬¤¤
+		//å°‡å€‹æ–‡ä»¶ä¸»é¡Œçš„å­—è©TFåˆ†æ•¸ä¾æ“šå¾—åˆ°çš„ä¸»é¡Œæ˜ å°„é—œä¿‚å­˜å…¥ä½¿ç”¨è€…æ¨¡å‹ä¸­
 		for(int i: doc_term.keySet()){
-			//¥ı¨ú¥X¨â­Ó¬Û¹ï¬Mªº¥DÃD
+			//å…ˆå–å‡ºå…©å€‹ç›¸å°æ˜ çš„ä¸»é¡Œ
 			HashMap<String, Double> doc_topic;// = new HashMap<String, Double>();
 			doc_topic = new HashMap(doc_term.get(i));
 			HashMap<String, Double> User_profile_topic;// = new HashMap<String, Double>();
 			//User_profile_topic = User_profile_term.get(topic_mapping.get(i));
 			if(User_profile_term.get(topic_mapping.get(i))==null){
 				User_profile_topic = new HashMap<String, Double>();
-				User_profile_topic.put("temp", 0.0); //·s¥DÃDªºªì©l¤Æ
+				User_profile_topic.put("temp", 0.0); //æ–°ä¸»é¡Œçš„åˆå§‹åŒ–
 				term_had_changed.add("temp");
 			}else{
 				User_profile_topic = new HashMap( User_profile_term.get(topic_mapping.get(i)));
 			}
 			
-			//±N¥DÃD¤ºªº¦rµü¤À¼Æ¦s¤J¨Ï¥ÎªÌ¼Ò«¬ (§ó·s)
+			//å°‡ä¸»é¡Œå…§çš„å­—è©åˆ†æ•¸å­˜å…¥ä½¿ç”¨è€…æ¨¡å‹ (æ›´æ–°)
 			for(String s: doc_topic.keySet()){
 				if(!term_had_changed.contains(s)){
-					//System.out.println("±N¦rµü"+s+"¦s¤J§ó°Ê¦rµü¦Cªí");
-					term_had_changed.add(s); //±N¦rµü¦s¤J¡A¥H«K¨C¤Ñ¦rµü¤À¼Æ»P¿ò§Ñ¦]¤lÁ`¾ã²z®É´£¥X
+					//System.out.println("å°‡å­—è©"+s+"å­˜å…¥æ›´å‹•å­—è©åˆ—è¡¨");
+					term_had_changed.add(s); //å°‡å­—è©å­˜å…¥ï¼Œä»¥ä¾¿æ¯å¤©å­—è©åˆ†æ•¸èˆ‡éºå¿˜å› å­ç¸½æ•´ç†æ™‚æå‡º
 				}
-				if(User_profile_topic.get(s)!=null){ //¥DÃDªºÂÂ¦rµü´N¥H²Ö¥[ªº¤è¦¡¦s¤J
-					User_profile_topic.put(s,User_profile_topic.get(s)+doc_topic.get(s)); //§ó·s¦¹¦rµü¤À¼Æ
-				}else{ //¥DÃDªº·s¦rµü´Nª½±µ¦s¤J
+				if(User_profile_topic.get(s)!=null){ //ä¸»é¡Œçš„èˆŠå­—è©å°±ä»¥ç´¯åŠ çš„æ–¹å¼å­˜å…¥
+					User_profile_topic.put(s,User_profile_topic.get(s)+doc_topic.get(s)); //æ›´æ–°æ­¤å­—è©åˆ†æ•¸
+				}else{ //ä¸»é¡Œçš„æ–°å­—è©å°±ç›´æ¥å­˜å…¥
 					User_profile_topic.put(s,doc_topic.get(s));
 				}
 			}
-			System.out.print("§ó·s¨Ï¥ÎªÌ¼Ò«¬¥DÃD "+topic_mapping.get(i)+",¦rµü¼Æ¶q¬°"+User_profile_topic.size()+"\n");
-			//±N§ó·s«áªº¼Ò«¬©ñ¦^¥h
+			System.out.print("æ›´æ–°ä½¿ç”¨è€…æ¨¡å‹ä¸»é¡Œ "+topic_mapping.get(i)+",å­—è©æ•¸é‡ç‚º"+User_profile_topic.size()+"\n");
+			//å°‡æ›´æ–°å¾Œçš„æ¨¡å‹æ”¾å›å»
 			User_profile_term.put(topic_mapping.get(i), new HashMap(User_profile_topic));
 		}
 		return User_profile_term;
 	}
 	
-	//¨C¤é»İ°õ¦æªº¨Ï¥ÎªÌ¼Ò«¬§ó·s¡A¥]§t¿ò§Ñ¦]¤lªº§@¥Î»P¥DÃD¡B¦rµüªº¥h°£
-	//°Ñ¼Æ¬°¹êÅç¸ê®Æ§X¦ì¸m¦WºÙ, ¨Ï¥ÎªÌ¼Ò«¬
+	//æ¯æ—¥éœ€åŸ·è¡Œçš„ä½¿ç”¨è€…æ¨¡å‹æ›´æ–°ï¼ŒåŒ…å«éºå¿˜å› å­çš„ä½œç”¨èˆ‡ä¸»é¡Œã€å­—è©çš„å»é™¤
+	//åƒæ•¸ç‚ºå¯¦é©—è³‡æ–™åŒ£ä½ç½®åç¨±, ä½¿ç”¨è€…æ¨¡å‹
 	public HashMap<Integer,HashMap<String,Double>> update_OneDayTerm_Decay_Factor(String exp_dir, HashMap<Integer,HashMap<String,Double>> User_profile_term){
-		//§ó·s¼Ò«¬®É¤]­n¶¶ÅÜ§ó·s¸Ó¦rµüªº¿ò§Ñ¦]¤l¡A¥ıÅª¨ú¿ò§Ñ¦]¤lªº¬ö¿ı¤å¥ó PS. TDF = Term Decay Factor
+		//æ›´æ–°æ¨¡å‹æ™‚ä¹Ÿè¦é †è®Šæ›´æ–°è©²å­—è©çš„éºå¿˜å› å­ï¼Œå…ˆè®€å–éºå¿˜å› å­çš„ç´€éŒ„æ–‡ä»¶ PS. TDF = Term Decay Factor
 		String line="";
-		//double sum_decayfactor; //¬ö¿ı¬Y¦rµüÀ³¸Ó­¼¤Wªº¿ò§Ñ¦]¤l
-		int this_term_src; //¬ö¿ı¸Ó¦¸³B²zªº¦rµü½s¸¹
-		//int this_term_update_time; //¬ö¿ı¸Ó¦¸³B²zªº¦rµüªº§ó·s®É¶¡
-		double this_term_tf = 0; //¬ö¿ı¸Ó¦¸³B²zªº¬Y¥DÃDªº¬Y¦rµüªºTF¤À¼Æ
-		double new_this_term_tf = 0; //§ó·s«áªºªº¬Y¥DÃDªº¬Y¦rµüªºTF¤À¼Æ
+		//double sum_decayfactor; //ç´€éŒ„æŸå­—è©æ‡‰è©²ä¹˜ä¸Šçš„éºå¿˜å› å­
+		int this_term_src; //ç´€éŒ„è©²æ¬¡è™•ç†çš„å­—è©ç·¨è™Ÿ
+		//int this_term_update_time; //ç´€éŒ„è©²æ¬¡è™•ç†çš„å­—è©çš„æ›´æ–°æ™‚é–“
+		double this_term_tf = 0; //ç´€éŒ„è©²æ¬¡è™•ç†çš„æŸä¸»é¡Œçš„æŸå­—è©çš„TFåˆ†æ•¸
+		double new_this_term_tf = 0; //æ›´æ–°å¾Œçš„çš„æŸä¸»é¡Œçš„æŸå­—è©çš„TFåˆ†æ•¸
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TDF.txt"));
-			//¬ö¿ı¦rµüªº½s¸¹¡Aµ¥µ¥«K©ó´£¥XÅv­«»P§ó·s®É¶¡ÂI
-			HashMap<String,Integer> terms_info = new HashMap<String,Integer>(); //¦rµü
-			int update_time = Integer.valueOf(br.readLine()); //¥Ø«e¬°¤îªº§ó·s½s¸¹
-			update_time++; //³o¦¸ªº§ó·s½s¸¹¡A´N¬O¤W¤@¦¸ªº¦A¥[1
-			ArrayList<Double> term_decayfactor = new ArrayList<Double>(); //¦rµü¿ò§Ñ¦]¤l°}¦C
-			ArrayList<Integer> term_update_time = new ArrayList<Integer>(); //¦rµü§ó·s®É¶¡ÂI°}¦C
-			ArrayList<Double> term_sum_score = new ArrayList<Double>(); //¦rµü¦b¼Ò«¬¤ºªºÁ`¤À(¤£¤À¥DÃD²Î­p)
-			int term_src=0; //¼È®Éªº¦rµü½s¸¹¡A«K©ó³sµ²term_decayfactor»Pterm_update_time¸Ó¦rµüªº¹ï¬M¦ì¸m
+			//ç´€éŒ„å­—è©çš„ç·¨è™Ÿï¼Œç­‰ç­‰ä¾¿æ–¼æå‡ºæ¬Šé‡èˆ‡æ›´æ–°æ™‚é–“é»
+			HashMap<String,Integer> terms_info = new HashMap<String,Integer>(); //å­—è©
+			int update_time = Integer.valueOf(br.readLine()); //ç›®å‰ç‚ºæ­¢çš„æ›´æ–°ç·¨è™Ÿ
+			update_time++; //é€™æ¬¡çš„æ›´æ–°ç·¨è™Ÿï¼Œå°±æ˜¯ä¸Šä¸€æ¬¡çš„å†åŠ 1
+			ArrayList<Double> term_decayfactor = new ArrayList<Double>(); //å­—è©éºå¿˜å› å­é™£åˆ—
+			ArrayList<Integer> term_update_time = new ArrayList<Integer>(); //å­—è©æ›´æ–°æ™‚é–“é»é™£åˆ—
+			ArrayList<Double> term_sum_score = new ArrayList<Double>(); //å­—è©åœ¨æ¨¡å‹å…§çš„ç¸½åˆ†(ä¸åˆ†ä¸»é¡Œçµ±è¨ˆ)
+			int term_src=0; //æš«æ™‚çš„å­—è©ç·¨è™Ÿï¼Œä¾¿æ–¼é€£çµterm_decayfactorèˆ‡term_update_timeè©²å­—è©çš„å°æ˜ ä½ç½®
 			while((line=br.readLine())!=null){
 				terms_info.put(line.split(",")[0], term_src);
 				term_decayfactor.add(Double.valueOf(line.split(",")[1]));
@@ -112,10 +112,10 @@ public class Go_User_profile {
 				term_src++;
 			}
 			
-			//¥ı±N·s¼Wªº(­ìuser_profile_TDF.txt¨S¦³ªº)¦rµü¥[¤J
+			//å…ˆå°‡æ–°å¢çš„(åŸuser_profile_TDF.txtæ²’æœ‰çš„)å­—è©åŠ å…¥
 			for(int i=0; i<term_had_changed.size(); i++){
 				if(terms_info.get(term_had_changed.get(i))==null){
-					//System.out.println("·s¼W¦rµü"+term_had_changed.get(i)+"¶i¤JTDF");
+					//System.out.println("æ–°å¢å­—è©"+term_had_changed.get(i)+"é€²å…¥TDF");
 					terms_info.put(term_had_changed.get(i), term_src);
 					term_decayfactor.add(DecayFactor_init);
 					term_update_time.add(update_time);
@@ -124,24 +124,24 @@ public class Go_User_profile {
 				}
 			}
 			
-			//§ó·s¨Ï¥ÎªÌ¼Ò«¬©Ò¦³¦rµüªº¤À¼Æ»P¿ò§Ñ¦]¤l
+			//æ›´æ–°ä½¿ç”¨è€…æ¨¡å‹æ‰€æœ‰å­—è©çš„åˆ†æ•¸èˆ‡éºå¿˜å› å­
 			for(int i: User_profile_term.keySet()){
 				for(String s: User_profile_term.get(i).keySet()){
 					
 					this_term_src = terms_info.get(s);
-					term_update_time.set(this_term_src, update_time); //§ó·s¦rµü§ó·s®É¶¡¦Ü¥Ø«e®É¶¡
-					//§ó·s¦rµüTF¤À¼Æ
+					term_update_time.set(this_term_src, update_time); //æ›´æ–°å­—è©æ›´æ–°æ™‚é–“è‡³ç›®å‰æ™‚é–“
+					//æ›´æ–°å­—è©TFåˆ†æ•¸
 					this_term_tf = User_profile_term.get(i).get(s);
 					new_this_term_tf = this_term_tf * (1-term_decayfactor.get(this_term_src));
-					System.out.println("§ó·s¨Ï¥ÎªÌ¼Ò«¬¥DÃD"+i+"¦rµü"+s+"¿ò§Ñ¦]¤l"+term_decayfactor.get(this_term_src)+"§ó·s«á¤À¼Æ¬°"+new_this_term_tf);
-					//¦pªG¬O­ì¦³¦rµü´N§ó·s¦rµüªºÁ`¤À¼Æ¬°¥Ø«e¤À¼Æ-ÂÂ¤À¼Æ+·s¤À¼Æ¡A·s¦rµüªºÁ`¤À¼Æ«hª½±µ¦s¤Jnew_this_term_tf
+					System.out.println("æ›´æ–°ä½¿ç”¨è€…æ¨¡å‹ä¸»é¡Œ"+i+"å­—è©"+s+"éºå¿˜å› å­"+term_decayfactor.get(this_term_src)+"æ›´æ–°å¾Œåˆ†æ•¸ç‚º"+new_this_term_tf);
+					//å¦‚æœæ˜¯åŸæœ‰å­—è©å°±æ›´æ–°å­—è©çš„ç¸½åˆ†æ•¸ç‚ºç›®å‰åˆ†æ•¸-èˆŠåˆ†æ•¸+æ–°åˆ†æ•¸ï¼Œæ–°å­—è©çš„ç¸½åˆ†æ•¸å‰‡ç›´æ¥å­˜å…¥new_this_term_tf
 					if(term_sum_score.get(this_term_src)==0){
 						term_sum_score.set(this_term_src,new_this_term_tf);
 					}else{
 						term_sum_score.set(this_term_src, term_sum_score.get(this_term_src)-this_term_tf+new_this_term_tf);
 					}
 					User_profile_term.get(i).put(s, new_this_term_tf);
-					//§ó·s¿ò§Ñ¦]¤l¡A¦pªG¦³µo¥Í§ïÅÜ±o´N¼W¥[¡A¨S¦³´N´î¤Ö
+					//æ›´æ–°éºå¿˜å› å­ï¼Œå¦‚æœæœ‰ç™¼ç”Ÿæ”¹è®Šå¾—å°±å¢åŠ ï¼Œæ²’æœ‰å°±æ¸›å°‘
 					if(term_had_changed.contains(s)){
 						term_decayfactor = update_Term_Decay_Factor(terms_info,term_decayfactor,"plus",s);
 					}else{
@@ -150,9 +150,9 @@ public class Go_User_profile {
 				}
 			}
 			
-			/*//§ó·s·í¤Ñ¦³ÅÜ°Êªº¦rµüªº¸ê°T
+			/*//æ›´æ–°ç•¶å¤©æœ‰è®Šå‹•çš„å­—è©çš„è³‡è¨Š
 			for(int i=0; i<term_had_changed.size(); i++){
-				//§ó·s¬Y¦rµüªº¿ò§Ñ¦]¤l¡A¶¶«K²Ö­p§ó·s¤À¼Æ©Ò»İ­n­¼¤Wªº¼Æ¦r
+				//æ›´æ–°æŸå­—è©çš„éºå¿˜å› å­ï¼Œé †ä¾¿ç´¯è¨ˆæ›´æ–°åˆ†æ•¸æ‰€éœ€è¦ä¹˜ä¸Šçš„æ•¸å­—
 				sum_decayfactor = 1;
 				if(terms_info.get(term_had_changed.get(i))!=null){
 					this_term_src = terms_info.get(term_had_changed.get(i));
@@ -162,14 +162,14 @@ public class Go_User_profile {
 						term_decayfactor = update_Term_Decay_Factor(terms_info,term_decayfactor,"minus",term_had_changed.get(i));
 					}
 					term_decayfactor = update_Term_Decay_Factor(terms_info,term_decayfactor,"plus",term_had_changed.get(i));
-					term_update_time.set(this_term_src, update_time); //§ó·s¦rµü§ó·s®É¶¡¦Ü¥Ø«e®É¶¡
+					term_update_time.set(this_term_src, update_time); //æ›´æ–°å­—è©æ›´æ–°æ™‚é–“è‡³ç›®å‰æ™‚é–“
 					
 					for(int j: User_profile_term.keySet()){
-						//¦pªG¬Y­Ó¦rµü¦s¦b©ó¬Y­Ó¼Ò«¬¥DÃD¤¤ªº¸Ü¡A§Ú­Ì´N§ó·s¥Lªº¤À¼Æ
+						//å¦‚æœæŸå€‹å­—è©å­˜åœ¨æ–¼æŸå€‹æ¨¡å‹ä¸»é¡Œä¸­çš„è©±ï¼Œæˆ‘å€‘å°±æ›´æ–°ä»–çš„åˆ†æ•¸
 						if(User_profile_term.get(j).get(term_had_changed.get(i))!=null){
 							this_term_tf = User_profile_term.get(j).get(term_had_changed.get(i));
 							new_this_term_tf = this_term_tf * sum_decayfactor;
-							//§ó·sªº¤À¼Æ¬°¥Ø«e¤À¼Æ-ÂÂ¤À¼Æ+·s¤À¼Æ
+							//æ›´æ–°çš„åˆ†æ•¸ç‚ºç›®å‰åˆ†æ•¸-èˆŠåˆ†æ•¸+æ–°åˆ†æ•¸
 							term_sum_score.set(this_term_src, term_sum_score.get(this_term_src)-this_term_tf+new_this_term_tf);
 							User_profile_term.get(j).put(term_had_changed.get(i), new_this_term_tf);
 						}
@@ -188,14 +188,14 @@ public class Go_User_profile {
 				}
 			}*/
 			
-			//¿é¥X·sªº¿ò§Ñ¦]¤l¬ö¿ı¤å¥ó
+			//è¼¸å‡ºæ–°çš„éºå¿˜å› å­ç´€éŒ„æ–‡ä»¶
 			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TDF.txt"));
 			bw.write(""+Integer.valueOf(update_time));
 			bw.newLine();
 			bw.flush();
 			for(String s: terms_info.keySet()){
 				//System.out.println("....."+s+".....");
-				//¦s©ñ®æ¦¡¬° ¦rµü,¦rµü¿ò§Ñ¦]¤l,¦¹¦¸§ó·s½s¸¹,¦rµüÁ`TF¤À¼Æ
+				//å­˜æ”¾æ ¼å¼ç‚º å­—è©,å­—è©éºå¿˜å› å­,æ­¤æ¬¡æ›´æ–°ç·¨è™Ÿ,å­—è©ç¸½TFåˆ†æ•¸
 				bw.write(s+","+term_decayfactor.get(terms_info.get(s))+","+term_update_time.get(terms_info.get(s))+","+term_sum_score.get(terms_info.get(s)));
 				bw.newLine();
 				bw.flush();
@@ -212,25 +212,25 @@ public class Go_User_profile {
 		return User_profile_term;
 	}
 	
-	//¥NÂàµLoperate°Ñ¼Æªº©I¥s¡A³q±`¨Ï¥Î¬O¦]¬°¨Ï¥Îªº¬O·s¦rµü¡Aoperate¿é¤Jªº¬O¤°»ò¤£­«­n
+	//ä»£è½‰ç„¡operateåƒæ•¸çš„å‘¼å«ï¼Œé€šå¸¸ä½¿ç”¨æ˜¯å› ç‚ºä½¿ç”¨çš„æ˜¯æ–°å­—è©ï¼Œoperateè¼¸å…¥çš„æ˜¯ä»€éº¼ä¸é‡è¦
 	public ArrayList<Double> update_Term_Decay_Factor(HashMap<String,Integer> terms_info, ArrayList<Double> term_decayfactor, String update_term){
 		return update_Term_Decay_Factor(terms_info,term_decayfactor,"plus",update_term);
 	}
-	//§ó·s¿ò§Ñ¦]¤l¡A¿é¤J°Ñ¼Æ¬°¿ò§Ñ¦rµü»P½s¸¹¹ï¬M¸ê°T, ¥Ø«e¿ò§Ñ¦]¤l, ±ı¥[³t©Î´î³t, ¥Ø¼Ğ¦rµü½s¸¹, ·Ç³Æ§ó·sªº¦rµü½s¸¹
+	//æ›´æ–°éºå¿˜å› å­ï¼Œè¼¸å…¥åƒæ•¸ç‚ºéºå¿˜å­—è©èˆ‡ç·¨è™Ÿå°æ˜ è³‡è¨Š, ç›®å‰éºå¿˜å› å­, æ¬²åŠ é€Ÿæˆ–æ¸›é€Ÿ, ç›®æ¨™å­—è©ç·¨è™Ÿ, æº–å‚™æ›´æ–°çš„å­—è©ç·¨è™Ÿ
 	public ArrayList<Double> update_Term_Decay_Factor(HashMap<String,Integer> terms_info, ArrayList<Double> term_decayfactor, String operate, String update_term){
-		if(terms_info.get(update_term)!=null){ //¼Ò«¬ÂÂ¦³¦rµü
-			int this_time_term_src = terms_info.get(update_term); //³o¬O§ó·sªº¦rµü½s¸¹
-			//System.out.println(update_term+"¬°¼Ò«¬ÂÂ¦³¦rµü¡A¥Ø«e¿ò§Ñ¦]¤l¬°"+term_decayfactor.get(this_time_term_src));
+		if(terms_info.get(update_term)!=null){ //æ¨¡å‹èˆŠæœ‰å­—è©
+			int this_time_term_src = terms_info.get(update_term); //é€™æ˜¯æ›´æ–°çš„å­—è©ç·¨è™Ÿ
+			//System.out.println(update_term+"ç‚ºæ¨¡å‹èˆŠæœ‰å­—è©ï¼Œç›®å‰éºå¿˜å› å­ç‚º"+term_decayfactor.get(this_time_term_src));
 			if(operate=="minus"){
-				//´î¤Ö¿ò§Ñ¦]¤l
-				//¦pªG´î¤Ö¿ò§Ñ¦]¤l·|§C©ó¤U­­´N³]¬°¤U­­¡A§_«h´Nª½±µ»¼´î
+				//æ¸›å°‘éºå¿˜å› å­
+				//å¦‚æœæ¸›å°‘éºå¿˜å› å­æœƒä½æ–¼ä¸‹é™å°±è¨­ç‚ºä¸‹é™ï¼Œå¦å‰‡å°±ç›´æ¥éæ¸›
 				if((term_decayfactor.get(this_time_term_src)-DecayFactor_minus)<DecayFactor_botton){
 					term_decayfactor.set(this_time_term_src, DecayFactor_botton);
 				}else{
 					term_decayfactor.set(this_time_term_src, term_decayfactor.get(this_time_term_src)-DecayFactor_minus);
 				}
 			}else if(operate=="plus"){
-				//¦]¬°¥»¦¸¦¹¦rµü¤S¼W¥[¤F¤À¼Æ©Ò¥H¿ò§Ñ¦]¤l¸òµÛ´£°ª¡A¦pªG´£°ª«á¦]¤l·|°ª©ó¤W­­´N³]¬°¤W­­¡A§_«h´Nª½±µ¼W¥[
+				//å› ç‚ºæœ¬æ¬¡æ­¤å­—è©åˆå¢åŠ äº†åˆ†æ•¸æ‰€ä»¥éºå¿˜å› å­è·Ÿè‘—æé«˜ï¼Œå¦‚æœæé«˜å¾Œå› å­æœƒé«˜æ–¼ä¸Šé™å°±è¨­ç‚ºä¸Šé™ï¼Œå¦å‰‡å°±ç›´æ¥å¢åŠ 
 				if((term_decayfactor.get(this_time_term_src)+DecayFactor_plus)>DecayFactor_top){
 					term_decayfactor.set(this_time_term_src, DecayFactor_top);
 				}else{
@@ -238,27 +238,27 @@ public class Go_User_profile {
 				}
 			}
 		}else{
-			//System.out.println(update_term+"¬°¼Ò«¬·s¦rµü");
+			//System.out.println(update_term+"ç‚ºæ¨¡å‹æ–°å­—è©");
 			term_decayfactor.add(DecayFactor_plus);
 		}
 		return term_decayfactor;
 	}
 	
-	//ªì©l¤Æ²Ö­p¥­§¡³æ¤å¥óÁ`TF­È
+	//åˆå§‹åŒ–ç´¯è¨ˆå¹³å‡å–®æ–‡ä»¶ç¸½TFå€¼
 	public void init_docTF(){
 		sum_avg_docTF = 0;
 	}
-	//¿³½ì¥h°£ªº²Ö­p¥­§¡³æ¤å¥óÁ`TF­È¡A¿é¤J°Ñ¼Æ¬°³æ¥÷¤å¥óªºÁ`TF­È
+	//èˆˆè¶£å»é™¤çš„ç´¯è¨ˆå¹³å‡å–®æ–‡ä»¶ç¸½TFå€¼ï¼Œè¼¸å…¥åƒæ•¸ç‚ºå–®ä»½æ–‡ä»¶çš„ç¸½TFå€¼
 	public void sum_avg_docTF(double docTF){
 		sum_avg_docTF = (sum_avg_docTF+docTF)/2;
 	}
-	//¿³½ì¥h°£µ{§Ç¡A¿é¤J°Ñ¼Æ¬°¹êÅç¸ê®Æ§X¦WºÙ, ¨Ï¥ÎªÌ¼Ò«¬, §ó·s¤é
+	//èˆˆè¶£å»é™¤ç¨‹åºï¼Œè¼¸å…¥åƒæ•¸ç‚ºå¯¦é©—è³‡æ–™åŒ£åç¨±, ä½¿ç”¨è€…æ¨¡å‹, æ›´æ–°æ—¥
 	public HashMap<Integer,HashMap<String,Double>> interest_remove_doc(String exp_dir, HashMap<Integer,HashMap<String,Double>> User_profile_term, int day){
 		double removal_threshold = sum_avg_docTF*interest_remove_rate;
-		double topic_sum_score; //¼Ò«¬¤º¥DÃDªºÁ`¤À
+		double topic_sum_score; //æ¨¡å‹å…§ä¸»é¡Œçš„ç¸½åˆ†
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/interst_Remove_Recorder.txt",true));
-			System.out.println("¥Ø«e¥DÃD²¾°£ªùÂe­È¬°"+removal_threshold);
+			System.out.println("ç›®å‰ä¸»é¡Œç§»é™¤é–€æª»å€¼ç‚º"+removal_threshold);
 			for (Iterator iterator = User_profile_term.keySet().iterator(); iterator.hasNext();){
 				int j = (Integer)iterator.next();
 				topic_sum_score = 0;
@@ -266,12 +266,12 @@ public class Go_User_profile {
 					topic_sum_score+=User_profile_term.get(j).get(s);
 				}
 				if(topic_sum_score<removal_threshold){
-					bw.write("²Ä"+day+"¤é¡A¥DÃD"+j+"¤À¼Æ¬° "+topic_sum_score+" ¦]¤p©óªùÂe­È "+removal_threshold+" ³Q²¾°£");
+					bw.write("ç¬¬"+day+"æ—¥ï¼Œä¸»é¡Œ"+j+"åˆ†æ•¸ç‚º "+topic_sum_score+" å› å°æ–¼é–€æª»å€¼ "+removal_threshold+" è¢«ç§»é™¤");
 					bw.newLine();
 					bw.flush();
-					System.out.println("¥DÃD"+j+"¤À¼Æ¬°"+topic_sum_score+"¦]¤p©óªùÂe­È³Q²¾°£");
+					System.out.println("ä¸»é¡Œ"+j+"åˆ†æ•¸ç‚º"+topic_sum_score+"å› å°æ–¼é–€æª»å€¼è¢«ç§»é™¤");
 					iterator.remove();
-					User_profile_term.remove(j); //¤p©óªùÂe­È´N²¾°£±¼
+					User_profile_term.remove(j); //å°æ–¼é–€æª»å€¼å°±ç§»é™¤æ‰
 					remove_topic(exp_dir, String.valueOf(j));
 				}
 			}
@@ -283,36 +283,36 @@ public class Go_User_profile {
 		return User_profile_term;
 	}
 	
-	//ªì©l¤Æ²Ö­p¥­§¡³æ¦rµüTF­È
+	//åˆå§‹åŒ–ç´¯è¨ˆå¹³å‡å–®å­—è©TFå€¼
 	public void init_termTF(){
 		sum_avg_termTF = 0;
 	}
-	//¦rµü¥h°£ªº²Ö­p¥­§¡³æ¦rµüTF­È¡A¿é¤J°Ñ¼Æ¬°³æ¦rµüªºTF­È
+	//å­—è©å»é™¤çš„ç´¯è¨ˆå¹³å‡å–®å­—è©TFå€¼ï¼Œè¼¸å…¥åƒæ•¸ç‚ºå–®å­—è©çš„TFå€¼
 	public void sum_avg_termTF(double docTF, int term_count){
 		sum_avg_termTF = (sum_avg_termTF+(docTF/term_count))/2;
 	}
-	//¦rµü¥h°£µ{§Ç¡A¿é¤J°Ñ¼Æ¬°¹êÅç¸ê®Æ§X¦WºÙ, ¨Ï¥ÎªÌ¼Ò«¬, §ó·s¤é
+	//å­—è©å»é™¤ç¨‹åºï¼Œè¼¸å…¥åƒæ•¸ç‚ºå¯¦é©—è³‡æ–™åŒ£åç¨±, ä½¿ç”¨è€…æ¨¡å‹, æ›´æ–°æ—¥
 	public HashMap<Integer,HashMap<String,Double>> interest_remove_term(String exp_dir, HashMap<Integer,HashMap<String,Double>> User_profile_term, int day){
 		double removal_threshold = sum_avg_termTF*term_remove_rate;
 		BufferedWriter bw;
 		try {
 			bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/interst_Remove_Recorder.txt",true));
-			System.out.println("¥Ø«e¦rµü²¾°£ªùÂe­È¬°"+removal_threshold);
+			System.out.println("ç›®å‰å­—è©ç§»é™¤é–€æª»å€¼ç‚º"+removal_threshold);
 			for(int j: User_profile_term.keySet()){
 				for (Iterator iterator = User_profile_term.get(j).keySet().iterator(); iterator.hasNext();){
 					String s = (String)iterator.next();
 					if(User_profile_term.get(j).get(s)<removal_threshold){
-						bw.write("²Ä"+day+"¤é¡A¥DÃD"+j+"ªº¦rµü"+s+"¤À¼Æ¬° "+User_profile_term.get(j).get(s)+" ¦]¤p©óªùÂe­È "+removal_threshold+" ³Q²¾°£");
+						bw.write("ç¬¬"+day+"æ—¥ï¼Œä¸»é¡Œ"+j+"çš„å­—è©"+s+"åˆ†æ•¸ç‚º "+User_profile_term.get(j).get(s)+" å› å°æ–¼é–€æª»å€¼ "+removal_threshold+" è¢«ç§»é™¤");
 						bw.newLine();
 						bw.flush();
-						System.out.println("¥DÃD"+j+"ªº¦rµü"+s+"¤À¼Æ¬°"+User_profile_term.get(j).get(s)+"¦]¤p©óªùÂe­È³Q²¾°£");
+						System.out.println("ä¸»é¡Œ"+j+"çš„å­—è©"+s+"åˆ†æ•¸ç‚º"+User_profile_term.get(j).get(s)+"å› å°æ–¼é–€æª»å€¼è¢«ç§»é™¤");
 						iterator.remove();
-						User_profile_term.get(j).remove(s); //¤p©óªùÂe­È´N²¾°£±¼
+						User_profile_term.get(j).remove(s); //å°æ–¼é–€æª»å€¼å°±ç§»é™¤æ‰
 					}
 				}
 			}
 			bw.close();
-			//²¾°£±¼¨Ï¥ÎªÌ¼Ò«¬¤º¤w¤£¦s¦bªº¦rµü
+			//ç§»é™¤æ‰ä½¿ç”¨è€…æ¨¡å‹å…§å·²ä¸å­˜åœ¨çš„å­—è©
 			remove_term(exp_dir, User_profile_term);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -321,20 +321,20 @@ public class Go_User_profile {
 		return User_profile_term;
 	}
 	
-	//¿é¥X¨C¦¸ªº¨Ï¥ÎªÌ¼Ò«¬µ²ªG¡A¿é¤J°Ñ¼Æ¬°¹êÅç¸ê®Æ§X¦WºÙ, ¨Ï¥ÎªÌ¼Ò«¬§Ç¦C½s¸¹, ¨Ï¥ÎªÌ¼Ò«¬
+	//è¼¸å‡ºæ¯æ¬¡çš„ä½¿ç”¨è€…æ¨¡å‹çµæœï¼Œè¼¸å…¥åƒæ•¸ç‚ºå¯¦é©—è³‡æ–™åŒ£åç¨±, ä½¿ç”¨è€…æ¨¡å‹åºåˆ—ç·¨è™Ÿ, ä½¿ç”¨è€…æ¨¡å‹
 	public void out_new_user_profile(String exp_dir, int preprocess_times, HashMap<Integer,HashMap<String,Double>> User_profile_term){
-		BufferedWriter bw; //bw¥Î¨Ó¼guser_profile
-		//¼È¦s¦rµü»P¤À¼Æ
+		BufferedWriter bw; //bwç”¨ä¾†å¯«user_profile
+		//æš«å­˜å­—è©èˆ‡åˆ†æ•¸
 		HashMap<String,Double> topic_term = new HashMap<String,Double>();
 		try {
 			bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_"+preprocess_times+".txt"));
 			for(int i: User_profile_term.keySet()){
 				topic_term.clear();
 				topic_term = new HashMap(User_profile_term.get(i));
-				//System.out.print("¨Ï¥ÎªÌ¼Ò«¬¥DÃD "+i+",¦rµü¼Æ¶q¬°"+topic_term.size()+"\n");
+				//System.out.print("ä½¿ç”¨è€…æ¨¡å‹ä¸»é¡Œ "+i+",å­—è©æ•¸é‡ç‚º"+topic_term.size()+"\n");
 				for(String s: topic_term.keySet()){
-					//Àx¦s®æ¦¡¬° ¦rµü,¦rµü¤À¼Æ,¦rµü¥DÃD½s¸¹
-					//System.out.print("«Ø¥ß¨Ï¥ÎªÌ¼Ò«¬¥DÃD "+i+",¦rµü"+s+",¤À¼Æ"+topic_term.get(s)+"\n");
+					//å„²å­˜æ ¼å¼ç‚º å­—è©,å­—è©åˆ†æ•¸,å­—è©ä¸»é¡Œç·¨è™Ÿ
+					//System.out.print("å»ºç«‹ä½¿ç”¨è€…æ¨¡å‹ä¸»é¡Œ "+i+",å­—è©"+s+",åˆ†æ•¸"+topic_term.get(s)+"\n");
 					bw.write(s+","+topic_term.get(s)+","+i);
 					bw.newLine();
 					bw.flush();
@@ -347,14 +347,14 @@ public class Go_User_profile {
 		}
 	}
 	
-	//±quser_profile_TDF.txt¤¤²¾°£¨Ï¥ÎªÌ¼Ò«¬¤º¤w¤£¦s¦bªº¦rµü
+	//å¾user_profile_TDF.txtä¸­ç§»é™¤ä½¿ç”¨è€…æ¨¡å‹å…§å·²ä¸å­˜åœ¨çš„å­—è©
 	public void remove_term(String exp_dir, HashMap<Integer,HashMap<String,Double>> User_profile_term){
 		try {
 			String line="", v;
 			ArrayList<String> TDF = new ArrayList<String>();
 			BufferedReader br;
 			br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TDF.txt"));
-			String un = br.readLine(); //²Ä¤@¦æ¤£­«­n
+			String un = br.readLine(); //ç¬¬ä¸€è¡Œä¸é‡è¦
 			boolean exis = false;
 			while((line=br.readLine())!=null){
 				v=line.split(",")[0];
@@ -389,13 +389,13 @@ public class Go_User_profile {
 		}
 	}
 	
-	//±quser_profile_TR.txt¤¤²¾°£³Q§R°£ªº¥DÃD
+	//å¾user_profile_TR.txtä¸­ç§»é™¤è¢«åˆªé™¤çš„ä¸»é¡Œ
 	public void remove_topic(String exp_dir, String old_topic){
 		try {
 			String line="", v1, v2;
 			ArrayList<String> TR = new ArrayList<String>();
 			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
-			String max_topic_index = br.readLine(); //²Ä¤@¦æ¬°³Ì¤j¥DÃD½s¸¹
+			String max_topic_index = br.readLine(); //ç¬¬ä¸€è¡Œç‚ºæœ€å¤§ä¸»é¡Œç·¨è™Ÿ
 			while((line=br.readLine())!=null){
 				TR.add(line);
 			}

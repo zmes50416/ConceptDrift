@@ -37,7 +37,7 @@ static String dirPath="Topic3/";
 		}
 	}
 
-	// °O¿ı¬O§_±N¸ê®Æ¦L¥X
+	// è¨˜éŒ„æ˜¯å¦å°‡è³‡æ–™å°å‡º
 	private boolean inHeader = false;
 	private static int _sn = -1;
 	// static private ArrayList<Double> num=new ArrayList<Double>();
@@ -46,11 +46,11 @@ static String dirPath="Topic3/";
 	public DocMeanSimilarity() {
 	}
 
-	// ±N Parse HTML «áªº¸ê®Æ¦L¥X
+	// å°‡ Parse HTML å¾Œçš„è³‡æ–™å°å‡º
 	public void handleText(char[] text, int position) {
 		if (inHeader) {
-			// ¦L¥X xxxx => <A HREF = ....> xxxx </A>
-			// xxxx => HTML Tag A ªº¤å¦r (text)
+			// å°å‡º xxxx => <A HREF = ....> xxxx </A>
+			// xxxx => HTML Tag A çš„æ–‡å­— (text)
 			// System.out.println("handleText: " + new String(text));
 
 			BufferedWriter bw;
@@ -59,11 +59,11 @@ static String dirPath="Topic3/";
 			// FileOutputStream outFile = new FileOutputStream(out, true);
 			// OutputStreamWriter bw = new OutputStreamWriter(outFile,
 			// "UTF-8");
-			if (String.valueOf(text).contains("¬ù¦³ ")
-					|| String.valueOf(text).contains(" ¶µµ²ªG")) {
-				String value = String.valueOf(text).replaceAll(",", ""); // ¬ù¦³
+			if (String.valueOf(text).contains("ç´„æœ‰ ")
+					|| String.valueOf(text).contains(" é …çµæœ")) {
+				String value = String.valueOf(text).replaceAll(",", ""); // ç´„æœ‰
 				// 173,000
-				// ¶µµ²ªG
+				// é …çµæœ
 
 				double value1 = Double.parseDouble(value.split(" ")[value
 						.split(" ").length - 2]);
@@ -77,7 +77,7 @@ static String dirPath="Topic3/";
 				// set.add(key + "," + value1);
 				// System.out.println(key+"==>"+value1);
 				// count++;
-			} else if (String.valueOf(text).contains("§ä¤£¨ì©M±zªº¬d¸ß")) {
+			} else if (String.valueOf(text).contains("æ‰¾ä¸åˆ°å’Œæ‚¨çš„æŸ¥è©¢")) {
 				double value1 = Double.parseDouble("0");
 				// System.out.println("update2");
 				mValue = 0;
@@ -90,14 +90,14 @@ static String dirPath="Topic3/";
 	public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
 			int position) {
 
-		// ¤ÀªR Tag ªº­«ÂI¦b³o¦æ
+		// åˆ†æ Tag çš„é‡é»åœ¨é€™è¡Œ
 		if (tag == HTML.Tag.DIV) {
 			Enumeration e = attributes.getAttributeNames();
 			while (e.hasMoreElements()) {
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID && value.equals("resultStats")) {
 					this.inHeader = true;
 				}
@@ -108,7 +108,7 @@ static String dirPath="Topic3/";
 				Object name = e.nextElement();
 				String value = (String) attributes.getAttribute(name);
 
-				// ²Å¦X <A HREF = "xxxx"> Äİ©Êªº¦r¦ê¡Axxxx ·|³Q¦L¥X
+				// ç¬¦åˆ <A HREF = "xxxx"> å±¬æ€§çš„å­—ä¸²ï¼Œxxxx æœƒè¢«å°å‡º
 				if (name == HTML.Attribute.ID) {
 					this.inHeader = true;
 				}
@@ -127,12 +127,12 @@ static String dirPath="Topic3/";
 		// } else {
 		// String i1 = "\"" + line + "\"";
 		String i1 = s;
-		// long runstartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		// long runstartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		// System.out.println("process: " + i1);
-		// ¿é¤J±ı¤ÀªRªººô­¶
+		// è¼¸å…¥æ¬²åˆ†æçš„ç¶²é 
 		// URL u = new URL("http://www.yam.com");
 		String j = "http://www.google.com.tw/search?aq=f&sourceid=chrome&ie=UTF-8&q=";
-		// String f = "&btnG=·j´M&aq=f&aqi=&aql=&oq=&gs_rfai=";
+		// String f = "&btnG=æœå°‹&aq=f&aqi=&aql=&oq=&gs_rfai=";
 		String http = j + i1;
 		// System.out.println(http);
 
@@ -147,14 +147,14 @@ static String dirPath="Topic3/";
 							"Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-TW; rv:1.8.1.14) Gecko/20080404 Firefox/2.0.0.14"
 									+ "SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)");
 
-			// Åª¤Jºô­¶
+			// è®€å…¥ç¶²é 
 			// InputStream in = u.openStream();
 			BufferedInputStream in = new BufferedInputStream(urlConnection
 					.getInputStream());
 			InputStreamReader r = new InputStreamReader(in, "UTF-8");
 			// System.out.println(r);
 
-			// ©I¥s parse method ¶}©l¶i¦æ Parse HTML
+			// å‘¼å« parse method é–‹å§‹é€²è¡Œ Parse HTML
 			// _sn = no;
 			parser.parse(r, callback, true);
 		} catch (MalformedURLException e) {
@@ -177,7 +177,7 @@ static String dirPath="Topic3/";
 
 		// in.close();
 		// r.close();
-		// Thread.sleep(1000);// ¹j1¬í·j´M¤@¦¸
+		// Thread.sleep(1000);// éš”1ç§’æœå°‹ä¸€æ¬¡
 		// System.out.println("finish: " + i1);
 		// System.out.println(System.currentTimeMillis()-runstartTime);
 		// System.out.println(num);
@@ -193,8 +193,8 @@ static String dirPath="Topic3/";
 		// if(num.size()==3){
 		// double x = num.get(0);
 		// double y = num.get(1);
-		double a = Math.log10(x) / Math.PI; // ¶ê¤@¥b®|
-		double b = Math.log10(y) / Math.PI; // ¶ê¤G¥b®|
+		double a = Math.log10(x) / Math.PI; // åœ“ä¸€åŠå¾‘
+		double b = Math.log10(y) / Math.PI; // åœ“äºŒåŠå¾‘
 
 		double r1 = 1.78 - Math.sqrt(a);
 		double r2 = 1.78 - Math.sqrt(b);
@@ -270,7 +270,7 @@ static String dirPath="Topic3/";
 
 	public static void main(String args[]) throws IOException,
 			InterruptedException {
-		long StartTime = System.currentTimeMillis(); // ¨ú¥X¥Ø«e®É¶¡
+		long StartTime = System.currentTimeMillis(); // å–å‡ºç›®å‰æ™‚é–“
 		DocMeanSimilarity test = new DocMeanSimilarity();
 		String[] s = new String[3];
 		Scanner input = new Scanner(System.in);
@@ -322,17 +322,17 @@ static String dirPath="Topic3/";
 					total = total + avg1;
 					bw.write(fs[i] + "<=>" + fs[j] + ":" + avg1);
 					bw.newLine();
-					bw.flush(); // ²MªÅ½w½Ä°Ï
+					bw.flush(); // æ¸…ç©ºç·©è¡å€
 //				}
 			}
 //			System.out.println(total / (dir.list().length - 1));
 			
 //			bw.newLine();
-//			bw.flush(); // ²MªÅ½w½Ä°Ï
+//			bw.flush(); // æ¸…ç©ºç·©è¡å€
 		}
 		bw.write("avg="+total / ((fs.length*(fs.length-1))/2));
 		bw.newLine();
-		bw.flush(); // ²MªÅ½w½Ä°Ï
+		bw.flush(); // æ¸…ç©ºç·©è¡å€
 		// System.out.println("AVG2=" + avg2);
 		// System.out.println("AVG3=" + avg3);
 		// System.out.println(test.newAdd);
@@ -341,8 +341,8 @@ static String dirPath="Topic3/";
 		// s[1]="\""+input.next()+"\"";
 
 		// s[2]=s[0]+"+"+s[1];
-		// long ProcessTime = System.currentTimeMillis() - StartTime; // ­pºâ³B²z®É¶¡
-		// AverageTime += ProcessTime; // ²Ö¿n­pºâ®É¶¡
+		// long ProcessTime = System.currentTimeMillis() - StartTime; // è¨ˆç®—è™•ç†æ™‚é–“
+		// AverageTime += ProcessTime; // ç´¯ç©è¨ˆç®—æ™‚é–“
 		// System.out.println(ProcessTime);
 	}
 
