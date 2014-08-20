@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-<comment>XMLSetting, You can change setting from here</comment>
-<entry key="QTagDirPath">Keyword_output_freq/</entry>
-<entry key="POSDirPath">POS_filter/</entry>
-<entry key="DocumetnDirPath">usedData/</entry>
-</properties>
