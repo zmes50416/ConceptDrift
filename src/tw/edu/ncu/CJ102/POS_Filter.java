@@ -15,23 +15,35 @@ public class POS_Filter {
 	static SettingManager setting;
 	final String POSDIRPATH;
 	/**
-	 * 
+	 * offer Filter of Tag Of Speech will also filter length of Words
 	 */
 	public POS_Filter() {
 		// TODO Auto-generated constructor stub
 		setting = SettingManager.getSettingManager();
-		POSDIRPATH = setting.getSetting(SettingManager.POSDIR);
+		POSDIRPATH = setting.getSetting(SettingManager.POSFilterDIR);
 	}
-
-	public void filter(String fileName) throws IOException {
-		FileReader FileStream = new FileReader(POSDIRPATH +fileName + "_"
-				+ "keyword_output_freq.txt");
+	public void filterDir(String POSFileDirPath){
+		File files = new File(POSFileDirPath);
+		for(File file : files.listFiles()){
+			//this.filter(file.getName());
+			try {
+				this.filter(file.getName(),POSFileDirPath);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	//filter one file at a time
+	public void filter(String fileName,String path) throws IOException {
+		FileReader FileStream = new FileReader(path +fileName);
 		BufferedReader BufferedStream = new BufferedReader(FileStream);
-		String e = "";
+		String line = "";
 
 		ArrayList list = new ArrayList();
-		while ((e = BufferedStream.readLine()) != null) {
-			list.add(e);
+		while ((line = BufferedStream.readLine()) != null) {
+			list.add(line);
 		}
 
 		Object[] datas = list.toArray();
@@ -63,7 +75,7 @@ public class POS_Filter {
 			System.out.println("key1:" + key1 + " " + tag1);
 			System.out.println("key2:" + key2 + " " + tag2);
 			System.out.println("key3:" + key3 + " " + tag3);
-			//³æ¦r¹LÂo¡A®Ú¾ÚD. Tufis and O. Mason©ó1998´£¥XªºQtag
+			//å–®å­—éæ¿¾ï¼Œæ ¹æ“šD. Tufis and O. Masonæ–¼1998æå‡ºçš„Qtag
 			if(tag1.equals("NN") || tag1.equals("NP") ||tag1.equals("JJ")){
 				set.add(key1);
 				System.out.println("add:" + key1);
@@ -95,7 +107,7 @@ public class POS_Filter {
 				bw.write("\"" + objs_out + "\"");
 				bw.newLine();
 
-				bw.flush(); // ²MªÅ½w½Ä°Ï
+				bw.flush(); // æ¸…ç©ºç·©è¡å€
 
 			} catch (IOException ex) {
 				// TODO Auto-generated catch block
@@ -104,7 +116,7 @@ public class POS_Filter {
 
 		}
 
-		bw.close(); // Ãö³¬BufferedWriterª«¥ó
+		bw.close(); // é—œé–‰BufferedWriterç‰©ä»¶
 	}
 
 
@@ -113,8 +125,8 @@ public class POS_Filter {
 	}
 
 	public static void main(String args[]) throws IOException {
-		String fileName="acq_0000005_qtag";
-		new POS_Filter().filter(fileName);
+		//String fileName="acq_0000005_qtag";
+		//new POS_Filter().filter(fileName);
 	}
 
 }

@@ -1,6 +1,7 @@
-package tw.edu.ncu.CJ102;
+﻿package tw.edu.ncu.CJ102;
 /*
- * ���ʼаO
+ * 詞性標記
+ * 每一次讀一個文件,Output為一個文件一個txt檔
 */
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,7 +18,7 @@ import qtag.Tagger;
 
 public class Qtag {
 	static String readFilePath = "usedData/acq/";
-	static String writeFilePath = "usedData/acq_qtag/";
+	static String writeFilePath = "Util/qtag/";
 	
 	public Qtag(){
 		
@@ -37,6 +38,7 @@ public class Qtag {
 	public static void main(String args[]) throws IOException {
 		File F = new File(readFilePath);
 		for(File f : F.listFiles()){
+			//split去除副檔名
 			System.out.println(f.getName().split("\\.")[0]);
 			tagging(f.getName().split("\\.")[0]);
 		}
@@ -58,7 +60,7 @@ public class Qtag {
 		if(!new File(writeFilePath).exists()){
 			boolean mkdirSuccess = new File(writeFilePath).mkdirs();
 			if (!mkdirSuccess) {
-				System.out.println("Directory creation failed");
+				System.err.println("Directory creation failed");
 			}
 		}
 		BufferedWriter bw= new BufferedWriter(new FileWriter(writeFilePath+fileName + "_"
@@ -94,8 +96,8 @@ public class Qtag {
 			}
 			line = in.readLine();
 		}
-		bw.flush(); // �M�Žw�İ�
-		bw.close(); // ����BufferedWriter����
+		bw.flush(); // 清空緩衝區
+		bw.close(); // 關閉BufferedWriter物件
 
 	}
 }
