@@ -22,6 +22,13 @@ import javax.swing.text.html.HTMLEditorKit;
 import tw.edu.ncu.sia.util.ServerUtil;
 
 public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
+	/**
+	 * 
+	 * @author 某屆學長
+	 * 搜尋Solr Server以取得NGD分數
+	 * 注意有可能會有ReadTimeout的例外可能！目前需要自行handle Exception!
+	 * 
+	 */
 	static class ParserGetter extends HTMLEditorKit {
 		// purely to make this methods public
 		public HTMLEditorKit.Parser getParser() {
@@ -31,32 +38,19 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 
 	// 記錄是否將資料印出
 	private boolean inHeader = false;
-	private static String _sn = "";
+	private static String _sn = ""; //舊式檔名命名法
 
 	public Lucene_Search1() {
-		/*try {
-			File F = new File("citeulike/citeulike_POS_filter/");
-			for(File f : F.listFiles()){	
-				doit(f.getName().split("_")[0]);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+		
 	}
 	// one file at a time
 	public static void doit(String fileName,String path) throws IOException {
-		//System.out.println("處理檔案"+fileName+"中...");
-		//File f = new File(path + fileName);
-		//f.delete();
-		// try {
+		//做實驗時務必清空舊有資料不保證IO讀取乾淨
 		ParserGetter kit = new ParserGetter();
 		HTMLEditorKit.Parser parser = kit.getParser();
 		//HTMLEditorKit.ParserCallback callback = new Lucene_Search1();
-		FileReader FileStream = new FileReader(path + fileName);
-		BufferedReader BufferedStream = new BufferedReader(FileStream);
+		BufferedReader BufferedStream = new BufferedReader(new FileReader(path + fileName));
 		
-		BufferedWriter bw = new BufferedWriter(new FileWriter("Util/time/google_output.txt", true));
 		
 		String line;
 		long t1 =0 , t2 = 0;
@@ -87,7 +81,7 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 			
 		}
 		BufferedStream.close();
-		
+		BufferedWriter bw = new BufferedWriter(new FileWriter("Util/time/google_output.txt", true));
 		bw.write(l+":"+sum);
 		bw.newLine();
 		bw.close();
