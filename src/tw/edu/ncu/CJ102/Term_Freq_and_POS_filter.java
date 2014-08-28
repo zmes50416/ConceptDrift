@@ -72,15 +72,15 @@ public class Term_Freq_and_POS_filter {
 			//filename = file.getName().split("_")[0];
 			
 			int lineNumber = 0;
-			String key1 = ""; //字詞1
-			String tag1 = ""; //字詞1的詞性
-			String key2 = ""; //字詞1
-			String tag2 = ""; //字詞1的詞性
+			String key1 = ""; //字詞3
+			String tag1 = ""; //字詞3的詞性
+			String key2 = ""; //字詞2
+			String tag2 = ""; //字詞2的詞性
 			String key3 = ""; //字詞1
 			String tag3 = ""; //字詞1的詞性
 			LinkedHashSet<String> set = new LinkedHashSet<String>(); //儲存符合詞性過濾的字詞
 			BufferedWriter bw;
-			bw = new BufferedWriter(new FileWriter(keyWordFreqPath+filename+"_"+"keyword_output_freq.txt",false));
+			bw = new BufferedWriter(new FileWriter(keyWordFreqPath+filename+".txt",false));
 			while((line = in.readLine()) != null){
 				++lineNumber;
 				key3 = line.split(", ")[0].toUpperCase();
@@ -165,7 +165,7 @@ public class Term_Freq_and_POS_filter {
 				tag2 = tag3;
 			}
 			bw.close(); // 關閉BufferedWriter物件
-			bw = new BufferedWriter(new FileWriter(POSFilterPath+filename + "_" + "filter_output1.txt", false));
+			bw = new BufferedWriter(new FileWriter(POSFilterPath+filename +".txt", false));
 			String objs_out = "";
 			Object[] objs = set.toArray();
 			for (int i = 0; i < objs.length; i++){

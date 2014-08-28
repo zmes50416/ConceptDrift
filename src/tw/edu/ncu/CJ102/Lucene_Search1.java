@@ -67,9 +67,9 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 		while ((line = BufferedStream.readLine()) != null) {
 			_sn = fileName;
 			t1 = System.currentTimeMillis();
-			IndexStatus qq = new IndexStatus();
+			SolrSearcher solr = new SolrSearcher();
 			try {
-				qq.indexed(line, _sn);
+				solr.searchIndexed(line, _sn);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -27,6 +27,7 @@ class SettingManager {
 	static String IndexDir = "IndexedDirPath";
 	static String PairDir = "PairDirPath";
 	static String TermRankDir = "TermRankDirPath";
+	static String NumOfTermDir = "NumberOfTermDirPath";
 	private static SettingManager instance = new SettingManager();
 	Properties settingProps;
 	private SettingManager(){
@@ -53,9 +54,9 @@ class SettingManager {
 		settingProps.put(KFCDIR, "Util/Keyword_output_freq/");
 		settingProps.put(POSFilterDIR, "Util/POS_filter/");
 		settingProps.put(IndexDir, "Util/WikiSearch/");
-		settingProps.put(PairDir, "Util/pair");
-		settingProps.put(TermRankDir, "Util/TermRankDir");
-		
+		settingProps.put(PairDir, "Util/Pair/");
+		settingProps.put(TermRankDir, "Util/TermRank/");
+		settingProps.put(NumOfTermDir, "Util/numberOfTerm/");
 		try {
 			settingProps.storeToXML(new FileOutputStream("setting.xml"), "XMLSetting, You can change setting from here");
 		} catch (FileNotFoundException e) {

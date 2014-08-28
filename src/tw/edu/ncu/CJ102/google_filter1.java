@@ -15,21 +15,22 @@ import java.util.Scanner;
 public class google_filter1 {
 
 	/**
-	 * 
+	 * NGD結果過濾 將NGD伺服器查詢結果與文件前處理後的資料做結合
+	 * 順便過濾掉過少或過多的搜尋
 	 */
 	public google_filter1() {
 		// TODO Auto-generated constructor stub
 
 	}
 
-	public static void search_filter(String no) throws IOException {
-		FileReader FileStream = new FileReader("citeulike/citeulike_Search1/"+no + "_" + "google_output1.txt");
-		BufferedReader reader = new BufferedReader(FileStream);
+	public static void search_filter(String fileName) throws IOException {
+		FileReader streamOfSearchOutput = new FileReader(SettingManager.getSetting(SettingManager.IndexDir)+fileName);
+		BufferedReader reader = new BufferedReader(streamOfSearchOutput);
 		String line = "";
-		FileReader FileStream1 = new FileReader("citeulike/citeulike_POS_filter/"+no + "_" + "filter_output1.txt");
-		BufferedReader BufferedStream1 = new BufferedReader(FileStream1);
+		FileReader streamOfPOSFilter = new FileReader(SettingManager.getSetting(SettingManager.POSFilterDIR)+fileName);
+		BufferedReader bStreamOfPOSFilter = new BufferedReader(streamOfPOSFilter);
 		ArrayList<String> list1 = new ArrayList<String> ();
-		while ((line = BufferedStream1.readLine()) != null) {
+		while ((line = bStreamOfPOSFilter.readLine()) != null) {
 			list1.add(line);
 		}
 
@@ -41,9 +42,9 @@ public class google_filter1 {
 			// String key = null;
 			String value1 = null;
 			if (count < datas.length) {
-				if (line.contains("�� ") || line.contains(" �����G")) {
+				if (line.contains("約有 ") || line.contains(" 項結果")) {
 
-					String value = line.replaceAll(",", ""); // �� 173,000 �����G
+					String value = line.replaceAll(",", ""); // 去除數字內的標記 ex:約有 173,000 項結果
 
 					value1 = value.split(" ")[value.split(" ").length - 2];
 					// set.add(value1);
@@ -60,7 +61,8 @@ public class google_filter1 {
 
 		Object[] arry1 = set.toArray();
 		BufferedWriter bw;
-		bw = new BufferedWriter(new FileWriter("citeulike/citeulike_Number_of_term/"+no + "_" + "number_of_term.txt",
+		String numOfTermPath = SettingManager.getSetting(SettingManager.NumOfTermDir);
+		bw = new BufferedWriter(new FileWriter(numOfTermPath+fileName + "_" + "number_of_term.txt",
 				false));
 		ArrayList<String> filtered_key = new ArrayList<String>();
 		ArrayList<String> filtered_line = new ArrayList<String>();
@@ -69,7 +71,6 @@ public class google_filter1 {
 			String value = ((String) arry1[i]).split(",")[1];
 			int k = 0;
 			int n = arry1.length;
-			;
 //			if (n < 12) {
 //				k = 12;
 //			} else if (11 < n && n < 16) {
@@ -79,15 +80,15 @@ public class google_filter1 {
 //			} else {
 //				k = 9;r
 //			}
-			//�W�U��
+			//上下限 這裡指的是幾位數10^upper ~ 10^lower
 			double upper = 4;  //google 8  wiki 4
-			double lower = 2;  //google 5  wiki 1
+			double lower = 2;  //google 5  wiki 2
 //			System.out.println("K=" + k);
 			
-			//�ھڷj�M���G�L�o�r��
-			//wiki�n�Ҽ{�^�ǭȤ��ର0
+			//根據搜尋結果過濾字詞
+			//wiki要考慮回傳值不能為0 這裡寫錯了吧？明明就會1~9也不行
 			if (lower <= value.length() && Long.valueOf(value)!=0) {
-			//google��
+			//google版
 			//if (lower <= value.length()) {
 				if (!key.contains("+")) {
 					if (value.length() <= upper) {
@@ -110,7 +111,7 @@ public class google_filter1 {
 						System.out.println(arry1[i] + " out");
 					}
 				}else
-				{//�i�H�]�w���P�Ӧr��զ������p���P���e
+				{//可以設定不同個字詞組成的狀況不同門檻
 					if (value.length() <= upper) {
 						System.out.println(arry1[i] + " add");
 						String arry_out = (String) arry1[i];
@@ -154,20 +155,20 @@ public class google_filter1 {
 			}
 		});
 		Object[] objline = filtered_line.toArray();
-		bw = new BufferedWriter(new FileWriter("citeulike/citeulike_TermRank/"+no + "_" + "termRank.txt", false));
+		bw = new BufferedWriter(new FileWriter(SettingManager.getSetting(SettingManager.TermRankDir)+fileName + "_" + "termRank.txt", false));
 		for (int i = 0; i < objline.length; i++) {
 			bw.write((String) objline[i]);
 			bw.newLine();
-			bw.flush(); // �M�Žw�İ�
+			bw.flush(); // 清空緩衝區
 		}
 		Object[] obj = filtered_key.toArray();
-		bw = new BufferedWriter(new FileWriter("citeulike/citeulike_Pairs/"+no + "_" + "pairs.txt", false));
+		bw = new BufferedWriter(new FileWriter(SettingManager.getSetting(SettingManager.PairDir)+fileName + "_" + "pairs.txt", false));
 		for (int i = 0; i < obj.length; i++) {
 			for (int j = i + 1; j < obj.length; j++) {
 				System.out.println(obj[i] + "+" + obj[j]);
 				bw.write(obj[i] + "+" + obj[j]);
 				bw.newLine();
-				bw.flush(); // �M�Žw�İ�
+				bw.flush(); // 清空緩衝區
 			}
 		}
 

@@ -63,8 +63,7 @@ public class Qtag {
 				System.err.println("Directory creation failed");
 			}
 		}
-		BufferedWriter bw= new BufferedWriter(new FileWriter(writeFilePath+fileName + "_"
-				+ "qtag.txt", false));
+		BufferedWriter bw= new BufferedWriter(new FileWriter(writeFilePath+fileName+".txt", false));
 		while (line != null) {
 			String line2=line.toString();
 			line=line.replace("]", "");

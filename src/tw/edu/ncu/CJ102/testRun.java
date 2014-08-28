@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
+
 public class testRun {
 	/**
 	 * @author 102鼎文
@@ -23,6 +25,8 @@ public class testRun {
 		}
 		//TermFreqCount.counting(Qtag.writeFilePath);
 		//new POS_Filter().filterDir(set.getSetting(SettingManager.KFCDIR));
+		 
+		 
 		Term_Freq_and_POS_filter.counting(new File(Qtag.writeFilePath));
 		for(File file:new File(set.getSetting(SettingManager.POSFilterDIR)).listFiles()){
 			try {
@@ -31,6 +35,14 @@ public class testRun {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		for(File file:new File(set.getSetting(SettingManager.POSFilterDIR)).listFiles()){
+		try {
+			google_filter1.search_filter(file.getName());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		}
 		
 	}
