@@ -10,6 +10,7 @@ import tw.edu.ncu.sia.util.ServerUtil;
  * 
  * @author 102蘇鼎文
  * 改名學長的IndexStatus，改為更符合的名稱
+ * 使用此類別來存取ServerUtil
  *
  */
 
@@ -44,5 +45,8 @@ public class SolrSearcher {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public void getHits(String key){
+		//TODO reimplement the method from UtilServer
 	}
 }

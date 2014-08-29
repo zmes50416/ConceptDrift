@@ -59,7 +59,7 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 		int l = 0;
 		// ArrayList<String> stop_list = Stop_Loader.loadList("stop_list.txt");
 		try {
-			ServerUtil.initialize();
+			ServerUtil.testServerConnected();
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
