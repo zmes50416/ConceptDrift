@@ -54,7 +54,7 @@ public class Term_Freq_and_POS_filter {
 			String filename = FilenameUtils.removeExtension(file.getName());
 			//reuters資料集的檔名萃取方法
 			/*for(int i=0; i<file.getName().split("_").length;i++){
-				//System.out.println("filename = "+ filename);
+				//System.out.println("filename = "+ );
 				if(i==0){
 					filename=file.getName().split("_")[0];
 				}else{

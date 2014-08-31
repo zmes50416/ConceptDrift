@@ -99,7 +99,7 @@ public class TF_calculate {
 					filename = files.getName().split("_")[0];
 					
 					System.out.print("讀取檔案"+files.getName()+"\n");
-					m_r1 = new BufferedReader(new FileReader("citeulike/citeulike_Keyword_output_freq/"+filename+"_keyword_output_freq.txt"));
+					m_r1 = new BufferedReader(new FileReader("citeulike/citeulike_Keyword_output_freq/"+filename));
 					m_r2 = new BufferedReader(new FileReader(files));
 					while((line=m_r2.readLine())!=null){
 						v1 = line.split(",")[0];

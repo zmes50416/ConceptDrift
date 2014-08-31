@@ -7,6 +7,9 @@ import java.util.Properties;
  * TODO 增加一個檢查路徑方法並且應該要可以替換實驗集
  * TODO 
  */
+enum projectPath{
+	stemDir
+}
 class SettingManager {
 	/** 
 	 * @author 102鼎文
@@ -28,6 +31,9 @@ class SettingManager {
 	static String PairDir = "PairDirPath";
 	static String TermRankDir = "TermRankDirPath";
 	static String NumOfTermDir = "NumberOfTermDirPath";
+	static String stemmedDir = "StemmedWordDirPath";
+	private static String projectName;
+	//static String 
 	private static SettingManager instance = new SettingManager();
 	Properties settingProps;
 	private SettingManager(){
@@ -46,6 +52,9 @@ class SettingManager {
 	}
 	
 	public static String getSetting(String key){
+		if(instance.settingProps.getProperty(key)==null){
+			System.err.println("Can't Find Setting:"+key);
+		}
 		return instance.settingProps.getProperty(key);
 	}
 	private void loadDefaultSetting(){
@@ -57,6 +66,7 @@ class SettingManager {
 		settingProps.put(PairDir, "Util/Pair/");
 		settingProps.put(TermRankDir, "Util/TermRank/");
 		settingProps.put(NumOfTermDir, "Util/numberOfTerm/");
+		settingProps.put(stemmedDir, "Util/Stem/");
 		try {
 			settingProps.storeToXML(new FileOutputStream("setting.xml"), "XMLSetting, You can change setting from here");
 		} catch (FileNotFoundException e) {
@@ -67,5 +77,17 @@ class SettingManager {
 			e.printStackTrace();
 		}
 	}
+	
+	public void createProject(){
+		
+	}
+	public void loadProject(){
+		
+	}
+	private void checkDirExsit(){
+		
+	}
+	
+	
 
 }

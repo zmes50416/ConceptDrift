@@ -16,34 +16,34 @@ public class testRun {
 		try {
 			File F = new File(Qtag.readFilePath);
 			for(File f : F.listFiles()){
-				System.out.println(f.getName().split("\\.")[0]);
+//				System.out.println(f.getName().split("\\.")[0]);
 				Qtag.tagging(f.getName().split("\\.")[0]);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//TermFreqCount.counting(Qtag.writeFilePath);
 		//new POS_Filter().filterDir(set.getSetting(SettingManager.KFCDIR));
 		 
 		 
 		Term_Freq_and_POS_filter.counting(new File(Qtag.writeFilePath));
-		for(File file:new File(set.getSetting(SettingManager.POSFilterDIR)).listFiles()){
-			try {
-				Lucene_Search1.doit(file.getName(),set.getSetting(SettingManager.POSFilterDIR));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		for(File file:new File(set.getSetting(SettingManager.POSFilterDIR)).listFiles()){
+//			try {
+//				Lucene_Search1.doit(file.getName(),set.getSetting(SettingManager.POSFilterDIR));
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
 		for(File file:new File(set.getSetting(SettingManager.POSFilterDIR)).listFiles()){
 		try {
-			google_filter1.search_filter(file.getName());
+			GoogleFilter.search_filter(file.getName());
+			Stem.stemming(file.getName());
+			NGD_calculate.NGD(file.getName());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			}
 		}
-		}
+		
+		
 		
 	}
 

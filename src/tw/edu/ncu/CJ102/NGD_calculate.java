@@ -10,36 +10,35 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 public class NGD_calculate {
-
-	public static void NGD(String no) {
-		System.out.println("處理檔案"+no+"中...");
+	
+	
+	public static void NGD(String fileName) {
+		String pairPath = SettingManager.getSetting(SettingManager.PairDir);
+		String stemmedPath = SettingManager.getSetting(SettingManager.stemmedDir);
+		System.out.println("處理檔案"+fileName+"中...");
 		try {
 			//組合字部分
-			FileReader FileStream1;
-
-			FileStream1 = new FileReader("citeulike/citeulike_Number_of_pair/" + no + "_"
-					+ "number_of_pair.txt");
-
-			BufferedReader BufferedStream1 = new BufferedReader(FileStream1);
+			//NumberOfPair
+			BufferedReader numberOfPairReader = new BufferedReader(new FileReader(pairPath + fileName));
 			String e1 = "";
 
 			ArrayList<String> pairlist = new ArrayList<String>();
-			while ((e1 = BufferedStream1.readLine()) != null) {
+			while ((e1 = numberOfPairReader.readLine()) != null) {
 
 				pairlist.add(e1);
 			}
-
-			FileReader FileStream = new FileReader("citeulike/citeulike_Stem/" + no + "_"
-					+ "stem.txt");
-			BufferedReader BufferedStream = new BufferedReader(FileStream);
+			numberOfPairReader.close();
+			FileReader FileStream = new FileReader(stemmedPath + fileName);
+			BufferedReader stemmedReader = new BufferedReader(FileStream);
 			String e = "";
 
 			ArrayList<String> termlist = new ArrayList<String>();
-			while ((e = BufferedStream.readLine()) != null) {
+			while ((e = stemmedReader.readLine()) != null) {
 
 				termlist.add(e);
 
 			}
+			stemmedReader.close();
 
 			Object[] datas = termlist.toArray();
 			LinkedHashSet<String> set = new LinkedHashSet<String>();
@@ -57,39 +56,25 @@ public class NGD_calculate {
 						if (o.contains("\"" + key1 + "\"+\"" + key2 + "\"")
 								|| o.contains("\"" + key2 + "\"+\"" + key1
 										+ "\""))
-						// if(o.contains(key1+"+"+key2)||o.contains(key2+"+"+key1))
 						{
 							m = Double.parseDouble(o.split(",")[1]);
-							// System.out.println("get m="+m);
 							break;
 						}
 					}
-					//System.out.println("x=" + x + " y=" + y + " m=" + m);
-//					double logX = Math.log10(x);
-//					double logY = Math.log10(y);
-//					double logM = Math.log10(m);
-//					double logN = 9.906;
-//					// double logN = 10;
-//					double NGD = (Math.max(logX, logY) - logM)
-//							/ (logN - Math.min(logX, logY));
+
 					double NGD=NGD_cal(x,y,m);
-					//System.out.println(key1 + "," + key2 + ";" + NGD);
-					//if(NGD<=0.15){
-						//set.add(key1 + "," + key2 + ";" + NGD);
-					//}else{
-						set.add(key1 + "," + key2 + ";" + NGD);
-					//}
+					set.add(key1 + "," + key2 + ";" + NGD);
 				}
 			}
 			Object[] objs = set.toArray();
-			File file = new File("citeulike/citeulike_NGD/" + no + "_" + "nNGD.txt");
+			//clean old File
+			File file = new File("citeulike/citeulike_NGD/" + fileName + "_" + "nNGD.txt");
 			file.delete();
 			BufferedWriter bw;
-			bw = new BufferedWriter(new FileWriter("citeulike/citeulike_NGD/" + no + "_"
+			bw = new BufferedWriter(new FileWriter("citeulike/citeulike_NGD/" + fileName + "_"
 					+ "nNGD.txt", false));
 			for (int j = 0; j < objs.length; j++) {
 
-				//System.out.println(objs[j]);
 				String objs_out = (String) objs[j];
 
 				try {
@@ -99,7 +84,6 @@ public class NGD_calculate {
 					bw.flush(); // 清空緩衝區
 
 				} catch (IOException f) {
-					// TODO Auto-generated catch block
 					f.printStackTrace();
 				}
 
@@ -113,7 +97,7 @@ public class NGD_calculate {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("檔案"+no+"處理完畢");
+		System.out.println("檔案"+fileName+"處理完畢");
 	}
 	
 	public static double NGD_cal(double x, double y, double m) {

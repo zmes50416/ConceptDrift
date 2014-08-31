@@ -19,22 +19,25 @@ public class Stem {
 		// TODO Auto-generated constructor stub
 	}
 
-	public static void stemming(String no) throws IOException {
-		System.out.println("處理檔案"+no+"中...");
-		FileReader FileStream = new FileReader("citeulike/citeulike_Number_of_term/"+no + "_" + "number_of_term.txt");
-		BufferedReader BufferedStream = new BufferedReader(FileStream);
-		String e = "";
+	public static void stemming(String fileName) throws IOException {
+		System.out.println("Stem:處理檔案"+fileName+"中...");
+		String numberOfTermPath = SettingManager.getSetting(SettingManager.NumOfTermDir);
+		String stemmedPath = SettingManager.getSetting(SettingManager.stemmedDir);
+		
+		BufferedReader termReader = new BufferedReader(new FileReader(numberOfTermPath +fileName));
+		String line;
 
-		ArrayList list = new ArrayList();
-		while ((e = BufferedStream.readLine()) != null) {
+		ArrayList<String> list = new ArrayList<String>();
+		while ((line = termReader.readLine()) != null) {
 			
-				list.add(e);
+				list.add(line);
 			
 			
 		}
+		termReader.close();
 		// System.out.println( list.toString());
-
 		Object[] datas = list.toArray();
+		//String[] datas = list.toArray(new String[list.size()]);
 		LinkedHashSet<String> set = new LinkedHashSet<String>();
 		for (int i = 0; i < datas.length; i++) {
 			String key = ((String) datas[i]).split(",")[0]; //first keyword
@@ -58,51 +61,22 @@ public class Stem {
 		
 		Object[] objs = set.toArray();
 		BufferedWriter bw;
-		bw = new BufferedWriter(new FileWriter("citeulike/citeulike_Stem/"+no + "_" + 
-				"stem.txt", false));
+		bw = new BufferedWriter(new FileWriter(stemmedPath + fileName, false));
 		for (int j = 0; j < objs.length; j++) {
 
-			//System.out.println(objs[j]);
 			String objs_out = (String) objs[j];
 
-			
-				
-
 				try {
-					
 					bw.write(objs_out);
 					bw.newLine();
 					bw.flush(); // 清空緩衝區
 					
-
 				} catch (IOException f) {
-					// TODO Auto-generated catch block
 					f.printStackTrace();
 				}
-
-			
 		}
 		bw.close(); // 關閉BufferedWriter物件
-		System.out.println("處理檔案"+no+"處理完畢");
-	}
-
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	// TODO Auto-generated method stub
-	public static void main(int no) throws IOException {
-		//stemming(no);
-	}
-
-	public static void main(String args[]) throws IOException {
-		// TODO Auto-generated method stub
-		File F = new File("citeulike/citeulike_Number_of_term/");
-		for(File f : F.listFiles()){
-			//System.out.println(f.getName().split("_")[0]);
-			stemming(f.getName().split("_")[0]);
-		}
-		//stemming(11);
+		System.out.println("處理檔案"+fileName+"處理完畢");
 	}
 
 }

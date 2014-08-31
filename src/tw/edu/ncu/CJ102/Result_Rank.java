@@ -37,7 +37,7 @@ public class Result_Rank {
 				String dupKey=key.split(",")[1]+","+key.split(",")[0];
 				Double value = Double.parseDouble(line.split(";")[1]);
 				if(!map_Data.containsKey(dupKey)&&!key.split(",")[1].equals(key.split(",")[0]))
-				map_Data.put(key, value);
+					map_Data.put(key, value);
 			}
 
 			List<Map.Entry<String, Double>> list_Data = new ArrayList<Map.Entry<String, Double>>(
@@ -51,8 +51,9 @@ public class Result_Rank {
 							return (int) ((o1.getValue() - o2.getValue()) * 1000.0);
 						}
 					});
+			//TODO Delete old Files
 			File file=new File("citeulike/citeulike_Rank/"+no + "_" + "Rank.txt");
-	file.delete();
+			file.delete();
 			BufferedWriter bw = new BufferedWriter(new FileWriter("citeulike/citeulike_Rank/"+no + "_" + "Rank.txt"));
 			//bw.write("");
 			//bw.newLine();
