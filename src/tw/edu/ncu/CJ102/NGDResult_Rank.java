@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Result_Rank {
+public class NGDResult_Rank {
 	public static void main(String args[])
 	{
 		File F = new File("citeulike/citeulike_NGD/");
@@ -24,20 +24,22 @@ public class Result_Rank {
 		}
 		//ranking(1);
 	}
-	public static void ranking(String no) {
-		System.out.println("處理檔案"+no+"中...");
+	public static void ranking(String fileName) {
+		String readPath = SettingManager.getSetting(SettingManager.NGDCalcDir);
+		String writePath = SettingManager.getSetting(SettingManager.NGDRankDir);
+		System.out.println("處理檔案"+fileName+"中...");
 		try {
 			
-			BufferedReader br = new BufferedReader(new FileReader("citeulike/citeulike_NGD/"+no + "_" + 
-					"nNGD.txt"));
+			BufferedReader fileReader = new BufferedReader(new FileReader(readPath +fileName));
 			Map<String, Double> map_Data = new HashMap<String, Double>();
 			String line = "";
-			while ((line = br.readLine()) != null) {
+			while ((line = fileReader.readLine()) != null) {
 				String key = line.split(";")[0];
 				String dupKey=key.split(",")[1]+","+key.split(",")[0];
 				Double value = Double.parseDouble(line.split(";")[1]);
-				if(!map_Data.containsKey(dupKey)&&!key.split(",")[1].equals(key.split(",")[0]))
+				if(!map_Data.containsKey(dupKey)&&!key.split(",")[1].equals(key.split(",")[0])){
 					map_Data.put(key, value);
+				}
 			}
 
 			List<Map.Entry<String, Double>> list_Data = new ArrayList<Map.Entry<String, Double>>(
@@ -52,9 +54,9 @@ public class Result_Rank {
 						}
 					});
 			//TODO Delete old Files
-			File file=new File("citeulike/citeulike_Rank/"+no + "_" + "Rank.txt");
-			file.delete();
-			BufferedWriter bw = new BufferedWriter(new FileWriter("citeulike/citeulike_Rank/"+no + "_" + "Rank.txt"));
+//			File file=new File("citeulike/citeulike_Rank/"+fileName + "_" + "Rank.txt");
+//			file.delete();
+			BufferedWriter bw = new BufferedWriter(new FileWriter(writePath+fileName));
 			//bw.write("");
 			//bw.newLine();
 
@@ -75,7 +77,7 @@ public class Result_Rank {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("檔案"+no+"處理完畢");
+		System.out.println("檔案"+fileName+"處理完畢");
 	}
 }
 

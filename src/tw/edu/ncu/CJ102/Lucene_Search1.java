@@ -1,25 +1,11 @@
 ﻿package tw.edu.ncu.CJ102;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
 
-import javax.swing.JTextArea;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
-
-import tw.edu.ncu.sia.util.ServerUtil;
 
 public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 	/**
@@ -29,6 +15,8 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 	 * 注意有可能會有ReadTimeout的例外可能！目前需要自行handle Exception!
 	 * 
 	 */
+	String indexPath = SettingManager.getSetting(SettingManager.IndexDir);
+
 	static class ParserGetter extends HTMLEditorKit {
 		// purely to make this methods public
 		public HTMLEditorKit.Parser getParser() {
@@ -44,11 +32,10 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 		
 	}
 	// one file at a time
-	public static void doit(String fileName,String path) throws IOException {
-		//做實驗時務必清空舊有資料不保證IO讀取乾淨
+	public void doit(String fileName,String path) throws IOException {
+		//TODO 做實驗時務必清空舊有資料不保證IO讀取乾淨
 		ParserGetter kit = new ParserGetter();
 		HTMLEditorKit.Parser parser = kit.getParser();
-		//HTMLEditorKit.ParserCallback callback = new Lucene_Search1();
 		BufferedReader BufferedStream = new BufferedReader(new FileReader(path + fileName));
 		
 		
@@ -58,19 +45,27 @@ public class Lucene_Search1 extends HTMLEditorKit.ParserCallback {
 		
 		int l = 0;
 		// ArrayList<String> stop_list = Stop_Loader.loadList("stop_list.txt");
-		try {
-			ServerUtil.testServerConnected();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		while ((line = BufferedStream.readLine()) != null) {
 			_sn = fileName;
 			t1 = System.currentTimeMillis();
 			SolrSearcher solr = new SolrSearcher();
+			long num = solr.searchIndexed(line, _sn);
+						
 			try {
-				solr.searchIndexed(line, _sn);
-			} catch (Exception e) {
+				BufferedWriter bw = new BufferedWriter(new FileWriter( indexPath + fileName, true));
+		
+				if (num > 0)
+				{
+					bw.write("約有 " + num + " 項結果");
+					 
+				} else if (num == 0)
+				{
+					bw.write("約有 0 項結果");
+				}
+				bw.newLine();
+				bw.flush(); // 清空緩衝區
+				bw.close();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			

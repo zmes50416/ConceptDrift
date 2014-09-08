@@ -7,9 +7,6 @@ import java.util.Properties;
  * TODO 增加一個檢查路徑方法並且應該要可以替換實驗集
  * TODO 
  */
-enum projectPath{
-	stemDir
-}
 class SettingManager {
 	/** 
 	 * @author 102鼎文
@@ -28,11 +25,17 @@ class SettingManager {
 	static final String POSFilterDIR = "POSDirPath";
 	static String EXPDIR = "ExperimentDirPath";
 	static String IndexDir = "IndexedDirPath";
+	static String IndexMultiTermDir = "MultiTermIndexResultDirPath";
 	static String PairDir = "PairDirPath";
 	static String TermRankDir = "TermRankDirPath";
 	static String NumOfTermDir = "NumberOfTermDirPath";
 	static String stemmedDir = "StemmedWordDirPath";
-	private static String projectName;
+	static String NGDCalcDir = "NGDCalculatedDirPath";
+	static String NGDRankDir = "NGDRankDirPath";
+	static String NGDToleranceDir = "NGDToleranceDirPath";
+	static String TFDir = "TermFreqDirPath";
+	static String conceptDir = "ConceptDirPath";
+	private String projectName; 
 	//static String 
 	private static SettingManager instance = new SettingManager();
 	Properties settingProps;
@@ -53,7 +56,8 @@ class SettingManager {
 	
 	public static String getSetting(String key){
 		if(instance.settingProps.getProperty(key)==null){
-			System.err.println("Can't Find Setting:"+key);
+			System.err.println("Can't Find Setting:"+key+"\n System ShoutDown");
+			System.exit(1);
 		}
 		return instance.settingProps.getProperty(key);
 	}
@@ -63,10 +67,17 @@ class SettingManager {
 		settingProps.put(KFCDIR, "Util/Keyword_output_freq/");
 		settingProps.put(POSFilterDIR, "Util/POS_filter/");
 		settingProps.put(IndexDir, "Util/WikiSearch/");
+		settingProps.put(IndexMultiTermDir, "Util/WikiSearchMultiTerm/");
 		settingProps.put(PairDir, "Util/Pair/");
 		settingProps.put(TermRankDir, "Util/TermRank/");
 		settingProps.put(NumOfTermDir, "Util/numberOfTerm/");
 		settingProps.put(stemmedDir, "Util/Stem/");
+		settingProps.put(NGDCalcDir, "Util/NGDCalc/");
+		settingProps.put(NGDRankDir, "Util/NGDRank/");
+		settingProps.put(TFDir, "Util/TF/");
+		settingProps.put(NGDToleranceDir, "Util/NGDTol/");
+		settingProps.put(conceptDir,"Util/concept/");
+		settingProps.put("SolrURL", "http://140.115.82.105/searchWeb");
 		try {
 			settingProps.storeToXML(new FileOutputStream("setting.xml"), "XMLSetting, You can change setting from here");
 		} catch (FileNotFoundException e) {
@@ -81,10 +92,10 @@ class SettingManager {
 	public void createProject(){
 		
 	}
-	public void loadProject(){
-		
+	public void loadProject(String projectName){
+		this.projectName = projectName;
 	}
-	private void checkDirExsit(){
+	public void prepare(){
 		
 	}
 	

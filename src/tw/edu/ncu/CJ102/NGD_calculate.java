@@ -13,9 +13,10 @@ public class NGD_calculate {
 	
 	
 	public static void NGD(String fileName) {
-		String pairPath = SettingManager.getSetting(SettingManager.PairDir);
+		String pairPath = SettingManager.getSetting(SettingManager.IndexMultiTermDir);//should be the GoogleFilter2 result
 		String stemmedPath = SettingManager.getSetting(SettingManager.stemmedDir);
-		System.out.println("處理檔案"+fileName+"中...");
+		String writePath = SettingManager.getSetting(SettingManager.NGDCalcDir);
+//		System.out.println("處理檔案"+fileName+"中...");
 		try {
 			//組合字部分
 			//NumberOfPair
@@ -67,12 +68,11 @@ public class NGD_calculate {
 				}
 			}
 			Object[] objs = set.toArray();
-			//clean old File
-			File file = new File("citeulike/citeulike_NGD/" + fileName + "_" + "nNGD.txt");
-			file.delete();
+			//TODO clean old File
+//			File file = new File("citeulike/citeulike_NGD/" + fileName + "_" + "nNGD.txt");
+//			file.delete();
 			BufferedWriter bw;
-			bw = new BufferedWriter(new FileWriter("citeulike/citeulike_NGD/" + fileName + "_"
-					+ "nNGD.txt", false));
+			bw = new BufferedWriter(new FileWriter(writePath + fileName, false));
 			for (int j = 0; j < objs.length; j++) {
 
 				String objs_out = (String) objs[j];
@@ -90,14 +90,11 @@ public class NGD_calculate {
 			}
 			bw.close(); // 關閉BufferedWriter物件
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("檔案"+fileName+"處理完畢");
+//		System.out.println("檔案"+fileName+"處理完畢");
 	}
 	
 	public static double NGD_cal(double x, double y, double m) {
@@ -110,7 +107,7 @@ public class NGD_calculate {
 
 		//9.906是Google的
 		//double logN = 5.507;
-		double logN = 6.627;
+		double logN = 6.627;//LogN 為總體文件(N)的Log10值 TODO 應該設定自動取得此值(用Solr *:* query應該即可)
 		//4.64是Lucnen的
 		//double logN = 4.64;
 

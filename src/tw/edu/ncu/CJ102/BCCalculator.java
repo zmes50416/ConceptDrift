@@ -13,10 +13,10 @@ import java.util.Map.Entry;
 import javax.swing.JFrame;
 
 import org.apache.commons.collections15.Transformer;
+import org.apache.commons.io.FilenameUtils;
 
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.algorithms.cluster.WeakComponentClusterer;
-
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.scoring.BetweennessCentrality;
@@ -26,15 +26,23 @@ import edu.uci.ics.jung.graph.SparseMultigraph;
 import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
-
+/**
+ * Rewrite from TOM_BetwennesCentrarity
+ * 
+ * @author TingWen
+ *
+ */
 //for test!!!
-public class TOM_betweennessCentrality {
+public class BCCalculator {
+	String readNGDRankPath;
+	String readTFPath;
+	String writeConceptPath;
 	
 	double core_threshold = 0.75; //取多少當作核心
 	double betweeness_threshold = 0.35; //去掉多少連線
 	
 	double simMin;
-	
+	//Bunch of var, need Comment!
 	Set<String> vertices;
 	Set<String> edges;
 	Map<String, Double> map;
@@ -44,16 +52,24 @@ public class TOM_betweennessCentrality {
 	Map<String,Integer> clustermap;
 	
 	List<Map.Entry<String, Integer>> sort_data;
-	
-	LinkedList<String> linkList;
-	
+	LinkedList<String> ngdList;
 	Graph<String, link> g;
-	
 	Map<link, Pair<String>> edges_removed;
 	
+	BCCalculator(String NGDRankDir, String NGDTolDir,String ConceptDir){
+		this.readNGDRankPath = NGDRankDir;
+		this.readTFPath = NGDTolDir;
+		this.writeConceptPath = ConceptDir;
+	}
+	public void start(){
+		File[] files = new File(this.readNGDRankPath).listFiles();
+		for(File f:files){
+			this.betweenness_cal(this.readNGDRankPath,this.writeConceptPath,f.getName(),true);
+		}
+	}
 	//參數: 分群資料來源, 分群後資料存放地點, 檔名
 	public Map<String, Integer> betweenness_cal(String source_dir, String resultDir, String conceptFile, boolean changeSimMin){
-		linkList = new LinkedList<String>();
+		ngdList = new LinkedList<String>();
 		vertices = new HashSet<String>();
 		edges = new HashSet<String>();
 		map = new HashMap<String, Double>();
@@ -65,28 +81,10 @@ public class TOM_betweennessCentrality {
 		
 		g = new SparseMultigraph<String, link>();
 		
-		BufferedReader br,br2,Tom_bcr1;
-		BufferedWriter bw,bw2,bw3;
+		BufferedReader ngdReader,termFreqReader;
+		BufferedWriter bw,bw3;
 		
-		String filename = "";
-		//reuters資料集的檔名萃取方法
-		for(int i=0; i<conceptFile.split("_").length;i++){
-			//System.out.println("filename = "+ filename);
-			if(i==0){
-				filename=conceptFile.split("_")[0];
-			}else{
-				char[] filename_temp = conceptFile.split("_")[i].toCharArray();
-				if(!Character.isDigit(filename_temp[0])){ //如果第一個字元是數字代表到檔名結尾了
-					filename=filename+"_"+conceptFile.split("_")[i];
-				}else{
-					filename=filename+"_"+conceptFile.split("_")[i];
-					break;
-				}
-			}
-		}
-		
-		//citeulike資料集的檔名萃取方法
-		//filename = conceptFile.split("_")[0];
+		String filename = FilenameUtils.removeExtension(conceptFile);
 		
 		String conceptsFile = filename+"_concepts.txt";
 		String centerFile = filename+"_centers.txt";
@@ -96,31 +94,31 @@ public class TOM_betweennessCentrality {
 		try {
 			//br = new BufferedReader(new FileReader(source_dir +"/"+ conceptFile));
 			//br = new BufferedReader(new FileReader(source_dir +"/"+ filename +"_TolNGD.txt"));
-			br = new BufferedReader(new FileReader(source_dir +"/"+ filename +"_Rank.txt"));
-			br2 = new BufferedReader(new FileReader("citeulike/citeulike_sTF_score/"+filename+"_Term_TFcalculate.txt"));
+			ngdReader = new BufferedReader(new FileReader(source_dir+ filename+".txt"));
+			termFreqReader = new BufferedReader(new FileReader(this.readTFPath+filename+".txt"));
 			
-			bw = new BufferedWriter(new FileWriter(resultDir +"/"+ conceptsFile));//處理後的概念群
+			bw = new BufferedWriter(new FileWriter(resultDir + conceptsFile));//處理後的概念群
 			//bw2 =  new BufferedWriter(new FileWriter(resultDir +"/centers/"+ centerFile));//各概念群挑選過的結果
-			bw3 =  new BufferedWriter(new FileWriter("time/bc.txt", true));//紀錄時間
+			bw3 =  new BufferedWriter(new FileWriter("Util/time/bc.txt", true));//紀錄時間
 			
 			String line;
 			//取出此檔案的所有字詞與權重
-			while((line=br2.readLine())!=null){
+			while((line=termFreqReader.readLine())!=null){
 				String v1 = line.split(",")[0];
 				TF_term.put(v1,Integer.valueOf(line.split(",")[1]));
 			}
 			
-			while ((line = br.readLine()) != null && Double.parseDouble(line.split(",")[2])<1) {
-				linkList.add(line);
+			while ((line = ngdReader.readLine()) != null && Double.parseDouble(line.split(",")[2])<1) {
+				ngdList.add(line);
 			}
 			
-			if(changeSimMin && linkList.size()!=0){
-				simMin = Double.parseDouble(linkList.get(linkList.size()/2).split(",")[2]);
+			if(changeSimMin && ngdList.size()!=0){
+				simMin = Double.parseDouble(ngdList.get(ngdList.size()/2).split(",")[2]);//取NGD中位數
 			}
 			double save_simMin = simMin;
 			//simMin = 1; //alldata
 			//simMin = 0.6856923160192606; //10sametrain
-			for(String s : linkList){
+			for(String s : ngdList){
 				if(Double.parseDouble(s.split(",")[2]) <= simMin){
 				String vertex1 = s.split(",")[0];
 				String vertex2 = s.split(",")[1];
@@ -137,20 +135,20 @@ public class TOM_betweennessCentrality {
 				
 			}
 			//simMin = 0.679174915480266;
-			br.close();
-			bw.write(""+save_simMin); 
+			ngdReader.close();
+			bw.write("NGD中位數:"+save_simMin); 
 			bw.newLine();
 			bw.flush();
 			
-			
+			//將頂點塞進g
 			for(String v : vertices){
 				g.addVertex(v);
 			}
-			
+			//將邊也塞入g
 			for(String e : edges){
 				link l = new link(e,map.get(e));
 				g.addEdge(l , e.split(",")[0], e.split(",")[1]);
-				linkmap.put(e,l);
+				linkmap.put(e,l);//Unknow useage...
 			}
 		     
 		    //原始的分群，邊權重為1
@@ -163,7 +161,7 @@ public class TOM_betweennessCentrality {
 			
 			long t2 = System.currentTimeMillis();
 			
-			bw3.write(g.getEdgeCount()+","+map.size()*betweeness_threshold+":"+(t2-t1));
+			bw3.write(g.getEdgeCount()+","+map.size()*betweeness_threshold+":SpendTime:"+(t2-t1));
 			bw3.newLine();
 			bw3.close();
 			
@@ -382,7 +380,6 @@ public class TOM_betweennessCentrality {
 	public static void main(String args[]){
 		//new betweennessCentrality().betweenness_cal(10);
 		
-		TOM_betweennessCentrality bc = new TOM_betweennessCentrality();
 		//bc.betweeness_threshold = 0.5; 
 		
 		//要計算中間度分群資料檔名的來源
@@ -394,7 +391,7 @@ public class TOM_betweennessCentrality {
 			System.out.print("目前處理檔案為"+f.getName()+"\n");
 			//bc.betweenness_cal("citeulike/citeulike_NGD_Tolerance_0.4/", "citeulike/citeulike_Tom_citeulike_0.4/", f.getName(), true);
 			//bc.betweenness_cal("source_dir", "Tom_reuters/multi", f.getName(), true);
-			bc.betweenness_cal("citeulike/citeulike_Rank", "citeulike/citeulike_Tom_citeulike_noTolerance", f.getName(), true);
+			//bc.betweenness_cal("citeulike/citeulike_Rank", "citeulike/citeulike_Tom_citeulike_noTolerance", f.getName(), true);
 		}
 	}
 }
