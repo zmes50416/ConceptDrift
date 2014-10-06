@@ -20,7 +20,7 @@ import org.apache.solr.common.SolrDocumentList;
 public class SolrSearcher {
 	private static CommonsHttpSolrServer server=null; // Singleton Design pattern only access it by getServer() to ensure connection
 	private static Boolean initialize(){
-		String url = SettingManager.getSetting("solrURL");
+		String url = SettingManager.getSetting(SettingManager.ServerURL);
 		try {
 			server = new CommonsHttpSolrServer(url); // last two parameter will determined by Computer Power. Higher mean more speedy Index
 		} catch (MalformedURLException e) {
@@ -77,7 +77,8 @@ public class SolrSearcher {
 	public void search(){
 		
 	}
-	public void getHits(String key){
+	public static double getHits(String key){
 		//TODO reimplement the method from UtilServer
+		return 0.0;
 	}
 }

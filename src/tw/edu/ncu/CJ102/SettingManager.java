@@ -35,6 +35,7 @@ class SettingManager {
 	static String NGDToleranceDir = "NGDToleranceDirPath";
 	static String TFDir = "TermFreqDirPath";
 	static String conceptDir = "ConceptDirPath";
+	static String ServerURL = "SolrURL";
 	private String projectName; 
 	//static String 
 	private static SettingManager instance = new SettingManager();
@@ -77,7 +78,7 @@ class SettingManager {
 		settingProps.put(TFDir, "Util/TF/");
 		settingProps.put(NGDToleranceDir, "Util/NGDTol/");
 		settingProps.put(conceptDir,"Util/concept/");
-		settingProps.put("SolrURL", "http://140.115.82.105/searchWeb");
+		settingProps.put(ServerURL, "http://140.115.82.105/searchweb");
 		try {
 			settingProps.storeToXML(new FileOutputStream("setting.xml"), "XMLSetting, You can change setting from here");
 		} catch (FileNotFoundException e) {

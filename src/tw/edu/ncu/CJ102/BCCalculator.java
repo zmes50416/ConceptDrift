@@ -28,11 +28,10 @@ import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 /**
  * Rewrite from TOM_BetwennesCentrarity
- * 
+ * it is really a mess
  * @author TingWen
  *
  */
-//for test!!!
 public class BCCalculator {
 	String readNGDRankPath;
 	String readTFPath;
@@ -54,7 +53,7 @@ public class BCCalculator {
 	List<Map.Entry<String, Integer>> sort_data;
 	LinkedList<String> ngdList;
 	Graph<String, link> g;
-	Map<link, Pair<String>> edges_removed;
+	Map<link, Pair<String>> edges_removed; //should not be access by main process and function at the same time
 	
 	BCCalculator(String NGDRankDir, String NGDTolDir,String ConceptDir){
 		this.readNGDRankPath = NGDRankDir;
@@ -98,7 +97,6 @@ public class BCCalculator {
 			termFreqReader = new BufferedReader(new FileReader(this.readTFPath+filename+".txt"));
 			
 			bw = new BufferedWriter(new FileWriter(resultDir + conceptsFile));//處理後的概念群
-			//bw2 =  new BufferedWriter(new FileWriter(resultDir +"/centers/"+ centerFile));//各概念群挑選過的結果
 			bw3 =  new BufferedWriter(new FileWriter("Util/time/bc.txt", true));//紀錄時間
 			
 			String line;
@@ -116,12 +114,10 @@ public class BCCalculator {
 				simMin = Double.parseDouble(ngdList.get(ngdList.size()/2).split(",")[2]);//取NGD中位數
 			}
 			double save_simMin = simMin;
-			//simMin = 1; //alldata
-			//simMin = 0.6856923160192606; //10sametrain
-			for(String s : ngdList){
-				if(Double.parseDouble(s.split(",")[2]) <= simMin){
-				String vertex1 = s.split(",")[0];
-				String vertex2 = s.split(",")[1];
+			for(String ngdEdge : ngdList){
+				if(Double.parseDouble(ngdEdge.split(",")[2]) <= simMin){
+				String vertex1 = ngdEdge.split(",")[0];
+				String vertex2 = ngdEdge.split(",")[1];
 				String edge = vertex1+","+vertex2;
 				
 				vertices.add(vertex1);
@@ -129,14 +125,13 @@ public class BCCalculator {
 				
 				edges.add(edge);
 				
-				map.put(edge, Double.parseDouble(s.split(",")[2]));
+				map.put(edge, Double.parseDouble(ngdEdge.split(",")[2]));
 				
 				}
 				
 			}
-			//simMin = 0.679174915480266;
 			ngdReader.close();
-			bw.write("NGD中位數:"+save_simMin); 
+			bw.write(""+save_simMin);//NGD中位數:
 			bw.newLine();
 			bw.flush();
 			
@@ -149,11 +144,7 @@ public class BCCalculator {
 				link l = new link(e,map.get(e));
 				g.addEdge(l , e.split(",")[0], e.split(",")[1]);
 				linkmap.put(e,l);//Unknow useage...
-			}
-		     
-		    //原始的分群，邊權重為1
-			//EdgeBetweennessClusterer<String,link> cluster = 
-			//		new EdgeBetweennessClusterer<String,link>((int) (map.size()*betweeness_threshold)); 
+			} 
 			
 			long t1 = System.currentTimeMillis();
 			
@@ -233,43 +224,7 @@ public class BCCalculator {
 							}
 						});	*/
 				
-				//之前方法
-				/*String name;
-				if(conceptFile.equals("concept.txt")){
-					name = "Stem/a_Term_calculate(onlyterm)_stem.txt";
-					Tom_bcr1 = new BufferedReader(new FileReader(name));
-				}else{
-					name = "Stem/"+conceptFile.split("_")[0]+"_"+conceptFile.split("_")[1]+"_Term_calculate_stem.txt";
-					Tom_bcr1 = new BufferedReader(new FileReader(name));
-				}
-				System.out.println("配對TF分數檔案 : "+name);
-				String readline;
-				int j = 0;
-				readline = Tom_bcr1.readLine();
-				while(j<=terms_cum&&readline!=null){
-					System.out.println("readline="+readline+" , j="+j);
-					readline = readline.split(",")[0];
-					if(degreemap.get(readline)!=null){
-						j++;
-						bw2.write(readline+","+degreemap.get(readline)+","+i); //字,degree,群 (main_concepts
-						bw2.newLine();
-						bw2.flush();
-					}else{
-						System.out.print(readline+" 找不到對應群\n");
-					}
-					readline = Tom_bcr1.readLine();
-				}
-				Tom_bcr1.close();*/
 				
-				//學長方法
-				/*for(int j=0;j< sort_data.size()*core_threshold;j++ ){
-					Entry<String, Integer> e = sort_data.get(j);
-				//for(Entry<String, Integer> e : sort_data){
-					bw2.write(e.getKey()+","+e.getValue()+","+i); //字,degree,群 (main_concepts
-					bw2.newLine();
-					bw2.flush();		
-				//}
-				}*/				
 				i++;
 			}
 			bw.close();
@@ -303,7 +258,8 @@ public class BCCalculator {
 		edges_removed = new LinkedHashMap<link, Pair<String>>();;
 		
 		Transformer<link, Double> wtTransformer = new Transformer<link,Double>() {
-            public Double transform(link link) {
+            @Override
+			public Double transform(link link) {
                 return link.weight;
             }
 		};
@@ -312,7 +268,6 @@ public class BCCalculator {
             throw new IllegalArgumentException("Invalid number of edges passed in.");
         }
         
-        Double bigest,distan;
         for (int k=0;k<mNumEdgesToRemove;k++) {
         	BetweennessCentrality<String,link> bc = 
             		new BetweennessCentrality<String,link>(graph, wtTransformer);
@@ -324,21 +279,12 @@ public class BCCalculator {
                     to_remove = e;
                     score = bc.getEdgeScore(e);
                 }
-        	/*link to_remove = null;
-        	bigest=0.0;
-        	for (link e : graph.getEdges()){
-        		distan = map.get(e.toString());
-    			if(bigest<=distan){
-    				to_remove = e;
-    			}
-    		}*/
-        	//System.out.print("判斷不相連邊為 = "+to_remove.id+"\n");
             edges_removed.put(to_remove, graph.getEndpoints(to_remove));
             graph.removeEdge(to_remove);
         }
 
         WeakComponentClusterer<String,link> wcSearch = new WeakComponentClusterer<String,link>();
-        Set<Set<String>> clusterSet = wcSearch.transform(graph);
+        Set<Set<String>> clusterSet = wcSearch.transform(graph); 
 
         for (Map.Entry<link, Pair<String>> entry : edges_removed.entrySet())
         {
@@ -351,7 +297,7 @@ public class BCCalculator {
         return clusterSet;
 
 	}
-	
+	// TODO what is this for? Ask 學長
 	public <V,E> double computeModularity (Graph<V,E> g, Map<String,Integer> moduleMembership) {
 		System.err.println("Computing Modularity...");
 		
