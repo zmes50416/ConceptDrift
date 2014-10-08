@@ -57,27 +57,25 @@ public class UserProfile {
 		GU.add_user_profile_term(User_profile_test,doc_test,topic_test);
 	}
 	
-	//輸入參數是String實驗資料匣、原使用者模型(字詞)、文件內容資訊、主題的映射，回傳的事更新後的使用這模型(字詞)
+	//輸入參數是原使用者模型(字詞)、文件內容資訊、主題的映射
+	//回傳的是更新後的使用者模型(字詞)
 	public HashMap<Integer,HashMap<String,Double>> add_user_profile_term(HashMap<Integer,HashMap<String,Double>> User_profile_term, HashMap<Integer,HashMap<String,Double>> doc_term, HashMap<Integer,Integer> topic_mapping){
 		//將個文件主題的字詞TF分數依據得到的主題映射關係存入使用者模型中
 		for(int i: doc_term.keySet()){
 			//先取出兩個相對映的主題
-			HashMap<String, Double> doc_topic;
-			doc_topic = new HashMap(doc_term.get(i));
-			HashMap<String, Double> User_profile_topic;
-			//User_profile_topic = User_profile_term.get(topic_mapping.get(i));
+			HashMap<String, Double> doc_topic = new HashMap(doc_term.get(i));
+			HashMap<String, Double> User_profile_topic; //使用者Topic
 			if(User_profile_term.get(topic_mapping.get(i))==null){
 				User_profile_topic = new HashMap<String, Double>();
 				User_profile_topic.put("temp", 0.0); //新主題的初始化
 				term_had_changed.add("temp");
 			}else{
-				User_profile_topic = new HashMap( User_profile_term.get(topic_mapping.get(i)));
+				User_profile_topic = new HashMap<String, Double>( User_profile_term.get(topic_mapping.get(i)));
 			}
 			
 			//將主題內的字詞分數存入使用者模型 (更新)
 			for(String s: doc_topic.keySet()){
 				if(!term_had_changed.contains(s)){
-					//System.out.println("將字詞"+s+"存入更動字詞列表");
 					term_had_changed.add(s); //將字詞存入，以便每天字詞分數與遺忘因子總整理時提出
 				}
 				if(User_profile_topic.get(s)!=null){ //主題的舊字詞就以累加的方式存入
