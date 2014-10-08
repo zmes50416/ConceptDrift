@@ -11,15 +11,16 @@ import java.util.HashMap;
 
 
 public class Tom_exp {
-
+	BufferedReader br,br2,br3,br4; //br用來讀目前的user_profile，br2用來讀文件，br3用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
+	BufferedWriter bw2,bw3; //bw2用來紀錄讀取文件的順序，bw3用來紀錄遺忘因子文件與主題關係文件
+	BufferedWriter EfficacyMeasure_w, Time_w; //EfficacyMeasure_w用來紀錄系統效能，Time_w用來紀錄系統執行時間
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		BufferedReader br,br2,br3,br4; //br用來讀目前的user_profile，br2用來讀文件，br3用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
-		BufferedWriter bw2,bw3; //bw2用來紀錄讀取文件的順序，bw3用來紀錄遺忘因子文件與主題關係文件
-		BufferedWriter EfficacyMeasure_w, Time_w; //EfficacyMeasure_w用來紀錄系統效能，Time_w用來紀錄系統執行時間
+	public static void main(String[] args){
+		new Tom_exp().start();
+	}
+	public void start() {
 		double train_sum_time_read_doc = 0, test_sum_time_read_doc = 0, train_time_read_doc = 0, test_time_read_doc = 0; //讀取文件的總時間
 		double train_sum_time_read_profile = 0, test_sum_time_read_profile = 0, train_time_read_profile = 0, test_time_read_profile = 0; //讀取模型的總時間
 		double train_sum_time_topic_mapping = 0, test_sum_time_topic_mapping = 0, train_time_topic_mapping = 0, test_time_topic_mapping = 0; //主題映射的總時間
@@ -40,10 +41,9 @@ public class Tom_exp {
 		int TP, TN, FP, FN;
 		TOM_ComperRelateness TC = new TOM_ComperRelateness();
 		Go_Training_Tom GTT = new Go_Training_Tom();
-		Go_User_profile GU = new Go_User_profile();
+		UserProfile userProfiler = new UserProfile(false);
 		ConceptDrift_Forecasting CDF = new ConceptDrift_Forecasting();
 		String dir = "exp_acq_DecayFactor_fs_fix0.05/";
-		int days = 15; //Reuters-實驗天數
 		int train_days = 0, test_days = -1; //citeulike-實驗天數，0為全部，-1為不使用
 		String real_people = "626838af45efa5ca465683ab3b3f303e"; //選擇citeulike資料流
 		FileWriter FWrite;
@@ -63,11 +63,12 @@ public class Tom_exp {
 		//int test_fs_num;
 		
 		try {
+			int days = 15; //Reuters-實驗天數
 			new File(dir).mkdirs(); //創造出實驗資料匣
 			new File(dir+"user_porfile").mkdirs(); //創造出實驗使用者模型資料匣
 			Time_w = new BufferedWriter(new FileWriter(dir+"time.txt"));
 			
-			/*//以下為實驗個資料匣與訓練、測試資料集創建程式片段，如要執行同實驗請註解掉
+			//以下為實驗個資料匣與訓練、測試資料集創建程式片段，如要執行同實驗請註解掉
 			StartTime = System.currentTimeMillis();
 			Time_w.write("訓練與測試集產生中 :");
 			Time_w.newLine();
@@ -94,6 +95,7 @@ public class Tom_exp {
 				//}
 			}
 			//以上為Reuters訓練、測試資料集創建程式碼
+			/*
 			//以下為CiteULike訓練、測試資料集創建程式碼
 			System.out.println("Real Word資料流為: "+real_people);
 			days = GTT.real_word_generateSet("citeulike/citeulike_Tom_citeulike_0.4/",dir,real_people,train_days,test_days);
@@ -246,8 +248,8 @@ public class Tom_exp {
 						}
 						doc_term.put(group,new HashMap(topic_term));
 					}
-					GU.sum_avg_docTF(docTF);
-					GU.sum_avg_termTF(docTF,doc_term_count);
+					userProfiler.sum_avg_docTF(docTF);
+					userProfiler.sum_avg_termTF(docTF,doc_term_count);
 					br2.close();
 					//如果文件完全沒有特徵字詞會使得程式出錯，因此對這種文件放入一個temp字詞，之後再想辦法解決
 					if(doc_term.get(1)==null){
@@ -308,12 +310,12 @@ public class Tom_exp {
 					//使用使用者模型主題字詞更新，來取得更新後的主題字詞
 					//此步驟也會用到遺忘因子
 					StartTime = System.currentTimeMillis();
-					User_profile_term = GU.add_user_profile_term(dir,User_profile_term, doc_term, topic_mapping);
+					User_profile_term = userProfiler.add_user_profile_term(User_profile_term, doc_term, topic_mapping);
 					EndTime = System.currentTimeMillis();
 					train_time_add_user_profile = train_time_add_user_profile + ((EndTime-StartTime)/1000);
 					
 					//輸出使用者模型
-					GU.out_new_user_profile(dir,preprocess_times,User_profile_term);
+					userProfiler.out_new_user_profile(dir,preprocess_times,User_profile_term);
 					System.err.println("文件"+dir+"training/day_"+day+"/"+train_f.getName()+"處理結束");
 				}
 				
@@ -427,16 +429,16 @@ public class Tom_exp {
 				System.out.println("使用者模型天更新處理...");
 				StartTime = System.currentTimeMillis();
 				//每日需執行的遺忘因子的作用
-				User_profile_term = GU.update_OneDayTerm_Decay_Factor(dir, User_profile_term);
+				User_profile_term = userProfiler.update_OneDayTerm_Decay_Factor(dir, User_profile_term);
 				//每日需執行的字詞去除
-				User_profile_term = GU.interest_remove_term(dir, User_profile_term, day);
+				User_profile_term = userProfiler.interest_remove_term(dir, User_profile_term, day);
 				//每日需執行的興趣去除
-				User_profile_term = GU.interest_remove_doc(dir, User_profile_term, day);
+				User_profile_term = userProfiler.interest_remove_doc(dir, User_profile_term, day);
 				//概念飄移預測
 				CDF.forecasting_NGDorSIM(dir);
 				
 				//將更新後的profile寫入
-				GU.out_new_user_profile(dir, preprocess_times, User_profile_term);
+				userProfiler.out_new_user_profile(dir, preprocess_times, User_profile_term);
 				EndTime = System.currentTimeMillis();
 				sum_time_update_OneDayTerm = sum_time_update_OneDayTerm + ((EndTime-StartTime)/1000);
 				
@@ -448,7 +450,7 @@ public class Tom_exp {
 				System.out.println("精準率為 " + TC.get_precision());
 				System.out.println("查全度為 " + TC.get_recall());
 				System.out.println("F-measure為 " + TC.get_f_measure());
-				System.out.println("概念飄移次數為: " + (GU.get_ConceptDrift_times()+TC.get_ConceptDrift_times()));
+				System.out.println("概念飄移次數為: " + (userProfiler.get_ConceptDrift_times()+TC.get_ConceptDrift_times()));
 				System.out.println("預測而連接的主題關係邊數為: " + CDF.get_forecasting_times());
 				double all_result[] = TC.get_all_result();
 				EfficacyMeasure_w.write("TP="+all_result[0]+", TN="+all_result[1]+", FP="+all_result[2]+", FN="+all_result[3]);
@@ -463,7 +465,7 @@ public class Tom_exp {
 				EfficacyMeasure_w.newLine();
 				EfficacyMeasure_w.write("F-measure為: " + TC.get_f_measure());
 				EfficacyMeasure_w.newLine();
-				EfficacyMeasure_w.write("概念飄移次數為: " + (GU.get_ConceptDrift_times()+TC.get_ConceptDrift_times()));
+				EfficacyMeasure_w.write("概念飄移次數為: " + (userProfiler.get_ConceptDrift_times()+TC.get_ConceptDrift_times()));
 				EfficacyMeasure_w.newLine();
 				EfficacyMeasure_w.write("預測而連接的主題關係邊數為: " + CDF.get_forecasting_times());
 				EfficacyMeasure_w.newLine();

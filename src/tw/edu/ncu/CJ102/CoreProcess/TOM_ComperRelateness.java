@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import tw.edu.ncu.CJ102.NGD_calculate;
-import tw.edu.ncu.sia.util.ServerUtil;
+import tw.edu.ncu.CJ102.SolrSearcher;
 
 
 public class TOM_ComperRelateness {
@@ -53,12 +53,6 @@ public class TOM_ComperRelateness {
 		HashMap<String,Double> sure_update_term = new HashMap<String,Double>(); //文檢主題i會被保存下來的字詞*/
 		//update_doc.clear();
 		
-		try {
-			ServerUtil.initialize();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		FileWriter FWrite;
 		try{
@@ -136,10 +130,10 @@ public class TOM_ComperRelateness {
 						for(String profile_term: profile.get(j).keySet()){
 							double term_tf = profile.get(j).get(profile_term);
 							//System.out.println(doc_term+","+profile_term+" ngd計算");
-							double a = ServerUtil.getHits("\""+doc_term+"\"");
-							double b = ServerUtil.getHits("\""+profile_term+"\"");
+							double a = SolrSearcher.getHits("\""+doc_term+"\"");
+							double b = SolrSearcher.getHits("\""+profile_term+"\"");
 							//System.err.println("測試文件與使用者模組概念比對 Query: +\""+doc_term+"\" +\""+profile_term+"\"");
-							double mValue = ServerUtil.getHits("+\""+doc_term+"\" +\""+profile_term+"\"");
+							double mValue = SolrSearcher.getHits("+\""+doc_term+"\" +\""+profile_term+"\"");
 							
 							double NGD = NGD_calculate.NGD_cal(a,b,mValue);
 							if(NGD<=doc_ngd){

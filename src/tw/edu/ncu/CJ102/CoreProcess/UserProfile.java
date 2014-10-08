@@ -10,24 +10,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 
-public class Go_User_profile {
-
+public class UserProfile {
 	/**
+	 * User profile data and decay
 	 * @param args
 	 */
-	/*//動態遺忘因子模式
-	double DecayFactor_top = 0.55; //遺忘因子上限
-	double DecayFactor_botton = 0.02; //遺忘因子下限
-	double DecayFactor_plus = 0.079; //遺忘因子加速值
-	double DecayFactor_minus = 0.075; //遺忘因子減緩值
-	double DecayFactor_init = DecayFactor_plus*2; //遺忘因子初始值*/
-	
-	//固定遺忘因子模式 0 0.285，top、botton、init都要調一樣的，其他都0
-	double DecayFactor_top = 0.05; //遺忘因子上限
-	double DecayFactor_botton = 0.05; //遺忘因子下限
-	double DecayFactor_plus = 0; //遺忘因子加速值
-	double DecayFactor_minus = 0; //遺忘因子減緩值
-	double DecayFactor_init = 0.05; //遺忘因子初始值*/
+	boolean isDynamicDecayMode;
+	double DecayFactor_top;	//遺忘因子上限
+	double DecayFactor_botton;//遺忘因子下限
+	double DecayFactor_plus;//遺忘因子加速值
+	double DecayFactor_minus; //遺忘因子減緩值
+	double DecayFactor_init; //遺忘因子初始值*/
 	
 	double sum_avg_docTF = 0; //累計平均單文件總TF值
 	double sum_avg_termTF = 0; //累計平均單字詞TF值
@@ -37,26 +30,41 @@ public class Go_User_profile {
 	static ArrayList<String> term_had_changed = new ArrayList<String>();
 	int ConceptDrift_times = 0; //概念飄移次數
 	
+	public UserProfile(boolean isDynamicDecayMode){
+		this.isDynamicDecayMode = isDynamicDecayMode;
+		if(this.isDynamicDecayMode){
+			 DecayFactor_top = 0.55;
+			 DecayFactor_botton = 0.02; 
+			 DecayFactor_plus = 0.079; 
+			 DecayFactor_minus = 0.075; 
+			 DecayFactor_init = DecayFactor_plus*2;
+		}else{
+			 DecayFactor_top = 0.05;
+			 DecayFactor_botton = 0.05;
+			 DecayFactor_plus = 0; 
+			 DecayFactor_minus = 0; 
+			 DecayFactor_init = 0.05; 
+		}
+	}
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		HashMap<Integer,HashMap<String,Double>> User_profile_test = new HashMap<Integer,HashMap<String,Double>>();
 		HashMap<Integer,HashMap<String,Double>> doc_test = new HashMap<Integer,HashMap<String,Double>>();
 		HashMap<Integer,Integer> topic_test = new HashMap<Integer,Integer>();
 		User_profile_test.put(0, null);
 		doc_test.put(0, null);
 		topic_test.put(0, null);
-		Go_User_profile GU = new Go_User_profile();
-		GU.add_user_profile_term("Tom_exp/",User_profile_test,doc_test,topic_test);
+		UserProfile GU = new UserProfile(false);
+		GU.add_user_profile_term(User_profile_test,doc_test,topic_test);
 	}
 	
 	//輸入參數是String實驗資料匣、原使用者模型(字詞)、文件內容資訊、主題的映射，回傳的事更新後的使用這模型(字詞)
-	public HashMap<Integer,HashMap<String,Double>> add_user_profile_term(String exp_dir,HashMap<Integer,HashMap<String,Double>> User_profile_term, HashMap<Integer,HashMap<String,Double>> doc_term, HashMap<Integer,Integer> topic_mapping){
+	public HashMap<Integer,HashMap<String,Double>> add_user_profile_term(HashMap<Integer,HashMap<String,Double>> User_profile_term, HashMap<Integer,HashMap<String,Double>> doc_term, HashMap<Integer,Integer> topic_mapping){
 		//將個文件主題的字詞TF分數依據得到的主題映射關係存入使用者模型中
 		for(int i: doc_term.keySet()){
 			//先取出兩個相對映的主題
-			HashMap<String, Double> doc_topic;// = new HashMap<String, Double>();
+			HashMap<String, Double> doc_topic;
 			doc_topic = new HashMap(doc_term.get(i));
-			HashMap<String, Double> User_profile_topic;// = new HashMap<String, Double>();
+			HashMap<String, Double> User_profile_topic;
 			//User_profile_topic = User_profile_term.get(topic_mapping.get(i));
 			if(User_profile_term.get(topic_mapping.get(i))==null){
 				User_profile_topic = new HashMap<String, Double>();

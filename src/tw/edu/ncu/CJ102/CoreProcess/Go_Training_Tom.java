@@ -26,9 +26,9 @@ public class Go_Training_Tom {
 	 */
 	static String real_real_people="";
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		/*//以下為Reuters訓練、測試資料集創建程式碼
+		//以下為Reuters訓練、測試資料集創建程式碼
 		String dir = "Tom_exp2/";
 		int days = 3; //實驗天數
 		new File(dir).mkdirs(); //創造出實驗資料匣
@@ -43,7 +43,7 @@ public class Go_Training_Tom {
 			topic_doc_generateTestSet("Tom_reuters/single",dir+"testing/"+"day_"+i,"acq");
 		}
 		//以上為Reuters訓練、測試資料集創建程式碼*/
-		
+		/*
 		//以下為CiteULike訓練、測試資料集創建程式碼
 		String dir = "Tom_exp5/", line="", real_people="";
 		int train_days = 30, test_days = 10; //citeulike-實驗天數，0為全部，-1為不使用
@@ -60,6 +60,7 @@ public class Go_Training_Tom {
 		}
 		//以上為CiteULike訓練、測試資料集創建程式碼
 	}
+	*/
 	
 	//產生不指定主題與文件數量的訓練集
 	public static void topic_doc_generateTrainSet(String source_dir, String resultDir){
