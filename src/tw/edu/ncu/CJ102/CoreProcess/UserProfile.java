@@ -63,7 +63,7 @@ public class UserProfile {
 		//將個文件主題的字詞TF分數依據得到的主題映射關係存入使用者模型中
 		for(int i: doc_term.keySet()){
 			//先取出兩個相對映的主題
-			HashMap<String, Double> doc_topic = new HashMap(doc_term.get(i));
+			HashMap<String, Double> doc_topic = new HashMap<String, Double>(doc_term.get(i));
 			HashMap<String, Double> User_profile_topic; //使用者Topic
 			if(User_profile_term.get(topic_mapping.get(i))==null){
 				User_profile_topic = new HashMap<String, Double>();

@@ -138,7 +138,7 @@ public class Go_Training_Tom {
 		point_topic_doc_generateSet(source_dir,resultDir,topic,size,0);
 	}
 	//參數為資料來源資料匣, 目標資料匣, 目標主題, 主題文件數量, 亂數種子
-	public static void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size, int random_num){
+	public void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size, int random_num){
 		File cdir = new File(source_dir+"/"+topic);
 		ArrayList<File> list = new ArrayList<File>();
 		//System.out.println(cdir);
@@ -185,7 +185,7 @@ public class Go_Training_Tom {
 	}
 	
 	//參數為資料來源資料匣, 目標資料匣, 資料流對象, 訓練天數, 測試天數
-	public static int real_word_generateSet(String source_dir, String resultDir, String real_people, int train_days, int test_days){
+	public int real_word_generateSet(String source_dir, String resultDir, String real_people, int train_days, int test_days){
 		try {
 			String line = "",article_id = "";
 			BufferedReader br;
