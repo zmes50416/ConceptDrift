@@ -63,46 +63,46 @@ public class Go_Training_Tom {
 	*/
 	
 	//產生不指定主題與文件數量的訓練集
-	public static void topic_doc_generateTrainSet(String source_dir, String resultDir){
+	public void topic_doc_generateTrainSet(String source_dir, String resultDir){
 		random_topic_doc_generate(source_dir,resultDir,"training");
 	}
 	//產生不指定文件數量的訓練集
-	public static void topic_doc_generateTrainSet(String source_dir, String resultDir, String topic){
+	public void topic_doc_generateTrainSet(String source_dir, String resultDir, String topic){
 		System.out.println("訓練集指定主題 = "+topic);
 		random_doc_generate(source_dir,resultDir,"training",topic);
 	}
 	//產生不指定主題的訓練集
-	public static void topic_doc_generateTrainSet(String source_dir, String resultDir, int size){
+	public void topic_doc_generateTrainSet(String source_dir, String resultDir, int size){
 		random_topic_generate(source_dir,resultDir,"training",size);
 	}
 	//產生不指定主題與文件數量的測試集
-	public static void topic_doc_generateTestSet(String source_dir, String resultDir){
+	public void topic_doc_generateTestSet(String source_dir, String resultDir){
 		random_topic_doc_generate(source_dir,resultDir,"testing");
 	}
 	//產生不指定文件數量的測試集
-	public static void topic_doc_generateTestSet(String source_dir, String resultDir, String topic){
+	public void topic_doc_generateTestSet(String source_dir, String resultDir, String topic){
 		System.out.println("測試集指定主題 = "+topic);
 		random_doc_generate(source_dir,resultDir,"testing",topic);
 	}
 	//產生不指定主題的測試集
-	public static void topic_doc_generateTestSet(String source_dir, String resultDir, int size){
+	public void topic_doc_generateTestSet(String source_dir, String resultDir, int size){
 		random_topic_generate(source_dir,resultDir,"testing",size);
 	}
 	//產生不指定文件數量的訓練與測試集
-	public static void topic_doc_generateTrainTestSet(String source_dir, String resultDir, int day, String topic){
+	public void topic_doc_generateTrainTestSet(String source_dir, String resultDir, int day, String topic){
 		System.out.println("訓練與測試集指定主題 = "+topic);
 		random_doc_generate(source_dir,resultDir,"training",topic);
 	}
 	
 	//指定主題，隨機主題文件數量
-	public static void random_doc_generate(String source_dir, String resultDir, String Object, String topic){
+	public void random_doc_generate(String source_dir, String resultDir, String Object, String topic){
 		Random ran = new Random();
 		int size = ran.nextInt(15)+1; //隨機1~15篇文章
 		System.out.println("隨機主題文件數量 = "+size);
 		point_topic_doc_generateSet(source_dir, resultDir, topic, size);
 	}
 	//隨機主題，指定主題文件數量
-	public static void random_topic_generate(String source_dir, String resultDir, String Object, int size){
+	public void random_topic_generate(String source_dir, String resultDir, String Object, int size){
 		File cdir = new File(source_dir);
 		ArrayList<File> list = new ArrayList<File>();
 		for(File f : cdir.listFiles()){
@@ -112,7 +112,7 @@ public class Go_Training_Tom {
 		point_topic_doc_generateSet(source_dir, resultDir, list.get(1).getName(), size);
 	}
 	//n個隨機主題，m篇隨機主題文件
-	public static void random_topic_doc_generate(String source_dir, String resultDir, String Object){
+	public void random_topic_doc_generate(String source_dir, String resultDir, String Object){
 		int topic_count;
 		int size = 0;
 		File cdir = new File(source_dir);
@@ -134,7 +134,7 @@ public class Go_Training_Tom {
 	}
 	
 	//指定主題與數量
-	public static void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size){
+	public void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size){
 		point_topic_doc_generateSet(source_dir,resultDir,topic,size,0);
 	}
 	//參數為資料來源資料匣, 目標資料匣, 目標主題, 主題文件數量, 亂數種子

@@ -2,11 +2,14 @@
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 /**
@@ -19,7 +22,41 @@ import org.apache.solr.common.SolrDocumentList;
 
 public class SolrSearcher {
 	private static CommonsHttpSolrServer server=null; // Singleton Design pattern only access it by getServer() to ensure connection
+	public static HashMap<String,Double> hitmap = null;//TODO Find out what these two var does
+	public static boolean temp = false;
 	private static Boolean initialize(){
+		
+		if(temp){
+			hitmap = new HashMap<String,Double>();
+			File hitsFile = new File("temp/tempfile.txt"); //暫存搜尋結果數
+			if(hitsFile.exists()){
+				String line;
+				BufferedReader br;
+				try {
+					br = new BufferedReader(new FileReader(hitsFile));
+				
+				while((line = br.readLine()) != null){
+					String q = line.split(",")[0];
+					double hits = Double.parseDouble(line.split(",")[1]);
+				
+					hitmap.put(q, hits);				
+				}
+				br.close();
+				}catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			}
+			else{
+				hitsFile.getParentFile().mkdir();
+				try {
+					hitsFile.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
 		String url = SettingManager.getSetting(SettingManager.ServerURL);
 		try {
 			server = new CommonsHttpSolrServer(url); // last two parameter will determined by Computer Power. Higher mean more speedy Index
@@ -69,16 +106,90 @@ public class SolrSearcher {
 	public long searchIndexed(String queryString, String fileName){
 		SolrQuery query = new SolrQuery();
 		query.setQuery(queryString);
-		//execQuery can return null, will break the program!
+		//execQuery() can return null, will break the program! Will happen often if your network is unstable!
 		QueryResponse rsp = execQuery(query);
 		SolrDocumentList docs = rsp.getResults();
 		return docs.getNumFound();
 	}
-	public void search(){
+	
+	public void search(String queryStr){
+		// TODO should be re-check from old version it have not been used
+		SolrQuery query = new SolrQuery();
+		query.setQuery(queryStr);
+		//query.setSortField("file", ORDER.asc);
+		query.setHighlight(true).setHighlightSnippets(3);
+		query.setParam("hl.fl", "*"); 
+		//hl.fragsize
+		//query.setParam("hl.fragsize", "300");
+		//only the filed was assigned in a query, the highlight snippet can be showed.
+		query.setParam("hl.requireFieldMatch", "true"); 
 		
+		try {
+			QueryResponse rsp = server.query(query);
+			SolrDocumentList docs = rsp.getResults();
+			System.out.println("Count:" + docs.getNumFound());
+			System.out.println("Time:" + rsp.getQTime());
+			for (SolrDocument doc : docs) {
+				String id = (String) doc.getFieldValue("id");
+				String file = (String) doc.getFieldValue("file");
+				System.out.println("\n" + file);
+				
+				//highlight
+				System.out.println("****highlight begin***");
+				if (rsp.getHighlighting().get(id) != null) {
+					List<String> highlightSnippets =
+					rsp.getHighlighting().get(id).get("methodbody");
+					List<String> highlightSnippets1 =
+						rsp.getHighlighting().get(id).get("field");
+					
+					if(highlightSnippets!=null){
+						for(String s : highlightSnippets){
+							System.out.println("[methodbody] " + s);
+						}
+					}
+					
+					if(highlightSnippets1!=null){
+						for(String s : highlightSnippets1){
+							System.out.println("[field] " + s);
+						}
+					}
+					
+				}
+				System.out.println("****highlight end***");
+			
+			}
+		} catch (SolrServerException e) {
+			e.printStackTrace();
+		}
 	}
 	public static double getHits(String key){
 		//TODO reimplement the method from UtilServer
-		return 0.0;
+		double hits;
+		
+		if(temp){
+			if(hitmap.containsKey(key)){
+				hits = hitmap.get(key);
+			}
+			else{
+				SolrQuery query = new SolrQuery();
+				query.setQuery(key);
+				QueryResponse rsp = execQuery(query);
+				SolrDocumentList docs = rsp.getResults();
+				hits = docs.getNumFound();
+				//System.err.println("Query 命中文件數量: "+hits);
+			
+				hitmap.put(key, hits);
+			}
+		}else{			
+			SolrQuery query = new SolrQuery();
+			query.setQuery(key);
+			//System.err.println("Query: "+q);
+			QueryResponse rsp = execQuery(query);
+			SolrDocumentList docs = rsp.getResults();
+			hits = docs.getNumFound();
+
+		}
+		
+		return hits;
 	}
 }
