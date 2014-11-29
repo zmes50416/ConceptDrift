@@ -17,7 +17,7 @@ public class ConceptDrift_Forecasting {
 	 * @param args
 	 */
 	double topic_close_threshold = 0.6; //NGD+LOG=0.802, NGD=0.088, 簡單重疊比例方法=0.6
-	int forecasting_times = 0;
+	int forecastingTimes = 0;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -36,9 +36,9 @@ public class ConceptDrift_Forecasting {
 	
 	
 	
-	public void forecasting_NGDorSIM(String exp_dir){
+	public void forecasting_NGDorSIM(String projectDir){
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
+			BufferedReader br = new BufferedReader(new FileReader(projectDir+"user_porfile/user_profile_TR.txt"));
 			int how_many_topic = Integer.valueOf(br.readLine()); //得知目前主題數
 			String topics;
 			String line;
@@ -164,13 +164,13 @@ public class ConceptDrift_Forecasting {
 									double should = (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
 									TR.put(new_edge, should);
 									//預測紀錄
-									BufferedWriter bw2 = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/Forecasting_Recorder.txt",true));
+									BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir+"user_porfile/Forecasting_Recorder.txt",true));
 									bw2.write(edge1+"與"+edge2+"相加的NGD為"+(TR_NGD.get(edge1)+TR_NGD.get(edge2)));
 									bw2.newLine();
 									bw2.write("新建立邊"+new_edge+" NGD為"+should);
 									bw2.newLine();
 									bw2.flush();
-									forecasting_times++;
+									forecastingTimes++;
 								}
 							}
 						}
@@ -180,7 +180,7 @@ public class ConceptDrift_Forecasting {
 			}
 			
 			//將跑完預測的TR文件重新寫入
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TR.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(projectDir+"user_porfile/user_profile_TR.txt"));
 			bw.write(""+how_many_topic); //目前主題數
 			bw.newLine();
 			bw.flush();
@@ -399,7 +399,7 @@ public class ConceptDrift_Forecasting {
 		return similarity;
 	}
 	
-	public int get_forecasting_times(){
-		return forecasting_times;
+	public int getForecastingTimes(){
+		return forecastingTimes;
 	}
 }

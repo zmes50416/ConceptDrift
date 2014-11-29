@@ -1,5 +1,4 @@
 package tw.edu.ncu.CJ102;
-import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -7,25 +6,24 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
-
-import javax.swing.JFrame;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.io.FilenameUtils;
 
-import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.algorithms.cluster.WeakComponentClusterer;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.algorithms.scoring.BetweennessCentrality;
-import edu.uci.ics.jung.algorithms.scoring.PageRank;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseMultigraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
 import edu.uci.ics.jung.graph.util.Pair;
-import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 /**
  * Rewrite from TOM_BetwennesCentrarity
  * it is really a mess
@@ -41,7 +39,7 @@ public class BCCalculator {
 	double betweeness_threshold = 0.35; //去掉多少連線
 	
 	double simMin;
-	//Bunch of var, need Comment!
+	//Bunch of field, need Comment!
 	Set<String> vertices;
 	Set<String> edges;
 	Map<String, Double> map;
@@ -231,10 +229,8 @@ public class BCCalculator {
 			//bw2.close();
 	
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -254,7 +250,6 @@ public class BCCalculator {
 	
 	//修改自jung2 原始碼: edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer
 	public Set<Set<String>> transform(Graph<String,link> graph, int mNumEdgesToRemove){
-		//System.err.println("Edge Betweenness Clusterering...");
 		edges_removed = new LinkedHashMap<link, Pair<String>>();;
 		
 		Transformer<link, Double> wtTransformer = new Transformer<link,Double>() {
@@ -289,9 +284,6 @@ public class BCCalculator {
         for (Map.Entry<link, Pair<String>> entry : edges_removed.entrySet())
         {
             Pair<String> endpoints = entry.getValue();
-            /*entry.getKey();
-            endpoints.getFirst();
-            endpoints.getSecond();*/
             graph.addEdge(entry.getKey(), endpoints.getFirst(), endpoints.getSecond());
         }
         return clusterSet;
@@ -324,14 +316,10 @@ public class BCCalculator {
 	}
 	
 	public static void main(String args[]){
-		//new betweennessCentrality().betweenness_cal(10);
-		
-		//bc.betweeness_threshold = 0.5; 
 		
 		//要計算中間度分群資料檔名的來源
 		File d = new File("citeulike/citeulike_Tom_citeulike_0.4/");
 		//File d = new File("Tom_reuters/single/acq");
-		
 		//File f = new File("Rank/acq_0011975_Rank.txt");
 		for(File f : d.listFiles()){
 			System.out.print("目前處理檔案為"+f.getName()+"\n");
