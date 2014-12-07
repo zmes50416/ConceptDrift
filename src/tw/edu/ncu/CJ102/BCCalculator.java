@@ -75,7 +75,7 @@ public class BCCalculator {
 		allConcepts = new LinkedList<Set<String>>();
 		clustermap = new HashMap<String,Integer>();
 		HashMap<String,Integer> TF_term = new HashMap<String,Integer>();
-		
+		//TODO We should not allowed Multi parallex Edge! should change to other class.
 		g = new SparseMultigraph<String, link>();
 		
 		BufferedReader ngdReader,termFreqReader;
