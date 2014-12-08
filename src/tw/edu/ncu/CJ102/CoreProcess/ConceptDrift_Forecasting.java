@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -24,21 +25,19 @@ public class ConceptDrift_Forecasting {
 	double topic_close_threshold = 0.6; //NGD+LOG=0.802, NGD=0.088, 簡單重疊比例方法=0.6
 	int forecastingTimes = 0;
 	
-	UndirectedSparseGraph<String,Double> topicCooccurrenceGraph = new UndirectedSparseGraph<String,Double>(); 
+	UndirectedSparseGraph<String,Double> topicCRGraph = new UndirectedSparseGraph<String,Double>(); //topic 共現圖形 
 	int topicSize;
 	HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
 	HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD計算後的主題關係
 	HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //各主題的出現
 	ArrayList<String> topic_list = new ArrayList<String>(); //topic列表
-	double sum_topics_relation=0;
+	double sum_topics_relation = 0;
 	String projectDir;
 	Boolean isLoaded = false;
 	
 	
 	public ConceptDrift_Forecasting(String projectDir){
 		this.projectDir = projectDir;
-		this.topicCooccurrenceGraph.addVertex("test");
-		this.topicCooccurrenceGraph.addVertex("test");
 	}
 
 	public void writeBackto(String projectDir){
@@ -55,11 +54,11 @@ public class ConceptDrift_Forecasting {
 				// 將還沒加進topic列表的字詞加入
 				if (!topic_list.contains(topicPair.split("-")[0])) {
 					topic_list.add(topicPair.split("-")[0]);
-					this.topicCooccurrenceGraph.addVertex(topicPair.split("-")[0]);
+					this.topicCRGraph.addVertex(topicPair.split("-")[0]);
 				}
 				if (!topic_list.contains(topicPair.split("-")[1])) {
 					topic_list.add(topicPair.split("-")[1]);
-					this.topicCooccurrenceGraph.addVertex(topicPair.split("-")[1]);
+					this.topicCRGraph.addVertex(topicPair.split("-")[1]);
 
 				}
 				// 累計主題的出現次數
@@ -98,9 +97,11 @@ public class ConceptDrift_Forecasting {
 			br.close();
 			
 			// 計算各主題關係的NGD值，
-			for (String two_topic : TR.keySet()) {
+			for (String topicPair : TR.keySet()) {
+				String topic = topicPair.split("-")[0];
+				String anotherTopic = topicPair.split("-")[1];
 				// 如果紀錄的是非自己主題的關係就需要計算兩相異主題間的NGD距離
-				if (!two_topic.split("-")[0].equals(two_topic.split("-")[1])) {
+				if (!topic.equals(anotherTopic)) {
 					
 					/* NGD+LOG方法 double
 					 * 
@@ -119,9 +120,9 @@ public class ConceptDrift_Forecasting {
 					 */
 
 					// NGD方法或SIM方法使用
-					double x = sum_topic_freq.get(two_topic.split("-")[0]); // 第一個主題的出現次數的log10
-					double y = sum_topic_freq.get(two_topic.split("-")[1]); // 第二個主題的出現次數的log10
-					double xy = TR.get(two_topic); // 第一、二主題的共現次數的log10
+					double x = sum_topic_freq.get(topic); // 第一個主題的出現次數的log10
+					double y = sum_topic_freq.get(anotherTopic); // 第二個主題的出現次數的log10
+					double xy = TR.get(topicPair); // 第一、二主題的共現次數的log10
 
 					// NGD方法
 					/*
@@ -138,9 +139,9 @@ public class ConceptDrift_Forecasting {
 					double NGD = (2 * xy) / (x + y);
 
 					// System.out.println("邊"+two_topic+"的NGD值為"+NGD);
-					TR_NGD.put(two_topic, NGD);
+					TR_NGD.put(topicPair, NGD);
 					//I should put in the index instead of value, because no two edge can be the same
-					this.topicCooccurrenceGraph.addEdge(NGD,two_topic.split("-")[0] , two_topic.split("-")[1]);
+					this.topicCRGraph.addEdge(NGD,topic , anotherTopic);
 				}
 			}
 			
@@ -155,6 +156,31 @@ public class ConceptDrift_Forecasting {
 	 */
 	public void forecastingBySim(){
 		
+	}
+	
+	/**
+	 * Newest Forecasting method
+	 * @param algorithm : LinkPrediction algorithm instance
+	 */
+	public void forecastingBy(LinkPrediction<String,Double> algorithm){
+		if(!this.isLoaded){
+			System.err.println("Not read user profile yet! please call read method first");
+			return;
+		}
+
+		
+		for(String node: this.topicCRGraph.getVertices()){
+			for(String anotherNode:this.topicCRGraph.getVertices()){
+				if(node != anotherNode && algorithm.predict(node, anotherNode)>this.topic_close_threshold){
+					
+						//Haven't deterime weight yet
+						this.topicCRGraph.addEdge(1.0, node, anotherNode);
+					
+					
+				}
+			}
+			
+		}
 	}
 	//Need read project first
 	public void forecastingByNGD() {
@@ -194,7 +220,7 @@ public class ConceptDrift_Forecasting {
 							if ((TR_NGD.get(edge1) + TR_NGD.get(edge2) <= topic_close_threshold)) {
 								// SIM方法是相似度數值越高越好
 								// if((TR_NGD.get(edge1)+TR_NGD.get(edge2)>=topic_close_threshold)){
-								String new_edge = edge_make(edge1_v1, edge1_v2,
+								String new_edge = makeEdge(edge1_v1, edge1_v2,
 										edge2_v1, edge2_v2);
 								if (TR.get(new_edge) == null) {
 									System.out.println("新建立邊" + new_edge);
@@ -260,8 +286,8 @@ public class ConceptDrift_Forecasting {
 			e.printStackTrace();
 		}
 	}
-	
-	public String edge_make(String edge1_v1, String edge1_v2, String edge2_v1, String edge2_v2){
+
+	private String makeEdge(String edge1_v1, String edge1_v2, String edge2_v1, String edge2_v2){
 		String new_edge="";
 		int int_edge1_v1 = Integer.valueOf(edge1_v1);
 		int int_edge1_v2 = Integer.valueOf(edge1_v2);
@@ -414,6 +440,6 @@ public class ConceptDrift_Forecasting {
 	}
 	
 	public Graph<String,Double> getTopicCooccurGrahp(){
-		return this.topicCooccurrenceGraph;
+		return this.topicCRGraph;
 	}
 }

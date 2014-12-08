@@ -27,7 +27,7 @@ public class Tom_exp {
 	
 	TOM_ComperRelateness comperRelatener = new TOM_ComperRelateness();
 	UserProfile mUserProfile = new UserProfile(false);
-	ConceptDrift_Forecasting driftForecaster = new ConceptDrift_Forecasting();//Link predicition used
+	ConceptDrift_Forecasting driftForecaster;//Link predicition used
 	
 	// 記錄user_profile各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
 	HashMap<Integer, HashMap<String, Double>> User_profile_term = new HashMap<Integer, HashMap<String, Double>>();
@@ -99,7 +99,14 @@ public class Tom_exp {
 			User_profile_term = mUserProfile.interest_remove_doc(projectDir,
 					User_profile_term, d);
 			// 概念飄移預測
-			driftForecaster.forecasting_NGDorSIM(projectDir);
+			driftForecaster = new ConceptDrift_Forecasting(projectDir);
+			try {
+				driftForecaster.readFromProject();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.exit(0);;
+			}
+			driftForecaster.forecastingByNGD();
 
 			// 將更新後的profile寫入
 			mUserProfile.out_new_user_profile(projectDir, preprocess_times,

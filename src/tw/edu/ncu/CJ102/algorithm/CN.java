@@ -12,15 +12,29 @@ import edu.uci.ics.jung.graph.Graph;
 public class CN<V,E> implements LinkPrediction<V, E> {
 	
 	Graph<V,E> graph;
-	CN(Graph<V,E> g){
+	/**
+	 * input the graph to compute
+	 * @param g : graph you want to compute
+	 */
+	public CN(Graph<V,E> g){
 		this.graph = g;
+		
 	}
+	//Should I compute every Node score? or compute as predict demand?
 	
 	@Override
 	public double predict(V target, V goal) {
-		this.graph.containsVertex(target);
-		this.graph.containsVertex(goal);
-		return 0;
+		double index = 0;
+		
+		for(V n:this.graph.getNeighbors(target)){
+			for(V n2: this.graph.getNeighbors(goal)){
+				if(n.equals(n2)){
+					index++;
+				}
+			}
+		}
+		
+		return index;
 	}
 
 }
