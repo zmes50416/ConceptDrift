@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import tw.edu.ncu.CJ102.algorithm.*;
@@ -25,12 +26,12 @@ public class ConceptDrift_Forecasting {
 	double topic_close_threshold = 0.6; //NGD+LOG=0.802, NGD=0.088, 簡單重疊比例方法=0.6
 	int forecastingTimes = 0;
 	
-	UndirectedSparseGraph<String,Double> topicCRGraph = new UndirectedSparseGraph<String,Double>(); //topic 共現圖形 
+	UndirectedSparseGraph<TopicNode,CEdge> topicCRGraph = new UndirectedSparseGraph<>(); //topic co-occurence Relation Graph 共現矩陣圖形  First is Topic ID, Second is Cooccuren 
 	int topicSize;
 	HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
 	HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD計算後的主題關係
 	HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //各主題的出現
-	ArrayList<String> topic_list = new ArrayList<String>(); //topic列表
+	HashMap<String,TopicNode> topics = new HashMap<>(); //topic列表
 	double sum_topics_relation = 0;
 	String projectDir;
 	Boolean isLoaded = false;
@@ -50,17 +51,23 @@ public class ConceptDrift_Forecasting {
 			this.setTopicSize(Integer.parseInt(br.readLine())); // 得知目前主題數
 
 			for(String line = br.readLine();line != null;line = br.readLine()) {
+				
 				String topicPair = line.split(",")[0];
+				String tName = topicPair.split("-")[0];
+				String anotherTName = topicPair.split("-")[1];
+				TopicNode t = new TopicNode(tName);
+				TopicNode t2 = new TopicNode(anotherTName);
+				
 				// 將還沒加進topic列表的字詞加入
-				if (!topic_list.contains(topicPair.split("-")[0])) {
-					topic_list.add(topicPair.split("-")[0]);
-					this.topicCRGraph.addVertex(topicPair.split("-")[0]);
+				if (!topics.containsKey(tName)) {
+					topics.put(tName, t);
+					this.topicCRGraph.addVertex(t);
 				}
-				if (!topic_list.contains(topicPair.split("-")[1])) {
-					topic_list.add(topicPair.split("-")[1]);
-					this.topicCRGraph.addVertex(topicPair.split("-")[1]);
-
+				if (!topics.containsKey(anotherTName)) {
+					topics.put(anotherTName, t2);
+					this.topicCRGraph.addVertex(t2);
 				}
+				
 				// 累計主題的出現次數
 				if (topicPair.split("-")[0].equals(topicPair.split("-")[1])) { // 自己對到自己就只存一次數值，避免重複累加
 					if (sum_topic_freq.get(topicPair.split("-")[0]) != null) {
@@ -141,7 +148,7 @@ public class ConceptDrift_Forecasting {
 					// System.out.println("邊"+two_topic+"的NGD值為"+NGD);
 					TR_NGD.put(topicPair, NGD);
 					//I should put in the index instead of value, because no two edge can be the same
-					this.topicCRGraph.addEdge(NGD,topic , anotherTopic);
+					this.topicCRGraph.addEdge(new CEdge("ID",NGD), topics.get(topic), topics.get(anotherTopic));
 				}
 			}
 			
@@ -151,30 +158,24 @@ public class ConceptDrift_Forecasting {
 		this.topicSize = number;
 		
 	}
-	/**
-	 * Not implement yet
-	 */
-	public void forecastingBySim(){
-		
-	}
-	
+
 	/**
 	 * Newest Forecasting method
 	 * @param algorithm : LinkPrediction algorithm instance
 	 */
-	public void forecastingBy(LinkPrediction<String,Double> algorithm){
+	public void forecastingBy(LinkPrediction<TopicNode,CEdge> algorithm){
 		if(!this.isLoaded){
 			System.err.println("Not read user profile yet! please call read method first");
 			return;
 		}
 
 		
-		for(String node: this.topicCRGraph.getVertices()){
-			for(String anotherNode:this.topicCRGraph.getVertices()){
+		for(TopicNode node: this.topicCRGraph.getVertices()){
+			for(TopicNode anotherNode:this.topicCRGraph.getVertices()){
 				if(node != anotherNode && algorithm.predict(node, anotherNode)>this.topic_close_threshold){
 					
-						//Haven't deterime weight yet
-						this.topicCRGraph.addEdge(1.0, node, anotherNode);
+						//TODO Haven't deterime weight yet
+						this.topicCRGraph.addEdge(new CEdge("sd",1.0), node, anotherNode);
 					
 					
 				}
@@ -182,6 +183,7 @@ public class ConceptDrift_Forecasting {
 			
 		}
 	}
+	@Deprecated
 	//Need read project first
 	public void forecastingByNGD() {
 		if(!this.isLoaded){
@@ -251,7 +253,6 @@ public class ConceptDrift_Forecasting {
 									bw2.write("新建立邊" + new_edge + " NGD為"
 											+ should);
 									bw2.newLine();
-									bw2.flush();
 									forecastingTimes++;
 								}
 							}
@@ -259,6 +260,7 @@ public class ConceptDrift_Forecasting {
 					}
 				}
 				door = false;
+				bw2.close();
 			}
 
 			// 將跑完預測的TR文件重新寫入
@@ -324,14 +326,14 @@ public class ConceptDrift_Forecasting {
 		return new_edge;
 	}
 	
-	
+	@Deprecated
 	public void forecasting_cosine(String exp_dir){
 		try {
 			
 			HashMap<String,double[]> TR_vector = new HashMap<String,double[]>(); //各主題向量
 			HashMap<String,Double> TR_cosine = new HashMap<String,Double>(); //各主題間相似度
 			double vector[];
-			int node_num = topic_list.size();
+			int node_num = topics.size();
 			vector = new double[node_num];
 			
 			//建立各主題的向量
@@ -340,17 +342,17 @@ public class ConceptDrift_Forecasting {
 					vector[z]=0.0;
 				}
 				for(int j=0;j<node_num;j++){
-					if(TR.get(topic_list.get(i)+"-"+topic_list.get(j))!=null){
-						vector[j]=TR.get(topic_list.get(i)+"-"+topic_list.get(j));
+					if(TR.get(topics.get(i)+"-"+topics.get(j))!=null){
+						vector[j]=TR.get(topics.get(i)+"-"+topics.get(j));
 						//System.out.println(topic_list.get(i)+" & "+topic_list.get(j)+" = "+TR.get(topic_list.get(i)+"-"+topic_list.get(j)));
-					}else if(TR.get(topic_list.get(j)+"-"+topic_list.get(i))!=null){
-						vector[j]=TR.get(topic_list.get(j)+"-"+topic_list.get(i));
+					}else if(TR.get(topics.get(j)+"-"+topics.get(i))!=null){
+						vector[j]=TR.get(topics.get(j)+"-"+topics.get(i));
 						//System.out.println(topic_list.get(j)+" & "+topic_list.get(i)+" = "+TR.get(topic_list.get(j)+"-"+topic_list.get(i)));
 					}else{
 						vector[j]=0.0;
 					}
 				}
-				TR_vector.put(topic_list.get(i), vector.clone());
+				TR_vector.put(topics.get(i).toString(), vector.clone());
 			}
 			
 			/*for(String node: TR_vector.keySet()){
@@ -439,7 +441,68 @@ public class ConceptDrift_Forecasting {
 		return this.forecastingTimes;
 	}
 	
-	public Graph<String,Double> getTopicCooccurGrahp(){
+	public Graph<TopicNode, CEdge> getTopicCooccurGrahp(){
 		return this.topicCRGraph;
+	}
+}
+/**
+ * customized Co-ouccrence Edge to use In JUNG Graph
+ *
+ * @author TingWen
+ *
+ */
+class CEdge{
+	String id;
+	double distance;
+	
+	public CEdge(String id){
+		this(id, 1.0);
+	}
+	
+	public CEdge(String id, double dist){
+		this.id = id;
+		this.distance = dist;
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof CEdge){
+			CEdge anotherEdge = (CEdge)o;
+			return this.id.equals(anotherEdge.id);
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString(){
+		return id;
+		
+	}
+}
+/**
+ * customized Topic Node to use in JUNG Graph
+ * @author TingWen
+ *
+ */
+class TopicNode{
+	String id;
+	public TopicNode(String id){
+		this.id = id;
+	}
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof TopicNode){
+			TopicNode anotherEdge = (TopicNode)o;
+			return this.id.equals(anotherEdge.id);
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString(){
+		return id;
+		
 	}
 }

@@ -26,7 +26,7 @@ public class UserProfileTopicViewer {
 	public static void main(String[] args) {
 		File lastPos;
 		try{
-			ObjectInputStream input = new ObjectInputStream(new FileInputStream("/lastPos.ser"));
+			ObjectInputStream input = new ObjectInputStream(new FileInputStream("lastPos.ser"));
 			lastPos = (File) input.readObject();
 		}catch(IOException | ClassNotFoundException e){
 			lastPos = new File(".");
@@ -47,12 +47,11 @@ public class UserProfileTopicViewer {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		c.forecastingByNGD();
-		Layout<String, Double> layout = new CircleLayout<String, Double>(c.getTopicCooccurGrahp());
-		BasicVisualizationServer<String,Double> graphPanel = new BasicVisualizationServer<String,Double>(layout) ;
+		Layout<TopicNode, CEdge> layout = new CircleLayout<>(c.getTopicCooccurGrahp());
+		BasicVisualizationServer<TopicNode,CEdge> graphPanel = new BasicVisualizationServer<>(layout) ;
 		graphPanel.setPreferredSize(new Dimension(300,300));
-		graphPanel.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<Double>());
-		graphPanel.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
+		graphPanel.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<CEdge>());
+		graphPanel.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<TopicNode>());
 		graphPanel.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
 		JFrame mFrame =  new UserProfileTopicViewer().mFrame;
 		mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
