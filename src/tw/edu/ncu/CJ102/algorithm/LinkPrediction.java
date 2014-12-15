@@ -15,10 +15,10 @@ public interface LinkPrediction<V,E> {
 	
 	/**
 	 * predict this two node should be link or not
-	 * @param target : targetNode
-	 * @param goal : goalNode
-	 * @return number between 0.0 to 1.0 , bigger the number, bigger the chance 
+	 * @param startNode : startNode
+	 * @param goalNode : goalNode
+	 * @return number should be between 0.0 to 1.0 , bigger the number, bigger the chance 
 	 */
-	public double predict(V target, V goal);
+	public double predict(V startNode, V goalNode);
 	
 }

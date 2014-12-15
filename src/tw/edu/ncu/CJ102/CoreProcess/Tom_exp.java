@@ -102,11 +102,12 @@ public class Tom_exp {
 			driftForecaster = new ConceptDrift_Forecasting(projectDir);
 			try {
 				driftForecaster.readFromProject();
+				driftForecaster.forecastingByNGD();
+
 			} catch (IOException e) {
 				e.printStackTrace();
 				System.exit(0);;
 			}
-			driftForecaster.forecastingByNGD();
 
 			// 將更新後的profile寫入
 			mUserProfile.out_new_user_profile(projectDir, preprocess_times,

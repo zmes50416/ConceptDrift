@@ -10,10 +10,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Comparator;
 
 import tw.edu.ncu.CJ102.algorithm.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
+import edu.uci.ics.jung.graph.util.Pair;
 import Algorithm.feature_algorithm.similarity;
 
 /**
@@ -24,14 +28,24 @@ import Algorithm.feature_algorithm.similarity;
 public class ConceptDrift_Forecasting {
 
 	double topic_close_threshold = 0.6; //NGD+LOG=0.802, NGD=0.088, 簡單重疊比例方法=0.6
-	int forecastingTimes = 0;
+	int forecastingTimes;
 	
 	UndirectedSparseGraph<TopicNode,CEdge> topicCRGraph = new UndirectedSparseGraph<>(); //topic co-occurence Relation Graph 共現矩陣圖形  First is Topic ID, Second is Cooccuren 
 	int topicSize;
 	HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
 	HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD計算後的主題關係
+	
 	HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //各主題的出現
-	HashMap<String,TopicNode> topics = new HashMap<>(); //topic列表
+	HashMap<String, TopicNode> topics = new HashMap<>(); //topic(V)列表
+	HashMap<String, CEdge> edges = new HashMap<>();
+	TreeMap<CEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<CEdge>(){
+
+		@Override
+		public int compare(CEdge o1, CEdge o2) {
+			return o1.distance>=o2.distance?1:-1;
+		}
+		
+	});
 	double sum_topics_relation = 0;
 	String projectDir;
 	Boolean isLoaded = false;
@@ -39,10 +53,6 @@ public class ConceptDrift_Forecasting {
 	
 	public ConceptDrift_Forecasting(String projectDir){
 		this.projectDir = projectDir;
-	}
-
-	public void writeBackto(String projectDir){
-		
 	}
 	
 	public void readFromProject() throws IOException {
@@ -102,7 +112,8 @@ public class ConceptDrift_Forecasting {
 				TR.put(topicPair, topic_relation);
 			}
 			br.close();
-			
+			int count = 0;
+
 			// 計算各主題關係的NGD值，
 			for (String topicPair : TR.keySet()) {
 				String topic = topicPair.split("-")[0];
@@ -148,9 +159,12 @@ public class ConceptDrift_Forecasting {
 					// System.out.println("邊"+two_topic+"的NGD值為"+NGD);
 					TR_NGD.put(topicPair, NGD);
 					//I should put in the index instead of value, because no two edge can be the same
-					this.topicCRGraph.addEdge(new CEdge("ID",NGD), topics.get(topic), topics.get(anotherTopic));
+					CEdge c =  new CEdge(String.valueOf(count),NGD);
+					this.edges.put(String.valueOf(count++), c);
+					this.topicCRGraph.addEdge(c, topics.get(topic), topics.get(anotherTopic));
 				}
 			}
+			
 			
 			this.isLoaded = true;
 	}
@@ -163,19 +177,26 @@ public class ConceptDrift_Forecasting {
 	 * Newest Forecasting method
 	 * @param algorithm : LinkPrediction algorithm instance
 	 */
-	public void forecastingBy(LinkPrediction<TopicNode,CEdge> algorithm){
+	public void forecastingBy(LinkPrediction<TopicNode,CEdge> algorithm) throws IOException{
 		if(!this.isLoaded){
 			System.err.println("Not read user profile yet! please call read method first");
 			return;
 		}
+		this.forecastingTimes = 0;
 
+		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
+				+ "user_porfile/Forecasting_Recorder.txt", true));
 		
 		for(TopicNode node: this.topicCRGraph.getVertices()){
 			for(TopicNode anotherNode:this.topicCRGraph.getVertices()){
-				if(node != anotherNode && algorithm.predict(node, anotherNode)>this.topic_close_threshold){
-					
-						//TODO Haven't deterime weight yet
-						this.topicCRGraph.addEdge(new CEdge("sd",1.0), node, anotherNode);
+				double index = algorithm.predict(node, anotherNode);
+				if(!node.equals(anotherNode)&& index>0){
+					this.forecastingTimes++;
+					String newID = String.valueOf(this.edges.size()+this.PredictionRank.size()+1);
+					CEdge newEdge = new CEdge(newID,index);
+					this.PredictionRank.put(newEdge, new Pair<TopicNode>(node, anotherNode));
+					//TODO Haven't deterime NGD Distance yet	
+					//this.topicCRGraph.addEdge(new CEdge("sd",1.0), node, anotherNode);
 					
 					
 				}
@@ -185,110 +206,72 @@ public class ConceptDrift_Forecasting {
 	}
 	@Deprecated
 	//Need read project first
-	public void forecastingByNGD() {
+	public void forecastingByNGD() throws IOException {
 		if(!this.isLoaded){
 			System.err.println("Not read user profile yet! please call read method first");
 			return;
 		}
-
-
+		this.forecastingTimes = 0;
+		
+		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
+				+ "user_porfile/Forecasting_Recorder.txt", true));
+		
 		// 預測步驟，計算兩兩邊之間的距離加總，如果總距離小於門檻值，相近的兩點即會產生連接的邊
-		String edge1_v1, edge1_v2; // 第一個邊的第一個節點, 第一個邊的第二個節點
-		String edge2_v1, edge2_v2; // 第二個邊的第一個節點, 第二個邊的第二個節點
-		boolean door = false;
-		try {
-			BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
-					+ "user_porfile/Forecasting_Recorder.txt", true));
-
-			for (String edge1 : TR_NGD.keySet()) {
-				edge1_v1 = edge1.split("-")[0];
-				edge1_v2 = edge1.split("-")[1];
-				for (String edge2 : TR_NGD.keySet()) {
-					if (edge1.equals(edge2)) {
-						door = true; // 減少重複計算的可能
-					}
-					if (door && !edge1.equals(edge2)) { // 自己跟自己不用計算
-						edge2_v1 = edge2.split("-")[0];
-						edge2_v2 = edge2.split("-")[1];
-						// 兩個邊中有其中一個節點是互相連接的，才計算連接的長度
-						if (edge2_v1.equals(edge1_v1)
-								|| edge2_v1.equals(edge1_v2)
-								|| edge2_v2.equals(edge1_v1)
-								|| edge2_v2.equals(edge1_v2)) {
-							// 當兩邊距離加起來小於門檻值時就創立除兩邊連接節點外的兩點之間關係
-							System.out.println(edge1 + "與" + edge2 + "相加的NGD為"
-									+ (TR_NGD.get(edge1) + TR_NGD.get(edge2)));
-							// NGD方法是NGD距離越低越好
-							if ((TR_NGD.get(edge1) + TR_NGD.get(edge2) <= topic_close_threshold)) {
-								// SIM方法是相似度數值越高越好
-								// if((TR_NGD.get(edge1)+TR_NGD.get(edge2)>=topic_close_threshold)){
-								String new_edge = makeEdge(edge1_v1, edge1_v2,
-										edge2_v1, edge2_v2);
-								if (TR.get(new_edge) == null) {
-									System.out.println("新建立邊" + new_edge);
-									// NGD反推
-									double should = Math.max(sum_topic_freq
-											.get(new_edge.split("-")[0]),
-											sum_topic_freq.get(new_edge
-													.split("-")[1]))
-											- ((TR_NGD.get(edge1) + TR_NGD
-													.get(edge2)) * ((sum_topics_relation - Math
-													.min(sum_topic_freq.get(new_edge
-															.split("-")[0]),
-															sum_topic_freq
-																	.get(new_edge
-																			.split("-")[1])))));
-									// SIM反推
-									// double should =
-									// (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
-									TR.put(new_edge, should);
-									// 預測紀錄
-									bw2.write(edge1
-											+ "與"
-											+ edge2
-											+ "相加的NGD為"
-											+ (TR_NGD.get(edge1) + TR_NGD
-													.get(edge2)));
-									bw2.newLine();
-									bw2.write("新建立邊" + new_edge + " NGD為"
-											+ should);
-									bw2.newLine();
-									forecastingTimes++;
-								}
-							}
+		for (TopicNode n : this.topics.values()) {
+			for (TopicNode neighborOfN : this.topicCRGraph.getNeighbors(n)) {
+				for (TopicNode n2 : this.topicCRGraph.getNeighbors(neighborOfN)) {
+					if ((this.topicCRGraph.findEdge(n2, n)) == null) {
+						CEdge edge = this.topicCRGraph.findEdge(n, neighborOfN);
+						CEdge anotherEdge = this.topicCRGraph.findEdge(
+								neighborOfN, n2);
+						if (edge.distance + anotherEdge.distance <= this.topic_close_threshold) {
+							CEdge newEdge;
+							double maxOfFreq = Math.max(sum_topic_freq.get(n.id),
+										sum_topic_freq.get(n2.id));
+							double minOfFreq = Math.min(sum_topic_freq.get(n.id),sum_topic_freq.get(n2.id));
+							
+							double should = maxOfFreq - ((edge.distance + anotherEdge.distance) * (sum_topics_relation - minOfFreq));
+							// SIM反推
+							// double should =
+							// (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
+							String newID = String.valueOf(this.edges.size()+1);
+							newEdge = new CEdge(newID,should);
+							edges.put(newID, newEdge);
+							TR.put(newEdge.id, should);
+							// 預測紀錄
+							bw2.write(edge+ "與"+ anotherEdge
+									+ "相加的NGD為"+ (TR_NGD.get(edge.id) + TR_NGD.get(anotherEdge.id)));
+							bw2.newLine();
+							bw2.write("新建立邊" + newEdge + " NGD為" + should);
+							bw2.newLine();
+							forecastingTimes++;
 						}
-					}
-				}
-				door = false;
-				bw2.close();
-			}
 
-			// 將跑完預測的TR文件重新寫入
-			BufferedWriter bw = new BufferedWriter(new FileWriter(projectDir
-					+ "user_porfile/user_profile_TR.txt"));
-			bw.write("" + topicSize); // 目前主題數
+					}//if find no Edge
+				}//for all n2 (nK^2)
+			}//for all neighborOfN(nk)
+		}//for all n 
+		bw2.close();
+
+
+
+
+		// 將跑完預測的TR文件重新寫入
+		BufferedWriter bw = new BufferedWriter(new FileWriter(projectDir
+				+ "user_porfile/user_profile_TR.txt"));
+		bw.write(String.valueOf(topicSize)); // 目前主題數
+		bw.newLine();
+		bw.flush();
+		for (String two_topic : TR.keySet()) {
+			// 存放格式為 主題1-主題2,關係程度,此次更新編號
+			bw.write(two_topic + "," + TR.get(two_topic));
 			bw.newLine();
 			bw.flush();
-			for (String two_topic : TR.keySet()) {
-				// 存放格式為 主題1-主題2,關係程度,此次更新編號
-				bw.write(two_topic + "," + TR.get(two_topic));
-				bw.newLine();
-				bw.flush();
-			}
-			bw.close();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-	}
+		bw.close();
 
+	}
+	@Deprecated
 	private String makeEdge(String edge1_v1, String edge1_v2, String edge2_v1, String edge2_v2){
 		String new_edge="";
 		int int_edge1_v1 = Integer.valueOf(edge1_v1);
@@ -476,7 +459,7 @@ class CEdge{
 	
 	@Override
 	public String toString(){
-		return id;
+		return "id:"+id+" - "+(float)distance;
 		
 	}
 }

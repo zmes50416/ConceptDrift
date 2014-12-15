@@ -20,14 +20,14 @@ public class CN<V,E> implements LinkPrediction<V, E> {
 		this.graph = g;
 		
 	}
-	//Should I compute every Node score? or compute as predict demand?
+	//Should I compute every Node score at once? or compute as predict demand?
 	
 	@Override
-	public double predict(V target, V goal) {
+	public double predict(V startNode, V goalNode) {
 		double index = 0;
 		
-		for(V n:this.graph.getNeighbors(target)){
-			for(V n2: this.graph.getNeighbors(goal)){
+		for(V n:this.graph.getNeighbors(startNode)){
+			for(V n2: this.graph.getNeighbors(goalNode)){
 				if(n.equals(n2)){
 					index++;
 				}
