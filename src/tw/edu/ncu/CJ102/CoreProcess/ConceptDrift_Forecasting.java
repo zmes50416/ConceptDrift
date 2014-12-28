@@ -39,7 +39,6 @@ public class ConceptDrift_Forecasting {
 	HashMap<String, TopicNode> topics = new HashMap<>(); //topic(V)列表
 	HashMap<String, CEdge> edges = new HashMap<>();
 	TreeMap<CEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<CEdge>(){
-
 		@Override
 		public int compare(CEdge o1, CEdge o2) {
 			return o1.distance>=o2.distance?1:-1;
@@ -182,6 +181,8 @@ public class ConceptDrift_Forecasting {
 			System.err.println("Not read user profile yet! please call read method first");
 			return;
 		}
+
+		this.PredictionRank.clear();
 		this.forecastingTimes = 0;
 
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
@@ -205,9 +206,8 @@ public class ConceptDrift_Forecasting {
 		}
 	}
 	@Deprecated
-	//Need read project first
 	public void forecastingByNGD() throws IOException {
-		if(!this.isLoaded){
+		if(!this.isLoaded){//Need read project first
 			System.err.println("Not read user profile yet! please call read method first");
 			return;
 		}

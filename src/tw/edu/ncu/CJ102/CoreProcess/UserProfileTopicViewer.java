@@ -19,7 +19,11 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
-
+/**
+ * This app is only for checking the Profile, not related to Experiment yet.
+ * @author lab703
+ *
+ */
 public class UserProfileTopicViewer {
 	JFrame mFrame = new JFrame("UserProfile Graph View");
 
@@ -28,6 +32,7 @@ public class UserProfileTopicViewer {
 		try{
 			ObjectInputStream input = new ObjectInputStream(new FileInputStream("lastPos.ser"));
 			lastPos = (File) input.readObject();
+			input.close();
 		}catch(IOException | ClassNotFoundException e){
 			lastPos = new File(".");
 		}
@@ -58,10 +63,14 @@ public class UserProfileTopicViewer {
 		mFrame.getContentPane().add(graphPanel);
 		mFrame.pack();
 		mFrame.setVisible(true);
-		
+
         ObjectOutputStream saver;
 		try {
-			saver = new ObjectOutputStream(new FileOutputStream("/lastPos.ser"));
+			KatZ<TopicNode, CEdge> k= new KatZ<>(c.getTopicCooccurGrahp());
+			c.forecastingBy(new CN<>(c.getTopicCooccurGrahp()));
+			c.forecastingBy(new LP<>(c.getTopicCooccurGrahp()));
+			
+			saver = new ObjectOutputStream(new FileOutputStream("lastPos.ser"));
 			saver.writeObject(file);
 	        saver.flush();
 	        saver.close();
@@ -69,7 +78,6 @@ public class UserProfileTopicViewer {
 			e.printStackTrace();
 		}
 		
-		c.forecastingBy(new CN(c.getTopicCooccurGrahp()));
         
 		
 
