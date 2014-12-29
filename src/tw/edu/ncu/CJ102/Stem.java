@@ -25,41 +25,32 @@ public class Stem {
 		String stemmedPath = SettingManager.getSetting(SettingManager.stemmedDir);
 		
 		BufferedReader termReader = new BufferedReader(new FileReader(numberOfTermPath +fileName));
-		String line;
+		//String line;
 
 		ArrayList<String> list = new ArrayList<String>();
-		while ((line = termReader.readLine()) != null) {
-			
-				list.add(line);
-			
-			
+		for (String line=termReader.readLine();line!=null;line=termReader.readLine()){
+			list.add(line);
 		}
+
 		termReader.close();
-		// System.out.println( list.toString());
-		Object[] datas = list.toArray();
-		//String[] datas = list.toArray(new String[list.size()]);
+		String[] datas = (String[]) list.toArray();
 		LinkedHashSet<String> set = new LinkedHashSet<String>();
-		for (int i = 0; i < datas.length; i++) {
-			String key = ((String) datas[i]).split(",")[0]; //first keyword
-			String value = ((String) datas[i]).split(",")[1];
+		for (String line:datas){
+			String key = line.split(",")[0]; //first keyword
+			String value = line.split(",")[1];
 			
 			Pattern p= Pattern.compile("[(),\"\\?!:;=]");
 
 	         Matcher m=p.matcher(key);
-
 	         String first=m.replaceAll("");
 	         
-			 set.add (first + "," + value);
-					 // i++;
- 
-			  
-		}
-       
-			  
-			  
-	 
+	         Porter_Stemmer stemmer = new Porter_Stemmer();
+	         String stemmedKey = stemmer.stemming(first);
+			 set.add (stemmedKey + "," + value);
+			
+		}			  
 		
-		Object[] objs = set.toArray();
+		String[] objs = (String[]) set.toArray();
 		BufferedWriter bw;
 		bw = new BufferedWriter(new FileWriter(stemmedPath + fileName, false));
 		for (int j = 0; j < objs.length; j++) {
