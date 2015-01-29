@@ -16,7 +16,7 @@ public class TOM_ComperRelateness {
 
 	/**
 	 * Edit from TOM_ComperRelateness
-	 * 這個類別是用來做甚麼的??
+	 * This class is use for Topic mapping procedure
 	 * @param args
 	 */
 	double relateness_threshold = 0.4; // 為0.525文羽學長實驗結果
@@ -515,6 +515,9 @@ public class TOM_ComperRelateness {
 	public void show_all_result() {
 		System.out.println("TP=" + TP + ", TN=" + TN + ", FP=" + FP + ", FN="
 				+ FN);
+	}
+	public void setRelatedThreshold(double phiMap){
+		this.relateness_threshold = phiMap;
 	}
 
 	public double[] get_all_result() {

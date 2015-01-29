@@ -15,7 +15,7 @@ public class Tom_exp {
 	BufferedWriter bw2, bw3; // bw2用來紀錄讀取文件的順序，bw3用來紀錄遺忘因子文件與主題關係文件
 	IOWriter efficacyMeasurer;
 	PerformanceWriter performanceTimer; // EfficacyMeasure_w用來紀錄系統效能，performanceTimer用來紀錄系統執行時間
-	Go_Training_Tom GTT = new Go_Training_Tom();
+	Go_Training_Tom trainerTom = new Go_Training_Tom();
 	String projectDir = "exp_acq_DecayFactor_fs_fix0.05/";
 	String train_topics[] = { "acq" };
 	String test_topics[] = { "acq", "earn", "crude", "coffee", "sugar",
@@ -203,7 +203,7 @@ public class Tom_exp {
 			new File(projectDir + "testing/" + "day_" + i).mkdirs(); // 創造出實驗測試集第i天資料匣
 			if (i == 1) {
 				for (int j = 0; j < train_topics.length; j++) {
-					GTT.point_topic_doc_generateSet("Tom_reuters_0.4/single",
+					trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
 							projectDir + "training/" + "day_" + i,
 							train_topics[j], 3, i);
 				}
@@ -211,7 +211,7 @@ public class Tom_exp {
 			// what is this doing for? 
 			// if(i==15){
 			for (int j = 0; j < test_topics.length; j++) {
-				GTT.point_topic_doc_generateSet("Tom_reuters_0.4/single",
+				trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
 						projectDir + "testing/" + "day_" + i, test_topics[j],
 						1, experimentDays + i);
 			}
@@ -224,10 +224,10 @@ public class Tom_exp {
 		int train_days = 0, test_days = -1; // citeulike-實驗天數，0為全部，-1為不使用
 
 		System.out.println("Real Word資料流為: " + real_people);
-		this.setExperimentDays(GTT.real_word_generateSet(
+		this.setExperimentDays(trainerTom.real_word_generateSet(
 				"citeulike/citeulike_Tom_citeulike_0.4/", projectDir,
 				real_people, train_days, test_days)); 
-		real_people = GTT.get_real_people();
+		real_people = trainerTom.get_real_people();
 		// 以上為CiteULike訓練、測試資料集創建程式碼
 		long EndTime = System.currentTimeMillis();
 		performanceTimer.addRecorded("結束時間 :" + EndTime);
