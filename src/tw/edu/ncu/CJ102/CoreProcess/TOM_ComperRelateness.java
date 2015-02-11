@@ -20,7 +20,7 @@ public class TOM_ComperRelateness {
 	 * @param args
 	 */
 	double relateness_threshold = 0.4; // 為0.525文羽學長實驗結果
-	double TP = 0, TN = 0, FP = 0, FN = 0;
+	private double TP = 0, TN = 0, FP = 0, FN = 0;
 	int ConceptDrift_times = 0; // 概念飄移次數
 
 	// update_doc、maybe_update_term、sure_update_term最後實驗後發現效果不好，因此相關步驟都被註解掉

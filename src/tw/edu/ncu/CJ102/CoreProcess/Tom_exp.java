@@ -11,22 +11,24 @@ import java.util.HashMap;
 
 public class Tom_exp {
 
-	BufferedReader br, br2, br3, br4; // br用來讀目前的user_profile，br2用來讀文件，br3用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
+	BufferedReader documentReader, trainSortReader, testSortReader; // userProfileReader用來讀目前的user_profile，documentReader用來讀文件，trainSortReader用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
 	BufferedWriter bw2, bw3; // bw2用來紀錄讀取文件的順序，bw3用來紀錄遺忘因子文件與主題關係文件
 	IOWriter efficacyMeasurer;
 	PerformanceWriter performanceTimer; // EfficacyMeasure_w用來紀錄系統效能，performanceTimer用來紀錄系統執行時間
 	Go_Training_Tom trainerTom = new Go_Training_Tom();
-	String projectDir = "exp_acq_DecayFactor_fs_fix0.05/";
+	String projectDir ;
 	String train_topics[] = { "acq" };
 	String test_topics[] = { "acq", "earn", "crude", "coffee", "sugar",
 			"trade", "cocoa" };
-	int experimentDays; // 實驗天數
+	int experimentDays = 0; // 實驗天數
+	int size;//產生多少文件數量
 	long StartTime;
+	boolean isDynamicDecayMode = false;
 	int preprocess_times = 0; // 某一天的第X篇文章
 	ArrayList<String> profile_label = new ArrayList<String>(); // 儲存用來訓練的標籤答案
 	
 	TOM_ComperRelateness comperRelatener = new TOM_ComperRelateness();
-	UserProfile mUserProfile = new UserProfile(false);
+	UserProfile mUserProfile;
 	ConceptDrift_Forecasting driftForecaster = new ConceptDrift_Forecasting();//Link predicition used
 	
 	// 記錄user_profile各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
@@ -39,25 +41,26 @@ public class Tom_exp {
 	HashMap<Integer, Integer> topic_mapping = new HashMap<Integer, Integer>();
 	
 	/**
-	 * @param args
+	 * prepare Directory Structure, if do not exist then create new one
+	 * @param projectDir 
 	 */
-	Tom_exp() {
-		new File(projectDir).mkdirs(); // 創造出實驗資料匣
-		new File(projectDir + "user_porfile").mkdirs(); // 創造出實驗使用者模型資料匣
+	Tom_exp(String projectDir) {
+		this.projectDir = projectDir;
+		new File(this.projectDir).mkdirs(); // 創造出實驗資料匣
+		new File(this.projectDir + "user_porfile").mkdirs(); // 創造出實驗使用者模型資料匣
 		try {
-			efficacyMeasurer = new IOWriter(projectDir + "EfficacyMeasure.txt");
-			performanceTimer = new PerformanceWriter(projectDir + "time.txt");
+			efficacyMeasurer = new IOWriter(this.projectDir + "EfficacyMeasure.txt");
+			performanceTimer = new PerformanceWriter(this.projectDir + "time.txt");
 		} catch (Exception e) {
-			e.printStackTrace();
-			return;
+			throw new Error("Can't Create IO");
 		}
-		new File(projectDir + "training").mkdirs(); // 創造出實驗訓練集資料匣
-		new File(projectDir + "testing").mkdirs(); // 創造出實驗測試集資料匣
+		new File(this.projectDir + "training").mkdirs(); // 創造出實驗訓練集資料匣
+		new File(this.projectDir + "testing").mkdirs(); // 創造出實驗測試集資料匣
 	}
-
+	/*SHOULD NOT RUN THIS YET!!
 	public static void main(String[] args) {
-		new Tom_exp().start();
-	}
+		new Tom_exp("exp/").start();
+	}*/
 	//Start Experiment from here
 	public void start() {
 		double train_sum_time_read_doc = 0, test_sum_time_read_doc = 0; // 讀取文件的總時間
@@ -70,13 +73,16 @@ public class Tom_exp {
 		
 		double docTF;
 		int train_times, test_times; // 設定每次訓練、測試互換的篇數
+		if((this.mUserProfile==null)){
+			throw new Error();
+		}
 		comperRelatener.init_EfficacyMeasure();
 		StartTime = System.currentTimeMillis();
 		
 		performanceTimer.addRecorded("訓練與測試集產生中 :");
 		performanceTimer.addRecorded("開始時間 :" + StartTime);
 
-		this.readFileFromRouter(15);// read from Router or CiteUlike
+		this.generateFileFromRouter(experimentDays,size);// read from Router or CiteUlike
 
 		//simulate
 		for (int d = 1; d <= experimentDays; d++) {
@@ -109,7 +115,7 @@ public class Tom_exp {
 					+ ((endTime - StartTime) / 1000);
 
 			// bw2.close();
-			// br3.close();
+			// trainSortReader.close();
 			comperRelatener.show_all_result();
 			System.out.println("正確率為 " + comperRelatener.get_accuracy());
 			System.out.println("錯誤率為 " + comperRelatener.get_error());
@@ -195,31 +201,29 @@ public class Tom_exp {
 	
 	// 以下為Routers訓練、測試資料集創建程式碼
 	// 不同的實驗要跑不同的值，這作法也太爛了
-	private void readFileFromRouter(int days) {
+	private void generateFileFromRouter(int days,int size) {
 		this.setExperimentDays(days);
 		for (int i = 1; i <= experimentDays; i++) {
 			System.out.println("第" + i + "天");
 			new File(projectDir + "training/" + "day_" + i).mkdirs(); // 創造出實驗訓練集第i天資料匣
 			new File(projectDir + "testing/" + "day_" + i).mkdirs(); // 創造出實驗測試集第i天資料匣
-			if (i == 1) {
-				for (int j = 0; j < train_topics.length; j++) {
-					trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
-							projectDir + "training/" + "day_" + i,
-							train_topics[j], 3, i);
-				}
+			for (int j = 0; j < train_topics.length; j++) {
+				trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
+					projectDir + "training/" + "day_" + i,
+					train_topics[j], size, i);
 			}
 			// what is this doing for? 
 			// if(i==15){
 			for (int j = 0; j < test_topics.length; j++) {
 				trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
 						projectDir + "testing/" + "day_" + i, test_topics[j],
-						1, experimentDays + i);
+						size, experimentDays + i);
 			}
 		//	}
 		}
 	}
 	
-	private void readFileFromCiteUlike(String real_people) {// 選擇citeulike資料流 讀者的成員編號 ex."626838af45efa5ca465683ab3b3f303e"
+	private void generateFileFromCiteUlike(String real_people) {// 選擇citeulike資料流 讀者的成員編號 ex."626838af45efa5ca465683ab3b3f303e"
 		
 		int train_days = 0, test_days = -1; // citeulike-實驗天數，0為全部，-1為不使用
 
@@ -237,17 +241,17 @@ public class Tom_exp {
 		performanceTimer.addRecorded("資料流名稱: " + real_people);
 	}
 
-	public void startTraining(int d) {// d = the day
-		File train_d = new File(projectDir + "training/day_" + d);
+	public void startTraining(int theDay) {
+		File train_d = new File(projectDir + "training/day_" + theDay);
 
-		if (d > 7) { // 短期興趣只保留7天
+		if (theDay > 7) { // 短期興趣只保留7天
 			profile_label.clear();
 		}
 
 		for (File train_f : train_d.listFiles()) {
 			double doc_ngd;
 
-			System.out.println("訓練開始\n" + "第" + d + "天, 第"
+			System.out.println("訓練開始\n" + "第" + theDay + "天, 第"
 					+ (preprocess_times + 1) + "篇文章");
 
 			StartTime = System.currentTimeMillis();
@@ -257,13 +261,13 @@ public class Tom_exp {
 			// 讀取目前的user_profile
 			if (preprocess_times != 0) { // 非第一次就讀取上一次建好的user_profile
 				try {
-					br = new BufferedReader(new FileReader(projectDir
+					BufferedReader userProfileReader = new BufferedReader(new FileReader(projectDir
 							+ "user_porfile/user_profile_"
 							+ preprocess_times + ".txt"));
 
 					System.out.print("讀取模型" + projectDir + "user_profile_"
 							+ preprocess_times + ".txt\n");
-					for(String line=br.readLine();line!=null;line = br.readLine()){
+					for(String line=userProfileReader.readLine();line!=null;line = userProfileReader.readLine()){
 						topic_term.clear();
 						String term = line.split(",")[0]; // 字詞
 						int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
@@ -278,7 +282,7 @@ public class Tom_exp {
 						User_profile_term.put(group,
 								new HashMap(topic_term));
 					}
-					br.close();
+					userProfileReader.close();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -344,14 +348,14 @@ public class Tom_exp {
 				profile_label.add(topicName);
 			}
 
-			System.out.print("讀取文件" + projectDir + "training/day_" + d
+			System.out.print("讀取文件" + projectDir + "training/day_" + theDay
 					+ "/" + train_f.getName() + "\n");
 			
 
 			try {
-				br2 = new BufferedReader(new FileReader(train_f));
+				documentReader = new BufferedReader(new FileReader(train_f));
 			
-				doc_ngd = Double.valueOf(br2.readLine()); // 文件的NGD門檻
+				doc_ngd = Double.valueOf(documentReader.readLine()); // 文件的NGD門檻
 				System.out.print("取出文件NGD=" + doc_ngd + "\n");
 				topic_term.clear();
 				doc_term.clear();
@@ -359,7 +363,7 @@ public class Tom_exp {
 				double docTF = 0; // 單文件的TF值
 				int doc_term_count = 0; // 單文件內的字詞數量
 				
-				for(String line = br2.readLine();line!=null;line = br2.readLine()){
+				for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
 					String term = line.split(",")[0]; // 字詞
 					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
 					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
@@ -378,7 +382,7 @@ public class Tom_exp {
 			
 				mUserProfile.sum_avg_docTF(docTF);
 				mUserProfile.sum_avg_termTF(docTF, doc_term_count);
-				br2.close();
+				documentReader.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 				return;
@@ -464,39 +468,39 @@ public class Tom_exp {
 			// 輸出使用者模型
 			mUserProfile.out_new_user_profile(projectDir, preprocess_times,
 					User_profile_term);
-			System.out.println("文件" + projectDir + "training/day_" + d
+			System.out.println("文件" + projectDir + "training/day_" + theDay
 					+ "/" + train_f.getName() + "處理結束");
 		}
 
 	}
 
-	public void startTesting(int d){
-		File test_d = new File(projectDir + "testing/day_" + d);
-		for (File test_f : test_d.listFiles()) {
+	public void startTesting(int theDay){
+		File testDir = new File(projectDir + "testing/day_" + theDay);
+		for (File testFile : testDir.listFiles()) {
 			try {
 				System.out.println("測試開始");
-				// File test_f = test_fs.get(test_fs_num);
+				// File testFile = test_fs.get(test_fs_num);
 				// test_fs_num++;
 				// 讀取規定順序文件
 				/*
-				 * br4 = new BufferedReader(new
+				 * testSortReader = new BufferedReader(new
 				 * FileReader(dir+"testing_order.txt")); String
 				 * testing_order; test_times = 1; //設定每份訓練文件訓練完後要用幾份測試文件進行測試
-				 * testing_order=br4.readLine(); while(testing_order!=null
-				 * && test_times!=0){ test_times--; File test_f = new
+				 * testing_order=testSortReader.readLine(); while(testing_order!=null
+				 * && test_times!=0){ test_times--; File testFile = new
 				 * File(dir+"testing/"+testing_order);
 				 */
 				// 開始讀取文件
-				br2 = new BufferedReader(new FileReader(test_f));
-				System.out.print("讀取文件" + projectDir + "testing/day_" + d
-						+ "/" + test_f.getName() + "\n");
-				double doc_ngd = Double.valueOf(br2.readLine()); // 文件的NGD門檻
+				documentReader = new BufferedReader(new FileReader(testFile));
+				System.out.print("讀取文件" + projectDir + "testing/day_" + theDay
+						+ "/" + testFile.getName() + "\n");
+				double doc_ngd = Double.valueOf(documentReader.readLine()); // 文件的NGD門檻
 				System.out.print("取出文件NGD=" + doc_ngd + "\n");
 				// 讀取測試文件
 				StartTime = System.currentTimeMillis();
 				topic_term.clear();
 				doc_term.clear();
-				for(String line =br2.readLine();line!=null;line = br2.readLine()){
+				for(String line =documentReader.readLine();line!=null;line = documentReader.readLine()){
 					String term = line.split(",")[0]; // 字詞
 					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
 					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
@@ -510,7 +514,7 @@ public class Tom_exp {
 					}
 					doc_term.put(group, new HashMap<String, Double>(topic_term));
 				}
-				br2.close();
+				documentReader.close();
 				// 如果文件完全沒有特徵字詞會使得程式出錯，因此對這種文件放入一個temp字詞，之後再想辦法解決
 				if (doc_term.get(1) == null) {
 					topic_term.clear();
@@ -526,7 +530,7 @@ public class Tom_exp {
 				FileWriter FWrite = new FileWriter(projectDir
 						+ "Comper_topic_profile_doc.txt", true);
 				BufferedWriter Comper_log = new BufferedWriter(FWrite);
-				Comper_log.write("測試文件名稱:" + test_f.getName());
+				Comper_log.write("測試文件名稱:" + testFile.getName());
 				Comper_log.newLine();
 				Comper_log.write("對映使用者模型:" + projectDir + "user_profile_"
 						+ preprocess_times + ".txt");
@@ -560,15 +564,15 @@ public class Tom_exp {
 			}
 			// 取得測試文件標籤
 			String topicName = "";
-			for (int ii = 0; ii < test_f.getName().split("_").length; ii++) {
+			for (int ii = 0; ii < testFile.getName().split("_").length; ii++) {
 				if (ii == 0) {
-					topicName = test_f.getName().split("_")[0];
+					topicName = testFile.getName().split("_")[0];
 				} else {
-					char[] topicname_temp = test_f.getName().split("_")[ii]
+					char[] topicname_temp = testFile.getName().split("_")[ii]
 							.toCharArray();
 					if (!Character.isDigit(topicname_temp[0])) { // 如果第一個字元是數字代表到檔名結尾了
 						topicName = topicName + "_"
-								+ test_f.getName().split("_")[ii];
+								+ testFile.getName().split("_")[ii];
 					} else {
 						break;
 					}
@@ -581,15 +585,21 @@ public class Tom_exp {
 			float EndTime = System.currentTimeMillis();
 			performanceTimer.testTimeOfComperRelateness += (EndTime - StartTime) / 1000;
 
-			efficacyMeasurer.addRecorded("測試文件: " + test_f.getName());
+			efficacyMeasurer.addRecorded("測試文件: " + testFile.getName());
 			efficacyMeasurer.addRecorded("判定為: " + relateness_result);
 			comperRelatener.set_EfficacyMeasure(relateness_result);
-			// br4.close();
+			// testSortReader.close();
 		}
 		
 		
 	}
-
+	/**
+	 * set Dynamic Decay mode or not
+	 * @param mode
+	 */
+	public void setDynamicDecayMode(boolean mode){
+		this.isDynamicDecayMode = mode;
+	}
 	public void setExperimentDays(int days){
 		this.experimentDays = days;
 	}

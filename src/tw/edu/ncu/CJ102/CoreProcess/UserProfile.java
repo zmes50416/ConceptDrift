@@ -25,11 +25,12 @@ public class UserProfile {
 	double sum_avg_docTF = 0; //累計平均單文件總TF值
 	double sum_avg_termTF = 0; //累計平均單字詞TF值
 	double remove_rate = 0.6; //興趣去除比例
-	double interest_remove_rate = remove_rate; //主題去除的累計平均單文件總TF值比例
+	double interest_remove_rate; //主題去除的累計平均單文件總TF值比例
 	double term_remove_rate = remove_rate; //字詞去除的累計平均單字詞TF值比例
 	static ArrayList<String> term_had_changed = new ArrayList<String>();
 	int ConceptDrift_times = 0; //概念飄移次數
 	
+
 	public UserProfile(boolean isDynamicDecayMode){
 		this.isDynamicDecayMode = isDynamicDecayMode;
 		if(this.isDynamicDecayMode){
@@ -45,6 +46,7 @@ public class UserProfile {
 			 DecayFactor_minus = 0; 
 			 DecayFactor_init = 0.05; 
 		}
+		this.setRemoveRate(0.6);//Default remove Rate
 	}
 	public static void main(String[] args) {
 		HashMap<Integer,HashMap<String,Double>> User_profile_test = new HashMap<Integer,HashMap<String,Double>>();
@@ -437,5 +439,11 @@ public class UserProfile {
 	
 	public int get_ConceptDrift_times(){
 		return ConceptDrift_times;
+	}
+	
+	public void setRemoveRate(double value){
+		this.remove_rate = value;
+		this.interest_remove_rate = this.remove_rate;
+		this.term_remove_rate = this.remove_rate;
 	}
 }
