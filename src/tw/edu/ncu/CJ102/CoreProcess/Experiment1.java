@@ -15,7 +15,9 @@ public class Experiment1 {
 			UserProfile mUserProfile = new UserProfile(true);
 			mUserProfile.setRemoveRate(0.1);
 			exp.mUserProfile= mUserProfile;
-			exp.size = 5;
+			exp.trainSize = 5;
+			exp.testSize = 5;
+			exp.setExperementSource(new RouterNewsPopulator(projectDir));
 			exp.start();
 		}
 		

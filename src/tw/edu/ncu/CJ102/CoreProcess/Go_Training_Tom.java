@@ -24,7 +24,7 @@ public class Go_Training_Tom {
 	/**
 	 * @param args
 	 */
-	static String real_real_people="";
+	static String realPeople="";
 	
 	/*public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -183,7 +183,16 @@ public class Go_Training_Tom {
 			System.out.println(e.getMessage());
 		}
 	}
-	
+	/**
+	 * 
+	 * @param source_dir
+	 * @param resultDir
+	 * @param real_people set the realPeople ID, can be set to "anyone"
+	 * @param train_days
+	 * @param test_days
+	 * @return
+	 */
+	// TODO this should be merge into CiteULikePopulater
 	//參數為資料來源資料匣, 目標資料匣, 資料流對象, 訓練天數, 測試天數
 	public int real_word_generateSet(String source_dir, String resultDir, String real_people, int train_days, int test_days){
 		try {
@@ -229,7 +238,7 @@ public class Go_Training_Tom {
 				line="";
 			}
 			System.out.println("資料流為: "+real_people);
-			real_real_people = real_people;
+			realPeople = real_people;
 			
 			br = new BufferedReader(new FileReader("citeulike/CiteULike資料集/2014/"+real_people+"-read2014.txt"));
 			while((line=br.readLine())!=null){
@@ -444,7 +453,7 @@ public class Go_Training_Tom {
 	}
 	
 	public String get_real_people(){
-		return real_real_people;
+		return realPeople;
 	}
 	
 	//參數為資料來源資料匣, 目標資料匣, 資料流對象, 訓練天數, 測試天數

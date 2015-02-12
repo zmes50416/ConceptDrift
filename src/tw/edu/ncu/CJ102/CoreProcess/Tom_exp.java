@@ -15,18 +15,16 @@ public class Tom_exp {
 	BufferedWriter bw2, bw3; // bw2用來紀錄讀取文件的順序，bw3用來紀錄遺忘因子文件與主題關係文件
 	IOWriter efficacyMeasurer;
 	PerformanceWriter performanceTimer; // EfficacyMeasure_w用來紀錄系統效能，performanceTimer用來紀錄系統執行時間
-	Go_Training_Tom trainerTom = new Go_Training_Tom();
 	String projectDir ;
-	String train_topics[] = { "acq" };
-	String test_topics[] = { "acq", "earn", "crude", "coffee", "sugar",
-			"trade", "cocoa" };
+
 	int experimentDays = 0; // 實驗天數
-	int size;//產生多少文件數量
+	int trainSize;//產生多少文件數量
+	int testSize;
 	long StartTime;
 	boolean isDynamicDecayMode = false;
 	int preprocess_times = 0; // 某一天的第X篇文章
 	ArrayList<String> profile_label = new ArrayList<String>(); // 儲存用來訓練的標籤答案
-	
+	ExperimentFilePopulater populater;
 	TOM_ComperRelateness comperRelatener = new TOM_ComperRelateness();
 	UserProfile mUserProfile;
 	ConceptDrift_Forecasting driftForecaster = new ConceptDrift_Forecasting();//Link predicition used
@@ -81,8 +79,12 @@ public class Tom_exp {
 		
 		performanceTimer.addRecorded("訓練與測試集產生中 :");
 		performanceTimer.addRecorded("開始時間 :" + StartTime);
-
-		this.generateFileFromRouter(experimentDays,size);// read from Router or CiteUlike
+		
+		this.populater.populateExperiment(experimentDays, trainSize, trainSize);
+		long EndTime = System.currentTimeMillis();
+		performanceTimer.addRecorded("結束時間 :" + EndTime);
+		performanceTimer.addRecorded("共使用時間(秒) :" + (EndTime - StartTime)
+				/ 1000);
 
 		//simulate
 		for (int d = 1; d <= experimentDays; d++) {
@@ -199,48 +201,10 @@ public class Tom_exp {
 	}
 	
 	
-	// 以下為Routers訓練、測試資料集創建程式碼
-	// 不同的實驗要跑不同的值，這作法也太爛了
-	private void generateFileFromRouter(int days,int size) {
-		this.setExperimentDays(days);
-		for (int i = 1; i <= experimentDays; i++) {
-			System.out.println("第" + i + "天");
-			new File(projectDir + "training/" + "day_" + i).mkdirs(); // 創造出實驗訓練集第i天資料匣
-			new File(projectDir + "testing/" + "day_" + i).mkdirs(); // 創造出實驗測試集第i天資料匣
-			for (int j = 0; j < train_topics.length; j++) {
-				trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
-					projectDir + "training/" + "day_" + i,
-					train_topics[j], size, i);
-			}
-			// what is this doing for? 
-			// if(i==15){
-			for (int j = 0; j < test_topics.length; j++) {
-				trainerTom.point_topic_doc_generateSet("Tom_reuters_0.4/single",
-						projectDir + "testing/" + "day_" + i, test_topics[j],
-						size, experimentDays + i);
-			}
-		//	}
-		}
+	public void setExperementSource(ExperimentFilePopulater experimentPopulator){
+		this.populater = experimentPopulator;
 	}
 	
-	private void generateFileFromCiteUlike(String real_people) {// 選擇citeulike資料流 讀者的成員編號 ex."626838af45efa5ca465683ab3b3f303e"
-		
-		int train_days = 0, test_days = -1; // citeulike-實驗天數，0為全部，-1為不使用
-
-		System.out.println("Real Word資料流為: " + real_people);
-		this.setExperimentDays(trainerTom.real_word_generateSet(
-				"citeulike/citeulike_Tom_citeulike_0.4/", projectDir,
-				real_people, train_days, test_days)); 
-		real_people = trainerTom.get_real_people();
-		// 以上為CiteULike訓練、測試資料集創建程式碼
-		long EndTime = System.currentTimeMillis();
-		performanceTimer.addRecorded("結束時間 :" + EndTime);
-		performanceTimer.addRecorded("共使用時間(秒) :" + (EndTime - StartTime)
-				/ 1000);
-
-		performanceTimer.addRecorded("資料流名稱: " + real_people);
-	}
-
 	public void startTraining(int theDay) {
 		File train_d = new File(projectDir + "training/day_" + theDay);
 
@@ -427,10 +391,6 @@ public class Tom_exp {
 			Comper_log.close();
 			topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir,
 					User_profile_term, doc_term, doc_ngd);
-			// updata_fine_doc()方法最後實驗後發現效果不好，因此下兩行被註解掉
-			// doc_term.clear();
-			// doc_term = new
-			// HashMap<Integer,HashMap<String,Double>>(comperRelatener.updata_fine_doc());
 			EndTime = System.currentTimeMillis();
 			performanceTimer.trainTimeOfTopicMapping += (EndTime - StartTime) / 1000;
 
@@ -593,9 +553,10 @@ public class Tom_exp {
 		
 		
 	}
+	
 	/**
-	 * set Dynamic Decay mode or not
-	 * @param mode
+	 * set UserProfile's Dynamic Decay mode
+	 * @param mode true for DynamicDecayMode or False for staticDecayMode
 	 */
 	public void setDynamicDecayMode(boolean mode){
 		this.isDynamicDecayMode = mode;
