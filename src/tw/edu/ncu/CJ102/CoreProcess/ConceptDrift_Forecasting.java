@@ -6,205 +6,273 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.Comparator;
 
+import tw.edu.ncu.CJ102.algorithm.*;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.UndirectedSparseGraph;
+import edu.uci.ics.jung.graph.util.Pair;
 import Algorithm.feature_algorithm.similarity;
 
-
+/**
+ * 
+ * @author TingWen
+ *
+ */
 public class ConceptDrift_Forecasting {
 
-	/**
-	 * @param args
-	 */
 	double topic_close_threshold = 0.6; //NGD+LOG=0.802, NGD=0.088, 簡單重疊比例方法=0.6
-	int forecastingTimes = 0;
+	int forecastingTimes;
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		ConceptDrift_Forecasting CDF = new ConceptDrift_Forecasting();
+	UndirectedSparseGraph<TopicNode,CEdge> topicCRGraph = new UndirectedSparseGraph<>(); //topic co-occurence Relation Graph 共現矩陣圖形  First is Topic ID, Second is Cooccuren 
+	int topicSize;
+	HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
+	HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD計算後的主題關係
+	
+	HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //各主題的出現
+	HashMap<String, TopicNode> topics = new HashMap<>(); //topic(V)列表
+	HashMap<String, CEdge> edges = new HashMap<>();
+	TreeMap<CEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<CEdge>(){
+		@Override
+		public int compare(CEdge o1, CEdge o2) {
+			return o1.distance>=o2.distance?1:-1;
+		}
 		
-		/*CDF.forecasting_NGDorSIM("temp/");
-		System.out.println(CDF.get_forecasting_times());*/
-				
-		double s1[] = {0, 0.66, 0.3, 0, 0, 0};
-		double s2[] = {0, 0.66, 0, 0, 0, 0};
-		
-		CDF.forecasting_cosine("temp/");
-		//System.out.println(CDF.similarityCalculator(s1, s2, "cosine"));
-		//System.out.println(CDF.similarityCalculator(s1, s2, "jaccard"));
+	});
+	double sum_topics_relation = 0;
+	String projectDir;
+	Boolean isLoaded = false;
+	
+	
+	public ConceptDrift_Forecasting(String projectDir){
+		this.projectDir = projectDir;
 	}
 	
-	
-	
-	public void forecasting_NGDorSIM(String projectDir){
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(projectDir+"user_porfile/user_profile_TR.txt"));
-			int how_many_topic = Integer.valueOf(br.readLine()); //得知目前主題數
-			String topics;
-			String line;
-			double topic_relation;
-			double sum_topics_relation=0;
-			HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
-			HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD計算後的主題關係
-			HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //各主題的出現
-			ArrayList<String> topic_list = new ArrayList<String>(); //topic列表
-			
-			while((line=br.readLine())!=null){
-				topics = line.split(",")[0];
-				//System.out.println("line="+line);
-				//將還沒加進topic列表的字詞加入
-				if(!topic_list.contains(topics.split("-")[0])){
-					topic_list.add(topics.split("-")[0]);
+	public void readFromProject() throws IOException {
+			BufferedReader br = new BufferedReader(new FileReader(projectDir
+					+ "user_porfile/user_profile_TR.txt"));
+			this.setTopicSize(Integer.parseInt(br.readLine())); // 得知目前主題數
+
+			for(String line = br.readLine();line != null;line = br.readLine()) {
+				
+				String topicPair = line.split(",")[0];
+				String tName = topicPair.split("-")[0];
+				String anotherTName = topicPair.split("-")[1];
+				TopicNode t = new TopicNode(tName);
+				TopicNode t2 = new TopicNode(anotherTName);
+				
+				// 將還沒加進topic列表的字詞加入
+				if (!topics.containsKey(tName)) {
+					topics.put(tName, t);
+					this.topicCRGraph.addVertex(t);
 				}
-				if(!topic_list.contains(topics.split("-")[1])){
-					topic_list.add(topics.split("-")[1]);
-				}
-				//累計主題的出現次數
-				if(topics.split("-")[0].equals(topics.split("-")[1])){ //自己對到自己就只存一次數值，避免重複累加
-					//System.out.println(topics.split("-")[0]+"++");
-					if(sum_topic_freq.get(topics.split("-")[0])!=null){
-						sum_topic_freq.put(topics.split("-")[0], sum_topic_freq.get(topics.split("-")[0])+Double.valueOf(line.split(",")[1]));
-					}else{
-						sum_topic_freq.put(topics.split("-")[0], Double.valueOf(line.split(",")[1]));
-					}
-				}else{
-					//System.out.println(topics.split("-")[0]+"++");
-					//System.out.println(topics.split("-")[1]+"++");
-					if(sum_topic_freq.get(topics.split("-")[0])!=null){
-						sum_topic_freq.put(topics.split("-")[0], sum_topic_freq.get(topics.split("-")[0])+Double.valueOf(line.split(",")[1]));
-					}else{
-						sum_topic_freq.put(topics.split("-")[0], Double.valueOf(line.split(",")[1]));
-					}
-					if(sum_topic_freq.get(topics.split("-")[1])!=null){
-						sum_topic_freq.put(topics.split("-")[1], sum_topic_freq.get(topics.split("-")[1])+Double.valueOf(line.split(",")[1]));
-					}else{
-						sum_topic_freq.put(topics.split("-")[1], Double.valueOf(line.split(",")[1]));
-					}
+				if (!topics.containsKey(anotherTName)) {
+					topics.put(anotherTName, t2);
+					this.topicCRGraph.addVertex(t2);
 				}
 				
-				topic_relation = Double.valueOf(line.split(",")[1]);
-				sum_topics_relation+=topic_relation;
-				TR.put(topics, topic_relation);
+				// 累計主題的出現次數
+				if (topicPair.split("-")[0].equals(topicPair.split("-")[1])) { // 自己對到自己就只存一次數值，避免重複累加
+					if (sum_topic_freq.get(topicPair.split("-")[0]) != null) {
+						sum_topic_freq.put(topicPair.split("-")[0],
+								sum_topic_freq.get(topicPair.split("-")[0])
+										+ Double.valueOf(line.split(",")[1]));
+					} else {
+						sum_topic_freq.put(topicPair.split("-")[0],
+								Double.valueOf(line.split(",")[1]));
+					}
+				} else {
+					if (sum_topic_freq.get(topicPair.split("-")[0]) != null) {
+						sum_topic_freq.put(topicPair.split("-")[0],
+								sum_topic_freq.get(topicPair.split("-")[0])
+										+ Double.valueOf(line.split(",")[1]));
+					} else {
+						sum_topic_freq.put(topicPair.split("-")[0],
+								Double.valueOf(line.split(",")[1]));
+					}
+					if (sum_topic_freq.get(topicPair.split("-")[1]) != null) {
+						sum_topic_freq.put(topicPair.split("-")[1],
+								sum_topic_freq.get(topicPair.split("-")[1])
+										+ Double.valueOf(line.split(",")[1]));
+					} else {
+						sum_topic_freq.put(topicPair.split("-")[1],
+								Double.valueOf(line.split(",")[1]));
+					}
+				}
+
+				double topic_relation = Double.valueOf(line.split(",")[1]);
+				sum_topics_relation += topic_relation;
+				TR.put(topicPair, topic_relation);
 			}
 			br.close();
-			
-			//System.out.println("所有主題的總出現次數為"+sum_topics_relation);
-			for(String s: sum_topic_freq.keySet()){
-				//System.out.println(s+"的出現次數為"+sum_topic_freq.get(s));
-			}
-			
-			//計算各主題關係的NGD值，
-			for(String two_topic: TR.keySet()){
-				//如果紀錄的是非自己主題的關係就需要計算兩相異主題間的NGD距離
-				if(!two_topic.split("-")[0].equals(two_topic.split("-")[1])){
-					/*//NGD+LOG方法
-					double logx=Math.log10(sum_topic_freq.get(two_topic.split("-")[0])); //第一個主題的出現次數的log10
-					//System.out.println("log("+two_topic.split("-")[0]+")="+logx);
-					double logy=Math.log10(sum_topic_freq.get(two_topic.split("-")[1])); //第二個主題的出現次數的log10
-					//System.out.println("log("+two_topic.split("-")[1]+")="+logy);
-					double logxy=Math.log10(TR.get(two_topic)); //第一、二主題的共現次數的log10
-					//System.out.println("log("+two_topic+")="+logxy);
-					double NGD=(Math.max(logx, logy) - logxy) / (Math.log10(sum_topics_relation) - Math.min(logx, logy));*/
+			int count = 0;
+
+			// 計算各主題關係的NGD值，
+			for (String topicPair : TR.keySet()) {
+				String topic = topicPair.split("-")[0];
+				String anotherTopic = topicPair.split("-")[1];
+				// 如果紀錄的是非自己主題的關係就需要計算兩相異主題間的NGD距離
+				if (!topic.equals(anotherTopic)) {
 					
-					//NGD方法或SIM方法使用
-					double x=sum_topic_freq.get(two_topic.split("-")[0]); //第一個主題的出現次數的log10
-					double y=sum_topic_freq.get(two_topic.split("-")[1]); //第二個主題的出現次數的log10
-					double xy=TR.get(two_topic); //第一、二主題的共現次數的log10
-					
-					//NGD方法
-					/*double NGD=(Math.max(x, y) - xy) / (sum_topics_relation - Math.min(x, y));
-					//System.out.println("logsum_topics_relation="+Math.log10(sum_topics_relation));
-					//System.out.println("NGD="+NGD);
-					if (xy == 0){
-						//NGD = 1;//避免無限大
-					}
-					if (NGD > 1){
-						//NGD = 1;
-					}
-					if (NGD < 0){
-						//NGD = 0;
-					}*/
-					
-					//簡單重疊比例方法(SIM)
-					double NGD = (2*xy)/(x+y);
-					
-					//System.out.println("邊"+two_topic+"的NGD值為"+NGD);
-					TR_NGD.put(two_topic, NGD);
+					/* NGD+LOG方法 double
+					 * 
+					 * logx=Math.log10(sum_topic_freq.get(two_topic.split("-")[0]));
+					 * //第一個主題的出現次數的log10
+					 * //System.out.println("log("+two_topic.split
+					 * ("-")[0]+")="+logx); double
+					 * logy=Math.log10(sum_topic_freq.get(two_topic.split("-")[1]));
+					 * //第二個主題的出現次數的log10
+					 * //System.out.println("log("+two_topic.split
+					 * ("-")[1]+")="+logy); double
+					 * logxy=Math.log10(TR.get(two_topic)); //第一、二主題的共現次數的log10
+					 * //System.out.println("log("+two_topic+")="+logxy); double
+					 * NGD=(Math.max(logx, logy) - logxy) /
+					 * (Math.log10(sum_topics_relation) - Math.min(logx, logy));
+					 */
+
+					// NGD方法或SIM方法使用
+					double x = sum_topic_freq.get(topic); // 第一個主題的出現次數的log10
+					double y = sum_topic_freq.get(anotherTopic); // 第二個主題的出現次數的log10
+					double xy = TR.get(topicPair); // 第一、二主題的共現次數的log10
+
+					// NGD方法
+					/*
+					 * double NGD =(Math.max(x, y) - xy) / (sum_topics_relation -
+					 * Math.min(x, y));
+					 * //System.out.println("logsum_topics_relation="
+					 * +Math.log10(sum_topics_relation));
+					 * //System.out.println("NGD="+NGD); if (xy == 0){ //NGD =
+					 * 1;//避免無限大 } if (NGD > 1){ //NGD = 1; } if (NGD < 0){ //NGD =
+					 * 0; }
+					 */
+
+					// 簡單重疊比例方法(SIM)
+					double NGD = (2 * xy) / (x + y);
+
+					// System.out.println("邊"+two_topic+"的NGD值為"+NGD);
+					TR_NGD.put(topicPair, NGD);
+					//I should put in the index instead of value, because no two edge can be the same
+					CEdge c =  new CEdge(String.valueOf(count),NGD);
+					this.edges.put(String.valueOf(count++), c);
+					this.topicCRGraph.addEdge(c, topics.get(topic), topics.get(anotherTopic));
 				}
 			}
 			
-			//預測步驟，計算兩兩邊之間的距離加總，如果總距離小於門檻值，相近的兩點即會產生連接的邊
-			String edge1_v1, edge1_v2; //第一個邊的第一個節點, 第一個邊的第二個節點
-			String edge2_v1, edge2_v2; //第二個邊的第一個節點, 第二個邊的第二個節點
-			boolean door = false;
-			for(String edge1: TR_NGD.keySet()){
-				edge1_v1 = edge1.split("-")[0];
-				edge1_v2 = edge1.split("-")[1];
-				for(String edge2: TR_NGD.keySet()){
-					if(edge1.equals(edge2)){
-						door = true; //減少重複計算的可能
-					}
-					if(door && !edge1.equals(edge2)){ //自己跟自己不用計算
-						edge2_v1 = edge2.split("-")[0];
-						edge2_v2 = edge2.split("-")[1];
-						//兩個邊中有其中一個節點是互相連接的，才計算連接的長度
-						if(edge2_v1.equals(edge1_v1) || edge2_v1.equals(edge1_v2) || edge2_v2.equals(edge1_v1) || edge2_v2.equals(edge1_v2)){
-							//當兩邊距離加起來小於門檻值時就創立除兩邊連接節點外的兩點之間關係
-							System.out.println(edge1+"與"+edge2+"相加的NGD為"+(TR_NGD.get(edge1)+TR_NGD.get(edge2)));
-							//NGD方法是NGD距離越低越好
-							//if((TR_NGD.get(edge1)+TR_NGD.get(edge2)<=topic_close_threshold)){
-							//SIM方法是相似度數值越高越好
-							if((TR_NGD.get(edge1)+TR_NGD.get(edge2)>=topic_close_threshold)){
-								String new_edge = edge_make(edge1_v1,edge1_v2,edge2_v1,edge2_v2);
-								if(TR.get(new_edge)==null){
-									System.out.println("新建立邊"+new_edge);
-									//NGD反推
-									//double should = Math.max(sum_topic_freq.get(new_edge.split("-")[0]), sum_topic_freq.get(new_edge.split("-")[1]))-((TR_NGD.get(edge1)+TR_NGD.get(edge2))*((sum_topics_relation - Math.min(sum_topic_freq.get(new_edge.split("-")[0]), sum_topic_freq.get(new_edge.split("-")[1])))));
-									//SIM反推
-									double should = (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
-									TR.put(new_edge, should);
-									//預測紀錄
-									BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir+"user_porfile/Forecasting_Recorder.txt",true));
-									bw2.write(edge1+"與"+edge2+"相加的NGD為"+(TR_NGD.get(edge1)+TR_NGD.get(edge2)));
-									bw2.newLine();
-									bw2.write("新建立邊"+new_edge+" NGD為"+should);
-									bw2.newLine();
-									bw2.flush();
-									forecastingTimes++;
-								}
-							}
-						}
-					}
+			
+			this.isLoaded = true;
+	}
+	private void setTopicSize(int number) {
+		this.topicSize = number;
+		
+	}
+
+	/**
+	 * Newest Forecasting method
+	 * @param algorithm : LinkPrediction algorithm instance
+	 */
+	public void forecastingBy(LinkPrediction<TopicNode,CEdge> algorithm) throws IOException{
+		if(!this.isLoaded){
+			System.err.println("Not read user profile yet! please call read method first");
+			return;
+		}
+
+		this.PredictionRank.clear();
+		this.forecastingTimes = 0;
+
+		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
+				+ "user_porfile/Forecasting_Recorder.txt", true));
+		
+		for(TopicNode node: this.topicCRGraph.getVertices()){
+			for(TopicNode anotherNode:this.topicCRGraph.getVertices()){
+				double index = algorithm.predict(node, anotherNode);
+				if(!node.equals(anotherNode)&& index>0){
+					this.forecastingTimes++;
+					String newID = String.valueOf(this.edges.size()+this.PredictionRank.size()+1);
+					CEdge newEdge = new CEdge(newID,index);
+					this.PredictionRank.put(newEdge, new Pair<TopicNode>(node, anotherNode));
+					//TODO Haven't deterime NGD Distance yet	
+					//this.topicCRGraph.addEdge(new CEdge("sd",1.0), node, anotherNode);
+					
+					
 				}
-				door=false;
 			}
 			
-			//將跑完預測的TR文件重新寫入
-			BufferedWriter bw = new BufferedWriter(new FileWriter(projectDir+"user_porfile/user_profile_TR.txt"));
-			bw.write(""+how_many_topic); //目前主題數
-			bw.newLine();
-			bw.flush();
-			for(String two_topic: TR.keySet()){
-				//存放格式為 主題1-主題2,關係程度,此次更新編號
-				bw.write(two_topic+","+TR.get(two_topic));
-				bw.newLine();
-				bw.flush();
-			}
-			bw.close();
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
-	
-	public String edge_make(String edge1_v1, String edge1_v2, String edge2_v1, String edge2_v2){
+	@Deprecated
+	public void forecastingByNGD() throws IOException {
+		if(!this.isLoaded){//Need read project first
+			System.err.println("Not read user profile yet! please call read method first");
+			return;
+		}
+		this.forecastingTimes = 0;
+		
+		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
+				+ "user_porfile/Forecasting_Recorder.txt", true));
+		
+		// 預測步驟，計算兩兩邊之間的距離加總，如果總距離小於門檻值，相近的兩點即會產生連接的邊
+		for (TopicNode n : this.topics.values()) {
+			for (TopicNode neighborOfN : this.topicCRGraph.getNeighbors(n)) {
+				for (TopicNode n2 : this.topicCRGraph.getNeighbors(neighborOfN)) {
+					if ((this.topicCRGraph.findEdge(n2, n)) == null) {
+						CEdge edge = this.topicCRGraph.findEdge(n, neighborOfN);
+						CEdge anotherEdge = this.topicCRGraph.findEdge(
+								neighborOfN, n2);
+						if (edge.distance + anotherEdge.distance <= this.topic_close_threshold) {
+							CEdge newEdge;
+							double maxOfFreq = Math.max(sum_topic_freq.get(n.id),
+										sum_topic_freq.get(n2.id));
+							double minOfFreq = Math.min(sum_topic_freq.get(n.id),sum_topic_freq.get(n2.id));
+							
+							double should = maxOfFreq - ((edge.distance + anotherEdge.distance) * (sum_topics_relation - minOfFreq));
+							// SIM反推
+							// double should =
+							// (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
+							String newID = String.valueOf(this.edges.size()+1);
+							newEdge = new CEdge(newID,should);
+							edges.put(newID, newEdge);
+							TR.put(newEdge.id, should);
+							// 預測紀錄
+							bw2.write(edge+ "與"+ anotherEdge
+									+ "相加的NGD為"+ (TR_NGD.get(edge.id) + TR_NGD.get(anotherEdge.id)));
+							bw2.newLine();
+							bw2.write("新建立邊" + newEdge + " NGD為" + should);
+							bw2.newLine();
+							forecastingTimes++;
+						}
+
+					}//if find no Edge
+				}//for all n2 (nK^2)
+			}//for all neighborOfN(nk)
+		}//for all n 
+		bw2.close();
+
+
+
+
+		// 將跑完預測的TR文件重新寫入
+		BufferedWriter bw = new BufferedWriter(new FileWriter(projectDir
+				+ "user_porfile/user_profile_TR.txt"));
+		bw.write(String.valueOf(topicSize)); // 目前主題數
+		bw.newLine();
+		bw.flush();
+		for (String two_topic : TR.keySet()) {
+			// 存放格式為 主題1-主題2,關係程度,此次更新編號
+			bw.write(two_topic + "," + TR.get(two_topic));
+			bw.newLine();
+			bw.flush();
+		}
+		bw.close();
+
+	}
+	@Deprecated
+	private String makeEdge(String edge1_v1, String edge1_v2, String edge2_v1, String edge2_v2){
 		String new_edge="";
 		int int_edge1_v1 = Integer.valueOf(edge1_v1);
 		int int_edge1_v2 = Integer.valueOf(edge1_v2);
@@ -241,61 +309,14 @@ public class ConceptDrift_Forecasting {
 		return new_edge;
 	}
 	
-	static double NGD_cal(double x, double y, double m) {
-		double logX = Math.log10(x);
-		double logY = Math.log10(y);
-		double logM=0.0;
-		
-		logM = Math.log10(m);
-		//當X=0的時候要處理Log(0)的問題，在此先改成m為1，讓LogM=0
-
-		//9.906是Google的
-		//double logN = 5.507;
-		double logN = 6.627;
-		//4.64是Lucnen的
-		//double logN = 4.64;
-
-		double NGD = (Math.max(logX, logY) - logM)
-				/ (logN - Math.min(logX, logY));
-		
-		if (m == 0)
-			NGD = 1;//避免無限大
-		if (NGD > 1)
-			NGD = 1;
-		if (NGD < 0)
-			NGD = 0;
-		return NGD;
-	}
-	
+	@Deprecated
 	public void forecasting_cosine(String exp_dir){
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
-			int how_many_topic = Integer.valueOf(br.readLine()); //得知目前主題數
-			String topics;
-			String line;
-			double topic_relation;
-			HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
+			
 			HashMap<String,double[]> TR_vector = new HashMap<String,double[]>(); //各主題向量
 			HashMap<String,Double> TR_cosine = new HashMap<String,Double>(); //各主題間相似度
-			ArrayList<String> topic_list = new ArrayList<String>(); //topic列表
 			double vector[];
-			
-			while((line=br.readLine())!=null){
-				topics = line.split(",")[0];
-				//System.out.println("line="+line);
-				//將還沒加進topic列表的字詞加入
-				if(!topic_list.contains(topics.split("-")[0])){
-					topic_list.add(topics.split("-")[0]);
-				}
-				if(!topic_list.contains(topics.split("-")[1])){
-					topic_list.add(topics.split("-")[1]);
-				}
-				topic_relation = Double.valueOf(line.split(",")[1]);
-				TR.put(topics, topic_relation);
-			}
-			br.close();
-			
-			int node_num = topic_list.size();
+			int node_num = topics.size();
 			vector = new double[node_num];
 			
 			//建立各主題的向量
@@ -304,17 +325,17 @@ public class ConceptDrift_Forecasting {
 					vector[z]=0.0;
 				}
 				for(int j=0;j<node_num;j++){
-					if(TR.get(topic_list.get(i)+"-"+topic_list.get(j))!=null){
-						vector[j]=TR.get(topic_list.get(i)+"-"+topic_list.get(j));
+					if(TR.get(topics.get(i)+"-"+topics.get(j))!=null){
+						vector[j]=TR.get(topics.get(i)+"-"+topics.get(j));
 						//System.out.println(topic_list.get(i)+" & "+topic_list.get(j)+" = "+TR.get(topic_list.get(i)+"-"+topic_list.get(j)));
-					}else if(TR.get(topic_list.get(j)+"-"+topic_list.get(i))!=null){
-						vector[j]=TR.get(topic_list.get(j)+"-"+topic_list.get(i));
+					}else if(TR.get(topics.get(j)+"-"+topics.get(i))!=null){
+						vector[j]=TR.get(topics.get(j)+"-"+topics.get(i));
 						//System.out.println(topic_list.get(j)+" & "+topic_list.get(i)+" = "+TR.get(topic_list.get(j)+"-"+topic_list.get(i)));
 					}else{
 						vector[j]=0.0;
 					}
 				}
-				TR_vector.put(topic_list.get(i), vector.clone());
+				TR_vector.put(topics.get(i).toString(), vector.clone());
 			}
 			
 			/*for(String node: TR_vector.keySet()){
@@ -336,7 +357,7 @@ public class ConceptDrift_Forecasting {
 			
 			//將跑完預測的TR文件重新寫入
 			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TR.txt"));
-			bw.write(""+how_many_topic); //目前主題數
+			bw.write(""+topicSize); //目前主題數
 			bw.newLine();
 			bw.flush();
 			for(String two_topic: TR.keySet()){
@@ -400,6 +421,71 @@ public class ConceptDrift_Forecasting {
 	}
 	
 	public int getForecastingTimes(){
-		return forecastingTimes;
+		return this.forecastingTimes;
+	}
+	
+	public Graph<TopicNode, CEdge> getTopicCooccurGrahp(){
+		return this.topicCRGraph;
+	}
+}
+/**
+ * customized Co-ouccrence Edge to use In JUNG Graph
+ *
+ * @author TingWen
+ *
+ */
+class CEdge{
+	String id;
+	double distance;
+	
+	public CEdge(String id){
+		this(id, 1.0);
+	}
+	
+	public CEdge(String id, double dist){
+		this.id = id;
+		this.distance = dist;
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof CEdge){
+			CEdge anotherEdge = (CEdge)o;
+			return this.id.equals(anotherEdge.id);
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString(){
+		return "id:"+id+" - "+(float)distance;
+		
+	}
+}
+/**
+ * customized Topic Node to use in JUNG Graph
+ * @author TingWen
+ *
+ */
+class TopicNode{
+	String id;
+	public TopicNode(String id){
+		this.id = id;
+	}
+	@Override
+	public boolean equals(Object o){
+		if(o instanceof TopicNode){
+			TopicNode anotherEdge = (TopicNode)o;
+			return this.id.equals(anotherEdge.id);
+		}else{
+			return false;
+		}
+	}
+	
+	@Override
+	public String toString(){
+		return id;
+		
 	}
 }
