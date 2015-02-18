@@ -10,14 +10,23 @@ public class Experiment1 {
 		String projectDir = new Experiment1().chooseProject();
 		System.out.println(projectDir);
 		for(int i=1;i<=1;i++){
-			Tom_exp exp = new Tom_exp(projectDir+"\\"+i+"_turn\\");
+			String turnProjectDir = projectDir+"\\"+i+"_turn\\";
+			Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(10);
 			UserProfile mUserProfile = new UserProfile(true);
-			mUserProfile.setRemoveRate(0.1);
+			mUserProfile.setRemoveRate(0.9);
 			exp.mUserProfile= mUserProfile;
 			exp.trainSize = 5;
 			exp.testSize = 5;
-			exp.setExperementSource(new RouterNewsPopulator(projectDir));
+			RouterNewsPopulator p = new RouterNewsPopulator(turnProjectDir);
+			String test[] = { "acq", "earn", "crude", "coffee", "sugar",
+					"trade", "cocoa" };
+			for(String topic:test){
+				p.addTestingTopics(topic);
+
+			}
+			p.addTrainingTopics("acq");
+			exp.setExperementSource(p);
 			exp.start();
 		}
 		

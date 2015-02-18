@@ -112,7 +112,7 @@ public class Tom_exp {
 			driftForecaster = new ConceptDrift_Forecasting(projectDir);
 			try {
 				driftForecaster.readFromProject();
-				driftForecaster.forecastingByNGD();
+				//driftForecaster.forecastingByNGD();
 
 			} catch (IOException e) {
 				e.printStackTrace();

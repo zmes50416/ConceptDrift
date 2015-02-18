@@ -7,8 +7,8 @@ import java.util.Collection;
 public class RouterNewsPopulator implements ExperimentFilePopulater {
 	String projectDir;
 	Collection<String> topics;
-	Collection<String> trainTopics;
-	Collection<String> testTopics;
+	Collection<String> trainTopics = new ArrayList<String>();
+	Collection<String> testTopics = new ArrayList<String>() ;
 	Go_Training_Tom trainerTom = new Go_Training_Tom();
 
 	public RouterNewsPopulator(String dir){
@@ -17,29 +17,32 @@ public class RouterNewsPopulator implements ExperimentFilePopulater {
 		if(!topicDir.isDirectory()||topicDir.list().length==0){
 			throw new IllegalArgumentException();//Nothing to add will break everythings
 		}
-		topics = new ArrayList<>();
+		topics = new ArrayList<String>();
 		for(String topic:topicDir.list()){
 			this.topics.add(topic);
 		}
 	}
+	//TODO Collection's contains problem
 	public void addTrainingTopics(String topic){
-		if(!this.topics.contains(topic)){
+		//if(!this.topics.contains(topic)){
 			this.trainTopics.add(topic);
-		}else{
-			throw new IllegalArgumentException("train topic are not in the list");
-		}
+		//}else{
+		//	throw new IllegalArgumentException("train topic "+topic+" are not in the list");
+		//}
 	}
 	public void addTestingTopics(String topic){
-		if(!this.topics.contains(topic)){
+		//if(!this.topics.contains(topic)){
 			this.testTopics.add(topic);
-		}else{
-			throw new IllegalArgumentException("test topic are not in the list");
-		}
+		//}else{
+		//	throw new IllegalArgumentException("test topic "+topic+" are not in the list");
+		//}
 	}
 
 	@Override
 	public boolean populateExperiment(int days, int trainSize, int testSize){
-		for (int i = 1; i <= days; i++) {
+		try{
+			for (int i = 1; i <= days; i++) {
+		
 			System.out.println("第" + i + "天");
 			new File(projectDir + "training/" + "day_" + i).mkdirs(); // 創造出實驗訓練集第i天資料匣
 			new File(projectDir + "testing/" + "day_" + i).mkdirs(); // 創造出實驗測試集第i天資料匣
@@ -57,6 +60,10 @@ public class RouterNewsPopulator implements ExperimentFilePopulater {
 			}
 		}		
 		return true;
+		}catch(NullPointerException e){
+			System.err.println("You may forget to set Training & Testting Topics");
+			throw e;
+		}
 	}
 
 	
