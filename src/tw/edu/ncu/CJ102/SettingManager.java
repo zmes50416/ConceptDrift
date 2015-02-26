@@ -2,12 +2,14 @@ package tw.edu.ncu.CJ102;
 import java.io.*;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
+
+import javax.swing.JFileChooser;
 /*
  * 需要調整寫法，目前調用設定需要呼叫太長了
  * TODO 增加一個檢查路徑方法並且應該要可以替換實驗集
  * TODO 
  */
-class SettingManager {
+public class SettingManager {
 	/** 
 	 * @author 102鼎文
 	 *
@@ -100,6 +102,15 @@ class SettingManager {
 		
 	}
 	
-	
+	public static String chooseProject(){
+		JFileChooser projectChooser = new JFileChooser(new File("."));
+		projectChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(!(projectChooser.showOpenDialog(null)==JFileChooser.APPROVE_OPTION)){
+			throw new Error();
+		}else{
+			return projectChooser.getSelectedFile().getAbsolutePath();
+		}
+		
+	}
 
 }
