@@ -46,13 +46,18 @@ public class Tom_exp {
 	 */
 	Tom_exp(String projectDir) {
 		this.projectDir = projectDir;
-		new File(this.projectDir).mkdirs(); // 創造出實驗資料匣
+		File project = new File(this.projectDir);
+		project.mkdirs(); // 創造出實驗資料匣
+		
 		new File(this.projectDir + "user_porfile").mkdirs(); // 創造出實驗使用者模型資料匣
 		try {
+			if(!new File(projectDir+"lock").createNewFile()){
+				throw new RuntimeException("The Project have been lock in others process, please clean the project dir first");
+			}
 			efficacyMeasurer = new IOWriter(this.projectDir + "EfficacyMeasure.txt");
 			performanceTimer = new PerformanceWriter(this.projectDir + "time.txt");
-		} catch (Exception e) {
-			throw new Error("Can't Create IO");
+		} catch (IOException e) {
+			throw new RuntimeException("IO have been Interrupted");
 		}
 		new File(this.projectDir + "training").mkdirs(); // 創造出實驗訓練集資料匣
 		new File(this.projectDir + "testing").mkdirs(); // 創造出實驗測試集資料匣
@@ -208,6 +213,7 @@ public class Tom_exp {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		new File(this.projectDir+".lock").delete();
 	}
 	
 	
