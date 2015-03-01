@@ -12,14 +12,12 @@ import java.util.HashMap;
 public class Tom_exp {
 
 	BufferedReader documentReader, trainSortReader, testSortReader; // userProfileReader用來讀目前的user_profile，documentReader用來讀文件，trainSortReader用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
-	BufferedWriter bw2, bw3; // bw2用來紀錄讀取文件的順序，bw3用來紀錄遺忘因子文件與主題關係文件
+	BufferedWriter bw2; // bw2用來紀錄讀取文件的順序，
 	IOWriter efficacyMeasurer;
 	PerformanceWriter performanceTimer; // EfficacyMeasure_w用來紀錄系統效能，performanceTimer用來紀錄系統執行時間
 	String projectDir ;
 
 	int experimentDays = 0; // 實驗天數
-	int trainSize;//產生多少文件數量
-	int testSize;
 	long StartTime;
 	boolean isDynamicDecayMode = false;
 	int preprocess_times = 0; // 某一天的第X篇文章
@@ -82,7 +80,7 @@ public class Tom_exp {
 		performanceTimer.addRecorded("訓練與測試集產生中 :");
 		performanceTimer.addRecorded("開始時間 :" + StartTime);
 		
-		this.populater.populateExperiment(experimentDays, trainSize, trainSize);
+		this.populater.populateExperiment(experimentDays);
 		long EndTime = System.currentTimeMillis();
 		performanceTimer.addRecorded("結束時間 :" + EndTime);
 		performanceTimer.addRecorded("共使用時間(秒) :" + (EndTime - StartTime)
@@ -265,24 +263,25 @@ public class Tom_exp {
 				topic_term.put("temp", 0.0);
 				User_profile_term.put(1, new HashMap<String, Double>(topic_term));
 				// 初始化遺忘因子文件
-				try {
-					bw3 = new BufferedWriter(new FileWriter(projectDir
-							+ "user_porfile/user_profile_TDF.txt"));
-					bw3.write("" + 1);
-					bw3.newLine();
+				try (BufferedWriter tDRWriter = new BufferedWriter(
+						new FileWriter(projectDir
+								+ "user_porfile/user_profile_TDF.txt"));
+						BufferedWriter tRWriter = new BufferedWriter(
+								new FileWriter(projectDir
+										+ "user_porfile/user_profile_TR.txt"));) {
+					//tDR:紀錄遺忘因子文件, TR:主題關係文件
+					tDRWriter.write("" + 1);
+					tDRWriter.newLine();
 					// 存放格式為 字詞,字詞遺忘因子,此次更新編號,字詞總TF分數
-					bw3.write("temp,0.079,1,0.0");
-					bw3.newLine();
-					bw3.flush();
-					bw3.close();
+					tDRWriter.write("temp,0.079,1,0.0");
+					tDRWriter.newLine();
+					tDRWriter.flush();
 					// 初始化主題關係文件
-					bw3 = new BufferedWriter(new FileWriter(projectDir
-							+ "user_porfile/user_profile_TR.txt"));
-					bw3.write("" + 0);
-					bw3.newLine();
-					bw3.flush();
-					bw3.close();
-				} catch (Exception e) {
+
+					tRWriter.write("" + 0);
+					tRWriter.newLine();
+					tRWriter.flush();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -302,15 +301,15 @@ public class Tom_exp {
 			
 			String topicName = ""; // 儲存標籤答案
 			// 開始讀取文件 TODO this must have some path dependent problem
-			for (int ii = 0; ii < train_f.getName().split("_").length; ii++) {
-				if (ii == 0) {
+			for (int j = 0; j < train_f.getName().split("_").length; j++) {
+				if (j == 0) {
 					 topicName = train_f.getName().split("_")[0];
 				} else {
-					char[] topicname_temp = train_f.getName().split("_")[ii]
+					char[] topicname_temp = train_f.getName().split("_")[j]
 							.toCharArray();
 					if (!Character.isDigit(topicname_temp[0])) { // 如果第一個字元是數字代表到檔名結尾了
 						topicName = topicName + "_"
-								+ train_f.getName().split("_")[ii];
+								+ train_f.getName().split("_")[j];
 					} else {
 						break;
 					}
@@ -573,6 +572,10 @@ public class Tom_exp {
 	}
 	public void setExperimentDays(int days){
 		this.experimentDays = days;
+	}
+	
+	public void reRandomize(){ // 重新更改變數種子
+		
 	}
 	
 	class IOWriter {

@@ -3,7 +3,7 @@ package tw.edu.ncu.CJ102.CoreProcess;
 public class CiteUlikePopulater implements ExperimentFilePopulater {
 	private String projectDir;
 	private String realPeople;// 選擇citeulike資料流 讀者的成員編號 ex."626838af45efa5ca465683ab3b3f303e"
-	private Go_Training_Tom trainerTom = new Go_Training_Tom();
+	private TrainingTools trainerTom = new TrainingTools();
 
 	public CiteUlikePopulater(String dir) {
 		this.projectDir = dir;
@@ -14,7 +14,7 @@ public class CiteUlikePopulater implements ExperimentFilePopulater {
 	}
 
 	@Override
-	public boolean populateExperiment(int days, int trainSize, int testSize) {
+	public boolean populateExperiment(int days) {
 
 		int train_days = 0, test_days = -1; // citeulike-實驗天數，0為全部，-1為不使用
 

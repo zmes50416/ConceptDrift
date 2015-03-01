@@ -19,9 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class Go_Training_Tom {
+public final class TrainingTools {
 
 	/**
+	 * 
+	 * 
 	 * @param args
 	 */
 	static String realPeople="";
@@ -158,22 +160,18 @@ public class Go_Training_Tom {
 	}
 	
 	public static void copyfile(File srFile, File dtFile) {
-		try {
-			File f1 = srFile;
-			File f2 = dtFile;
-			InputStream in = new FileInputStream(f1);
+		try(InputStream in = new FileInputStream(srFile);
+			OutputStream out = new FileOutputStream(dtFile)) {
 			// For Append the file.
 			// OutputStream out = new FileOutputStream(f2,true);
 			// For Overwrite the file.
-			OutputStream out = new FileOutputStream(f2);
-
+			
 			byte[] buf = new byte[1024];
 			int len;
 			while ((len = in.read(buf)) > 0) {
 				out.write(buf, 0, len);
 			}
-			in.close();
-			out.close();
+			
 			//System.out.println("File copied.");
 		} catch (FileNotFoundException ex) {
 			System.out

@@ -41,16 +41,20 @@ public class ThresholdExperiment {
 			Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(10);
 			UserProfile mUserProfile = new UserProfile(true);
-			mUserProfile.setRemoveRate(0.9);
+			mUserProfile.setRemoveRate(0.1);
 			exp.mUserProfile= mUserProfile;
-			exp.trainSize = 5;
-			exp.testSize = 5;
-			RouterNewsPopulator p = new RouterNewsPopulator(turnProjectDir);
-			String test[] = { "acq", "earn", "crude", "coffee", "sugar",
-					"trade", "cocoa" };
-			for(String topic:test){
-				p.addTestingTopics(topic);
+			RouterNewsPopulator p = new RouterNewsPopulator(turnProjectDir){
 
+				@Override
+				public void setGenarationRule() {
+					this.trainSize = 5;
+					this.testSize = 5;					
+				}
+				
+			};
+			
+			for(String topic:RouterNewsPopulator.test){
+				p.addTestingTopics(topic);
 			}
 			p.addTrainingTopics("acq");
 			exp.setExperementSource(p);
@@ -59,8 +63,108 @@ public class ThresholdExperiment {
 	}
 	
 	public void topicRemovingExperiment(){
+		for(double i=0.1;i<=0.9;i=i+0.1){
+			String turnProjectDir = projectDir+"\\LongFreq_"+i+"_removeRate\\";
+					Tom_exp exp = new Tom_exp(turnProjectDir);
+			exp.setExperimentDays(15);
+			UserProfile mUserProfile = new UserProfile(true);
+			mUserProfile.setRemoveRate(i);
+			RouterNewsPopulator longFreqInterest = new RouterNewsPopulator(turnProjectDir){
+				@Override
+				public void setGenarationRule(){
+					this.trainSize = 1;
+					this.testSize = 1;
+				}
+			};
+			for(String topic:RouterNewsPopulator.test){
+				longFreqInterest.addTestingTopics(topic);
+			}
+			longFreqInterest.addTrainingTopics("acq");
+			exp.setExperementSource(longFreqInterest);
+			exp.start();
+		}
+		for(double i=0.1;i<=0.9;i=i+0.1){
+			String turnProjectDir = projectDir+"\\LongRare_"+i+"_removeRate\\";
+					Tom_exp exp = new Tom_exp(turnProjectDir);
+			exp.setExperimentDays(15);
+			UserProfile mUserProfile = new UserProfile(true);
+			mUserProfile.setRemoveRate(i);
+			RouterNewsPopulator longRareInterest = new RouterNewsPopulator(turnProjectDir){
+				@Override
+				public void setGenarationRule() {
+						if(this.theDay==1||this.theDay==8){
+							this.trainSize = 3;
+							this.testSize = 3;
+						}else{
+							this.trainSize = 0;
+							this.testSize = 0;
+						}					
+				}
+			};
+			for(String topic:RouterNewsPopulator.test){
+				longRareInterest.addTestingTopics(topic);
+			}
+			longRareInterest.addTrainingTopics("acq");
+			exp.setExperementSource(longRareInterest);
+			exp.start();
+		}
+		for(double i=0.1;i<=0.9;i=i+0.1){
+			String turnProjectDir = projectDir+"\\shortFreq_"+i+"_removeRate\\";
+					Tom_exp exp = new Tom_exp(turnProjectDir);
+			exp.setExperimentDays(15);
+			UserProfile mUserProfile = new UserProfile(true);
+			mUserProfile.setRemoveRate(i);
+			RouterNewsPopulator shortFreqInterest = new RouterNewsPopulator(turnProjectDir){
+				
+				@Override
+				public void setGenarationRule() {
+					if(this.theDay <= 7){
+						this.trainSize = 1;
+						this.testSize = 1;
+					}else{
+						this.trainSize = 0;
+						this.testSize = 0;
+					}
+					
+				}
+			};
+			for(String topic:RouterNewsPopulator.test){
+				shortFreqInterest.addTestingTopics(topic);
+			}
+			shortFreqInterest.addTrainingTopics("acq");
+			exp.setExperementSource(shortFreqInterest);
+			exp.start();
+		}
+		for(double i=0.1;i<=0.9;i=i+0.1){
+			String turnProjectDir = projectDir+"\\ShortRare_"+i+"_removeRate\\";
+			Tom_exp exp = new Tom_exp(turnProjectDir);
+			exp.setExperimentDays(15);
+			UserProfile mUserProfile = new UserProfile(true);
+			mUserProfile.setRemoveRate(i);
+			RouterNewsPopulator shortRareInterest = new RouterNewsPopulator(turnProjectDir){
+				
+				@Override
+				public void setGenarationRule() {
+					if(this.theDay == 1){
+						this.setTrainSize(3);
+						this.setTestSize(3);
+					}else{
+						this.trainSize = 0;
+						this.testSize = 0;
+					}
+					
+				}
+			};
+			for(String topic:RouterNewsPopulator.test){
+				shortRareInterest.addTestingTopics(topic);
+			}
+			shortRareInterest.addTrainingTopics("acq");
+			exp.setExperementSource(shortRareInterest);
+			exp.start();
+		}
 		
 	}
+	
 	
 	public void topicClosenessExperiment(){
 		
