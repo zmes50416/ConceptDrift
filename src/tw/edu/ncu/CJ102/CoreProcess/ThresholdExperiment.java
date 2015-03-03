@@ -23,15 +23,19 @@ public class ThresholdExperiment {
 				i = (char)System.in.read();
 				if(i == '1'){
 					exp.topicMappingExperiment();
+					return;
 				}else if(i == '2'){
 					exp.topicRemovingExperiment();
+					return;
 				}else if(i == '3'){
 					exp.topicClosenessExperiment();
+					return;
 				}
 			}while(i != '0');
 		}catch(IOException e){
 			i = '0';
 			System.err.println("IO Have been Interrupted. System stopped.");
+			e.printStackTrace();
 		}
 	}
 	
@@ -47,8 +51,8 @@ public class ThresholdExperiment {
 
 				@Override
 				public void setGenarationRule() {
-					this.trainSize = 5;
-					this.testSize = 5;					
+					this.setTrainSize(5);
+					this.setTestSize(5);					
 				}
 				
 			};
@@ -67,13 +71,13 @@ public class ThresholdExperiment {
 			String turnProjectDir = projectDir+"\\LongFreq_"+i+"_removeRate\\";
 					Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
-			UserProfile mUserProfile = new UserProfile(true);
-			mUserProfile.setRemoveRate(i);
+			exp.mUserProfile = new UserProfile(true);
+			exp.mUserProfile.setRemoveRate(i);
 			RouterNewsPopulator longFreqInterest = new RouterNewsPopulator(turnProjectDir){
 				@Override
 				public void setGenarationRule(){
-					this.trainSize = 1;
-					this.testSize = 1;
+					this.setTrainSize(1);
+					this.setTestSize(1);
 				}
 			};
 			for(String topic:RouterNewsPopulator.test){
@@ -87,18 +91,17 @@ public class ThresholdExperiment {
 			String turnProjectDir = projectDir+"\\LongRare_"+i+"_removeRate\\";
 					Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
-			UserProfile mUserProfile = new UserProfile(true);
-			mUserProfile.setRemoveRate(i);
+			exp.mUserProfile = new UserProfile(true);
+			exp.mUserProfile.setRemoveRate(i);
 			RouterNewsPopulator longRareInterest = new RouterNewsPopulator(turnProjectDir){
 				@Override
 				public void setGenarationRule() {
 						if(this.theDay==1||this.theDay==8){
-							this.trainSize = 3;
-							this.testSize = 3;
+							this.setTrainSize(3);
 						}else{
-							this.trainSize = 0;
-							this.testSize = 0;
-						}					
+							this.setTrainSize(0);;
+						}
+						this.setTestSize(1);
 				}
 			};
 			for(String topic:RouterNewsPopulator.test){
@@ -112,20 +115,18 @@ public class ThresholdExperiment {
 			String turnProjectDir = projectDir+"\\shortFreq_"+i+"_removeRate\\";
 					Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
-			UserProfile mUserProfile = new UserProfile(true);
-			mUserProfile.setRemoveRate(i);
+			exp.mUserProfile = new UserProfile(true);
+			exp.mUserProfile.setRemoveRate(i);
 			RouterNewsPopulator shortFreqInterest = new RouterNewsPopulator(turnProjectDir){
 				
 				@Override
 				public void setGenarationRule() {
 					if(this.theDay <= 7){
-						this.trainSize = 1;
-						this.testSize = 1;
+						this.setTrainSize(1);
 					}else{
-						this.trainSize = 0;
-						this.testSize = 0;
+						this.setTrainSize(0);
 					}
-					
+					this.setTestSize(1);
 				}
 			};
 			for(String topic:RouterNewsPopulator.test){
@@ -139,20 +140,19 @@ public class ThresholdExperiment {
 			String turnProjectDir = projectDir+"\\ShortRare_"+i+"_removeRate\\";
 			Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
-			UserProfile mUserProfile = new UserProfile(true);
-			mUserProfile.setRemoveRate(i);
+			exp.mUserProfile = new UserProfile(true);
+			exp.mUserProfile.setRemoveRate(i);
 			RouterNewsPopulator shortRareInterest = new RouterNewsPopulator(turnProjectDir){
 				
 				@Override
 				public void setGenarationRule() {
 					if(this.theDay == 1){
 						this.setTrainSize(3);
-						this.setTestSize(3);
 					}else{
-						this.trainSize = 0;
-						this.testSize = 0;
+						this.setTrainSize(0);
 					}
-					
+					this.setTestSize(1);
+
 				}
 			};
 			for(String topic:RouterNewsPopulator.test){

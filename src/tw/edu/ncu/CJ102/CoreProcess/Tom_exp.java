@@ -49,7 +49,7 @@ public class Tom_exp {
 		
 		new File(this.projectDir + "user_porfile").mkdirs(); // 創造出實驗使用者模型資料匣
 		try {
-			if(!new File(projectDir+"lock").createNewFile()){
+			if(!new File(projectDir+".lock").createNewFile()){
 				throw new RuntimeException("The Project have been lock in others process, please clean the project dir first");
 			}
 			efficacyMeasurer = new IOWriter(this.projectDir + "EfficacyMeasure.txt");

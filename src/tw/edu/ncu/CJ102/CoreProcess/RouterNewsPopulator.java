@@ -1,6 +1,10 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,7 +20,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	Collection<String> trainTopics = new ArrayList<String>();
 	Collection<String> testTopics = new ArrayList<String>() ;
 	TrainingTools trainerTom = new TrainingTools();
-	int trainSize,testSize;
+	private int trainSize,testSize;
 	static final String test[] = { "acq", "earn", "crude", "coffee", "sugar",
 			"trade", "cocoa" };
 	
@@ -50,31 +54,39 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	}
 
 	@Override
-	public boolean populateExperiment(int days){
-		for(int i=1;i<=days;i++){
-			System.out.println("第" + theDay + "天");	
+	public boolean populateExperiment(int days) {
+		for (int i = 1; i <= days; i++) {
 			this.setGenarationRule();
-				// 創造出實驗訓練集,測試集第i天資料匣
-				if(new File(projectDir + "training/" + "day_" + theDay).mkdirs() && 
-						new File(projectDir + "testing/" + "day_" + theDay).mkdirs()){
-							System.err.println("System Can't Create Dir at:" +projectDir + "training/" + "day_" + theDay);
-							System.exit(1);
-					}
-				for (String topic : this.trainTopics) {
-					trainerTom.point_topic_doc_generateSet(
-							"Tom_reuters_0.4/single", projectDir + "training/"
-									+ "day_" + theDay, topic, trainSize, theDay);
-				}
-
-				for (String topic : this.testTopics) {
-					trainerTom.point_topic_doc_generateSet(
-							"Tom_reuters_0.4/single", projectDir + "testing/"
-									+ "day_" + theDay, topic, testSize, days + theDay);
-				}
-				
-			theDay++;
+			// 創造出實驗訓練集,測試集第i天資料匣
+			Path traingPath = Paths.get(projectDir + "training/" + "day_"
+					+ theDay);
+			Path testingPath = Paths.get(projectDir + "testing/" + "day_"
+					+ theDay);
+			try {
+				Files.createDirectories(traingPath);
+				Files.createDirectories(testingPath);
+			} catch (IOException e) {
+				System.err.println("System Can't Create Dir at:" + projectDir
+						+ "training/" + "day_" + theDay);
+				e.printStackTrace();
 			}
-		
+
+			for (String topic : this.trainTopics) {
+				trainerTom.point_topic_doc_generateSet(
+						"Tom_reuters_0.4/single", projectDir + "training/"
+								+ "day_" + theDay, topic, trainSize, theDay);
+			}
+
+			for (String topic : this.testTopics) {
+				trainerTom.point_topic_doc_generateSet(
+						"Tom_reuters_0.4/single", projectDir + "testing/"
+								+ "day_" + theDay, topic, testSize, days
+								+ theDay);
+			}
+
+			theDay++;
+		}
+
 		return true;
 	}
 	/**
