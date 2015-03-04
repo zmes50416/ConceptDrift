@@ -11,8 +11,7 @@ public class ThresholdExperiment {
 	String projectDir;
 	public static void main(String[] args) {
 		ThresholdExperiment exp = new ThresholdExperiment(); 
-		exp.projectDir = SettingManager.chooseProject();
-		System.out.println(exp.projectDir);
+		
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
@@ -21,16 +20,16 @@ public class ThresholdExperiment {
 		try{
 			do{
 				i = (char)System.in.read();
+				exp.projectDir = SettingManager.chooseProject();
+				System.out.println("You Dir is:"+exp.projectDir);
 				if(i == '1'){
 					exp.topicMappingExperiment();
-					return;
 				}else if(i == '2'){
 					exp.topicRemovingExperiment();
-					return;
 				}else if(i == '3'){
 					exp.topicClosenessExperiment();
-					return;
 				}
+				System.out.println("Experimetn have been done!\n please choose next or press 0 to exit:");
 			}while(i != '0');
 		}catch(IOException e){
 			i = '0';

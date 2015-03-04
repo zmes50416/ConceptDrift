@@ -23,21 +23,7 @@ public class TOM_ComperRelateness {
 	private double TP = 0, TN = 0, FP = 0, FN = 0;
 	int ConceptDrift_times = 0; // 概念飄移次數
 
-	// update_doc、maybe_update_term、sure_update_term最後實驗後發現效果不好，因此相關步驟都被註解掉
-	// HashMap<Integer,HashMap<String,Double>> update_doc = new
-	// HashMap<Integer,HashMap<String,Double>> (); //等待被更新的文件特徵
-
-	public static void main(String[] args) {
-		HashMap<Integer, HashMap<String, Double>> User_profile_test = new HashMap<Integer, HashMap<String, Double>>();
-		HashMap<Integer, HashMap<String, Double>> doc_test = new HashMap<Integer, HashMap<String, Double>>();
-		HashMap<Integer, Integer> topic_test = new HashMap<Integer, Integer>();
-		User_profile_test.put(0, null);
-		topic_test.put(0, null);
-		TOM_ComperRelateness TC = new TOM_ComperRelateness();
-		TC.Comper_topic_profile_doc("Tom_exp/", User_profile_test, doc_test,
-				0.2);
-	}
-
+	
 	// 主題映射程序，參數為實驗資料匣名稱, 使用者模型, 文件模型, ngd門檻值, 操作類別("train"或"test")
 	public HashMap<Integer, Integer> Comper_topic_profile_doc_only(
 			String exp_dir, HashMap<Integer, HashMap<String, Double>> profile,
@@ -48,69 +34,20 @@ public class TOM_ComperRelateness {
 		double profile_topic_tf_sum = 0; // 某一模型主題的總TF值
 		double threshold = 0; // ngd門檻值
 		double link_num = 0; // 某一文件主題與模型主題的密切連線數量
-		int how_many_topic = 0; // 模型的主題數
+		int topicSize = 0; // 模型的主題數
 		HashMap<Integer, Integer> topic_mapping = new HashMap<Integer, Integer>(); // 主題映射結果
-		// update_doc、maybe_update_term、sure_update_term最後實驗後發現效果不好，因此相關步驟都被註解掉
-		/*
-		 * HashMap<String,Double> maybe_update_term = new
-		 * HashMap<String,Double>(); //文檢主題i有可能被保存下來的字詞 HashMap<String,Double>
-		 * sure_update_term = new HashMap<String,Double>(); //文檢主題i會被保存下來的字詞
-		 */
-		// update_doc.clear();
 
-		FileWriter FWrite;
-		try {
-			BufferedReader br = new BufferedReader(new FileReader(exp_dir
-					+ "user_porfile/user_profile_TR.txt"));
-			how_many_topic = Integer.valueOf(br.readLine()); // 模型的主題數
-			br.close();
+		try(BufferedReader br = new BufferedReader(new FileReader(exp_dir
+				+ "user_porfile/user_profile_TR.txt"));
+				BufferedWriter Comper_log = new BufferedWriter(new FileWriter(exp_dir + "Comper_topic_profile_doc.txt",
+						true))) {
+			
+			topicSize = Integer.valueOf(br.readLine()); // 模型的主題數
 
-			FWrite = new FileWriter(exp_dir + "Comper_topic_profile_doc.txt",
-					true); // true 時,為 Append模式
-			BufferedWriter Comper_log = new BufferedWriter(FWrite);
-
-			/*以下先冰封存，因為計算TFIDF太過麻煩，對於系統可以能造成相當大的運算負擔，於評估後再決定是否使用。(未寫完)
-			//因為映射我們不是直接採取學長的字詞個數的連線數，而是各字詞在這個TFIDF分數，這樣更能利用主題特色字詞，所以要先更新各字詞的分數
-			//更新模型時也要順變更新該字詞的遺忘因子，先讀取遺忘因子的紀錄文件 PS. TDF = Term Decay Factor
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TDF.txt"));
-				String line="";
-				//紀錄字詞的編號，等等便於提出權重與更新時間點
-				HashMap<String,Integer> terms_info = new HashMap<String,Integer>(); //字詞
-				int update_time = Integer.valueOf(br.readLine()); //目前為止的更新編號
-				ArrayList<Double> term_decayfactor = new ArrayList<Double>(); //字詞遺忘因子陣列
-				ArrayList<Integer> term_update_time = new ArrayList<Integer>(); //字詞更新時間點陣列
-				ArrayList<Double> term_sum_score = new ArrayList<Double>(); //字詞在模型內的總分(不分主題統計)
-				int term_src=0; //暫時的字詞編號，便於連結term_decayfactor與term_update_time該字詞的對映位置
-				while((line=br.readLine())!=null){
-					terms_info.put(line.split(",")[0], term_src);
-					term_decayfactor.add(Double.valueOf(line.split(",")[1]));
-					term_update_time.add(Integer.valueOf(line.split(",")[2]));
-					term_src++;
-				}
-				//更新TDF裡所有字詞資訊與使用者模型字詞分數
-				for(String s: terms_info.keySet()){
-					double sum_decayfactor = 1; //累計的遺忘因子，後面讓分數直接成上這個遺忘因子即可
-					for(int j=term_update_time.get(terms_info.get(s)); j < update_time; j++){
-						sum_decayfactor = sum_decayfactor*(1-term_decayfactor.get(terms_info.get(s)));
-						term_decayfactor = update_Term_Decay_Factor(terms_info,term_decayfactor,"minus",s);
-					}
-				}
-				//對所有字詞更新分數，順便累計個字詞的
-			}catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			*/
 
 			// 文件的所有主題與使用者模型的所有主題進行NGD計算，找出互相對應的主題
 			for (int i : doc.keySet()) {
 				doc_topic_num = doc.get(i).size();
-				// maybe_update_term.clear();
-				// sure_update_term.clear();
 				// 不論文件主題或是模型主題的最低編號都是1，因此初始映射設0，在最後回傳還是0的話代表示此文件主題為模型內沒有的新主題
 				topic_mapping.put(i, 0);
 				// 儲存文件主題i對映到的最大相關度
@@ -232,10 +169,10 @@ public class TOM_ComperRelateness {
 					} else if (operate == "train") {
 						Comper_log.write("發現新主題");
 						Comper_log.newLine();
-						topic_mapping.put(i, how_many_topic + 1);
+						topic_mapping.put(i, topicSize + 1);
 						// update_doc.put(i, new HashMap(doc.get(i)));
 						// //新主題將保留下所有字詞
-						how_many_topic++;
+						topicSize++;
 					}
 				} else {
 					Comper_log.write("舊主題");
@@ -247,27 +184,14 @@ public class TOM_ComperRelateness {
 			}
 			Comper_log.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return topic_mapping;
 	}
 
-	/*
-	 * public HashMap<Integer,HashMap<String,Double>> updata_fine_doc(){ return
-	 * update_doc; }
-	 */
-
 	public HashMap<Integer, Integer> Comper_topic_profile_doc(String exp_dir,
 			HashMap<Integer, HashMap<String, Double>> profile,
 			HashMap<Integer, HashMap<String, Double>> doc, double doc_ngd) {
-		/*
-		 * try { BufferedWriter EfficacyMeasure_w = new BufferedWriter(new
-		 * FileWriter(exp_dir+"EfficacyMeasure.txt"));
-		 * EfficacyMeasure_w.write("aaa: xxxx"); EfficacyMeasure_w.newLine();
-		 * EfficacyMeasure_w.flush(); } catch (IOException e) { // TODO
-		 * Auto-generated catch block e.printStackTrace(); }
-		 */
 
 		HashMap<Integer, Integer> topic_mapping = new HashMap<Integer, Integer>(); // 主題映射結果
 		topic_mapping = Comper_topic_profile_doc_only(exp_dir, profile, doc,
@@ -280,10 +204,10 @@ public class TOM_ComperRelateness {
 			HashMap<Integer, Integer> topic_mapping) {
 
 		// 目前等多考慮到一個文件有兩個主題，因此可能文件包含了單個主題或兩的主題對映到同一個或不同的模型主題
-		try {
+		try (BufferedReader br = new BufferedReader(new FileReader(exp_dir
+				+ "user_porfile/user_profile_TR.txt"));){
 			// 讀取主題關係文件 PS. TR = Topic Relation
-			BufferedReader br = new BufferedReader(new FileReader(exp_dir
-					+ "user_porfile/user_profile_TR.txt"));
+			
 			String line;
 			int how_many_topic = Integer.valueOf(br.readLine()); // 得知目前主題數
 			String topics;
