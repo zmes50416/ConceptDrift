@@ -25,7 +25,7 @@ public class Tom_exp {
 	ExperimentFilePopulater populater;
 	TOM_ComperRelateness comperRelatener = new TOM_ComperRelateness();
 
-	UserProfile mUserProfile;
+	private UserProfile mUserProfile;
 	ConceptDrift_Forecasting driftForecaster;//Link predicition used
 
 	
@@ -42,7 +42,7 @@ public class Tom_exp {
 	 * prepare Directory Structure, if do not exist then create new one
 	 * @param projectDir 
 	 */
-	Tom_exp(String projectDir) {
+	public Tom_exp(String projectDir) {
 		this.projectDir = projectDir;
 		File project = new File(this.projectDir);
 		project.mkdirs(); // 創造出實驗資料匣
@@ -76,7 +76,7 @@ public class Tom_exp {
 		
 		double docTF;
 		int train_times, test_times; // 設定每次訓練、測試互換的篇數
-		if((this.mUserProfile==null)){
+		if((this.getmUserProfile()==null)){
 			throw new Error();
 		}
 		comperRelatener.init_EfficacyMeasure();
@@ -103,13 +103,13 @@ public class Tom_exp {
 			System.out.println("使用者模型天更新處理...");
 			StartTime = System.currentTimeMillis();
 			// 每日需執行的遺忘因子的作用
-			User_profile_term = mUserProfile.update_OneDayTerm_Decay_Factor(
+			User_profile_term = getmUserProfile().update_OneDayTerm_Decay_Factor(
 					projectDir, User_profile_term);
 			// 每日需執行的字詞去除
-			User_profile_term = mUserProfile.interest_remove_term(projectDir,
+			User_profile_term = getmUserProfile().interest_remove_term(projectDir,
 					User_profile_term, d);
 			// 每日需執行的興趣去除
-			User_profile_term = mUserProfile.interest_remove_doc(projectDir,
+			User_profile_term = getmUserProfile().interest_remove_doc(projectDir,
 					User_profile_term, d);
 			// 概念飄移預測
 			driftForecaster = new ConceptDrift_Forecasting(projectDir);
@@ -123,7 +123,7 @@ public class Tom_exp {
 			}
 
 			// 將更新後的profile寫入
-			mUserProfile.out_new_user_profile(projectDir, preprocess_times,
+			getmUserProfile().out_new_user_profile(projectDir, preprocess_times,
 					User_profile_term);
 			long endTime = System.currentTimeMillis();
 			sum_time_update_OneDayTerm = sum_time_update_OneDayTerm
@@ -138,7 +138,7 @@ public class Tom_exp {
 			System.out.println("查全度為 " + comperRelatener.get_recall());
 			System.out.println("F-measure為 " + comperRelatener.get_f_measure());
 			System.out.println("概念飄移次數為: "
-					+ (mUserProfile.get_ConceptDrift_times() + comperRelatener
+					+ (getmUserProfile().get_ConceptDrift_times() + comperRelatener
 							.get_ConceptDrift_times()));
 			System.out.println("預測而連接的主題關係邊數為: " + driftForecaster.getForecastingTimes());
 			double all_result[] = comperRelatener.get_all_result();
@@ -151,7 +151,7 @@ public class Tom_exp {
 			efficacyMeasurer.addRecorded("查全度為: " + comperRelatener.get_recall());
 			efficacyMeasurer.addRecorded("F-measure為: " + comperRelatener.get_f_measure());
 			efficacyMeasurer.addRecorded("概念飄移次數為: "
-					+ (mUserProfile.get_ConceptDrift_times() + comperRelatener
+					+ (getmUserProfile().get_ConceptDrift_times() + comperRelatener
 							.get_ConceptDrift_times()));
 			efficacyMeasurer.addRecorded("預測而連接的主題關係邊數為: "
 					+ driftForecaster.getForecastingTimes() + "\n\n");
@@ -359,8 +359,8 @@ public class Tom_exp {
 					doc_term.put(group, new HashMap<String, Double>(topic_term));
 				}
 			
-				mUserProfile.sum_avg_docTF(docTF);
-				mUserProfile.sum_avg_termTF(docTF, doc_term_count);
+				getmUserProfile().sum_avg_docTF(docTF);
+				getmUserProfile().sum_avg_termTF(docTF, doc_term_count);
 				documentReader.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -435,13 +435,13 @@ public class Tom_exp {
 			// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
 			// 此步驟也會用到遺忘因子
 			StartTime = System.currentTimeMillis();
-			User_profile_term = mUserProfile.add_user_profile_term(
+			User_profile_term = getmUserProfile().add_user_profile_term(
 					User_profile_term, doc_term, topic_mapping);
 			EndTime = System.currentTimeMillis();
 			performanceTimer.trainTimeOfAddingUserProfile += (EndTime - StartTime) / 1000;
 
 			// 輸出使用者模型
-			mUserProfile.out_new_user_profile(projectDir, preprocess_times,
+			getmUserProfile().out_new_user_profile(projectDir, preprocess_times,
 					User_profile_term);
 			System.out.println("文件" + projectDir + "training/day_" + theDay
 					+ "/" + train_f.getName() + "處理結束");
@@ -584,6 +584,13 @@ public class Tom_exp {
 		
 	}
 	
+	public UserProfile getmUserProfile() {
+		return mUserProfile;
+	}
+	public void setmUserProfile(UserProfile mUserProfile) {
+		this.mUserProfile = mUserProfile;
+	}
+
 	class IOWriter {
 		BufferedWriter timeWriter;
 		long StartTime;
