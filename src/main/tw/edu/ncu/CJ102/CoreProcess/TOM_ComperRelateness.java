@@ -8,7 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 
@@ -23,8 +26,15 @@ public class TOM_ComperRelateness {
 	private double TP = 0, TN = 0, FP = 0, FN = 0;
 	int ConceptDrift_times = 0; // 概念飄移次數
 
-	
-	// 主題映射程序，參數為實驗資料匣名稱, 使用者模型, 文件模型, ngd門檻值, 操作類別("train"或"test")
+	/**
+	 * 主題映射程序
+	 * @param exp_dir 實驗資料匣名稱
+	 * @param profile 使用者模型
+	 * @param doc 文件模型
+	 * @param doc_ngd ngd門檻值
+	 * @param operate 操作類別("train"或"test")
+	 * @return 文件與模型主題的映射
+	 */
 	public HashMap<Integer, Integer> Comper_topic_profile_doc_only(
 			String exp_dir, HashMap<Integer, HashMap<String, Double>> profile,
 			HashMap<Integer, HashMap<String, Double>> doc, double doc_ngd,
@@ -470,3 +480,4 @@ public class TOM_ComperRelateness {
 		return (FP + FN) / (TP + TN + FP + FN);
 	}
 }
+

@@ -7,6 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * For Router News DataSet.
@@ -17,8 +20,8 @@ import java.util.Collection;
 public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	String projectDir;
 	Collection<String> topics;
-	Collection<String> trainTopics = new ArrayList<String>();
-	Collection<String> testTopics = new ArrayList<String>() ;
+	Set<String> trainTopics = new HashSet<String>();
+	Set<String> testTopics = new HashSet<String>() ;
 	TrainingTools trainerTom = new TrainingTools();
 	private int trainSize,testSize;
 	static final String test[] = { "acq", "earn", "crude", "coffee", "sugar",
@@ -29,28 +32,28 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 		this.projectDir = dir;
 		File topicDir= new File("Tom_reuters_0.4/single");
 		if(!topicDir.isDirectory()||topicDir.list().length==0){
-			throw new IllegalArgumentException();//Nothing to add will break everythings
+			throw new IllegalArgumentException("Can't Find the Topics Dir");//Nothing to add will break everythings
 		}
-		topics = new ArrayList<String>();
+		topics = new HashSet<String>();
 		for(String topic:topicDir.list()){
 			this.topics.add(topic);
 		}
 		this.theDay =1;
 	}
-	//TODO Collection's contains problem
-	public void addTrainingTopics(String topic){
-		//if(!this.topics.contains(topic)){
-			this.trainTopics.add(topic);
-		//}else{
-		//	throw new IllegalArgumentException("train topic "+topic+" are not in the list");
-		//}
+
+	public boolean addTrainingTopics(String topic){
+		if(this.topics.contains(topic)){
+			return this.trainTopics.add(topic);
+		}else{
+			throw new IllegalArgumentException("train topic "+topic+" are not in the collection");
+		}
 	}
-	public void addTestingTopics(String topic){
-		//if(!this.topics.contains(topic)){
-			this.testTopics.add(topic);
-		//}else{
-		//	throw new IllegalArgumentException("test topic "+topic+" are not in the list");
-		//}
+	public boolean addTestingTopics(String topic){
+		if(this.topics.contains(topic)){
+			return this.testTopics.add(topic);
+		}else{
+			throw new IllegalArgumentException("test topic "+topic+" are not in the collection");
+		}
 	}
 
 	@Override
@@ -71,6 +74,9 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 				e.printStackTrace();
 			}
 
+			if(this.trainTopics.isEmpty()||this.testTopics.isEmpty()){
+				throw new RuntimeException("topic is empty, nothing will be generate!");
+			}
 			for (String topic : this.trainTopics) {
 				trainerTom.point_topic_doc_generateSet(
 						"Tom_reuters_0.4/single", projectDir + "training/"

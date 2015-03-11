@@ -10,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -155,7 +156,13 @@ public final class TrainingTools {
 		}
 		for(int i=0; i<size; i++){
 			//System.out.println("開始複製第 "+(i+1)+" 篇 = "+list.get(i).getName());
-			copyfile(list.get(i), new File(resultDir + "/" + list.get(i).getName()));
+			try(FileOutputStream dest = new FileOutputStream(new File(resultDir + "/" + list.get(i).getName()));) {
+				
+				Files.copy(list.get(i).toPath(), dest);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			//copyfile(list.get(i), new File(resultDir + "/" + list.get(i).getName()));
 		}
 	}
 	
