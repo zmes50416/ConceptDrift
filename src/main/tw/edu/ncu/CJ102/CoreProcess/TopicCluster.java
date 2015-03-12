@@ -13,7 +13,7 @@ class TopicCluster{
 	static HashSet<TopicCluster> clusters;
 	private int id;
 
-	Graph<String,Double> graph = new UndirectedSparseGraph<String,Double>();
+	Graph<TermNode,CEdge> graph = new UndirectedSparseGraph<TermNode,CEdge>();
 	public TopicCluster(int id){
 		this.id = id;
 	}
@@ -22,12 +22,13 @@ class TopicCluster{
 		return id;
 	}
 	
-	public void addNode(String node){
+	public void addNode(TermNode node){
 		this.graph.addVertex(node);
 	}
+
 	
-	public void addEdge(double distance,String nodeA,String nodeB){
-		this.graph.addEdge(distance, nodeA, nodeB);
+	public void addEdge(CEdge c,TermNode nodeA,TermNode nodeB){
+		this.graph.addEdge(c, nodeA, nodeB);
 	}
 	
 	@Override
@@ -49,5 +50,20 @@ class TopicCluster{
 		return id;
 		
 	}
+	
+	
+}
+
+class TermNode{
+	double termFreq;
+	String term;
+	TermNode(String _term){
+		this.term = _term;
+	}
+	TermNode(String _term,double _termFreq){
+		this.term = _term;
+		this.termFreq = _termFreq;
+	}
+	
 	
 }

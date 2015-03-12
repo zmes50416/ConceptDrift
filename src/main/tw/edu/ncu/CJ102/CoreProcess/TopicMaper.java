@@ -15,7 +15,7 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 
-public class TOM_ComperRelateness {
+public class TopicMaper {
 
 	/**
 	 * Edit from TOM_ComperRelateness

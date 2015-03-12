@@ -61,9 +61,9 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 		for (int i = 1; i <= days; i++) {
 			this.setGenarationRule();
 			// 創造出實驗訓練集,測試集第i天資料匣
-			Path traingPath = Paths.get(projectDir + "training/" + "day_"
+			Path traingPath = Paths.get(projectDir , "/training" ,"day_"
 					+ theDay);
-			Path testingPath = Paths.get(projectDir + "testing/" + "day_"
+			Path testingPath = Paths.get(projectDir ,"/testing" , "day_"
 					+ theDay);
 			try {
 				Files.createDirectories(traingPath);
@@ -79,14 +79,12 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 			}
 			for (String topic : this.trainTopics) {
 				trainerTom.point_topic_doc_generateSet(
-						"Tom_reuters_0.4/single", projectDir + "training/"
-								+ "day_" + theDay, topic, trainSize, theDay);
+						"Tom_reuters_0.4/single", traingPath.toString(), topic, trainSize, theDay);
 			}
 
 			for (String topic : this.testTopics) {
 				trainerTom.point_topic_doc_generateSet(
-						"Tom_reuters_0.4/single", projectDir + "testing/"
-								+ "day_" + theDay, topic, testSize, days
+						"Tom_reuters_0.4/single", testingPath.toString(), topic, testSize, days
 								+ theDay);
 			}
 

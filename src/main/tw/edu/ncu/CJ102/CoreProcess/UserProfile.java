@@ -2,11 +2,16 @@ package tw.edu.ncu.CJ102.CoreProcess;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 
@@ -30,6 +35,11 @@ public class UserProfile {
 	static ArrayList<String> term_had_changed = new ArrayList<String>();
 	int ConceptDrift_times = 0; //概念飄移次數
 	
+	HashSet<TopicCluster> topics = new HashSet<>();
+	HashMap<String,Double> terms = new HashMap<>();//遺忘因子紀錄
+	
+	public final static String TDF_FILENAME = "/user_porfile/user_profile_TDF";
+	public final static String TR_FILENAME = "/user_porfile/user_profile_TR";
 
 	public UserProfile(boolean isDynamicDecayMode){
 		this.isDynamicDecayMode = isDynamicDecayMode;
@@ -59,8 +69,25 @@ public class UserProfile {
 		GU.add_user_profile_term(User_profile_test,doc_test,topic_test);
 	}
 	
-	//輸入參數是原使用者模型(字詞)、文件內容資訊、主題的映射
-	//回傳的是更新後的使用者模型(字詞)
+	public HashSet<TopicCluster> getTopics() {
+		return topics;
+	}
+	public void setTopics(HashSet<TopicCluster> topics) {
+		this.topics = topics;
+	}
+	
+	public HashMap<Integer,HashMap<String,Double>> add_user_profile_term(){
+		
+		return null;
+		
+	}
+	/**
+	 * 
+	 * @param User_profile_term 原使用者模型(字詞)
+	 * @param doc_term 文件內容資訊
+	 * @param topic_mapping 主題的映射
+	 * @return 更新後的使用者模型(字詞)
+	 */
 	public HashMap<Integer,HashMap<String,Double>> add_user_profile_term(HashMap<Integer,HashMap<String,Double>> User_profile_term, HashMap<Integer,HashMap<String,Double>> doc_term, HashMap<Integer,Integer> topic_mapping){
 		//將個文件主題的字詞TF分數依據得到的主題映射關係存入使用者模型中
 		for(int i: doc_term.keySet()){
@@ -445,5 +472,21 @@ public class UserProfile {
 		this.remove_rate = value;
 		this.interest_remove_rate = this.remove_rate;
 		this.term_remove_rate = this.remove_rate;
+	}
+	
+	public void store(String savePlace){
+		try (ObjectOutputStream tDRWriter = new ObjectOutputStream(
+				new FileOutputStream(Paths.get(savePlace,TDF_FILENAME).toString()));
+				ObjectOutputStream tRWriter = new ObjectOutputStream(
+						new FileOutputStream(Paths.get(savePlace, TR_FILENAME).toString()));) {
+			//tDR:紀錄遺忘因子文件, TR:主題關係文件
+			// 存放格式為 字詞,字詞遺忘因子,此次更新編號,字詞總TF分數
+			tDRWriter.writeObject(terms);
+
+			// 初始化主題關係文件
+			tRWriter.writeObject(this.topics);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

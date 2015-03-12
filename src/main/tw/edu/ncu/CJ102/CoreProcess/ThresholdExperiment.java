@@ -70,7 +70,7 @@ public class ThresholdExperiment {
 					Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
 			exp.setmUserProfile(new UserProfile(true));
-			exp.getmUserProfile().setRemoveRate(i);
+			exp.mUserProfile().setRemoveRate(i);
 			RouterNewsPopulator longFreqInterest = new RouterNewsPopulator(turnProjectDir){
 				@Override
 				public void setGenarationRule(){
@@ -90,7 +90,7 @@ public class ThresholdExperiment {
 					Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
 			exp.setmUserProfile(new UserProfile(true));
-			exp.getmUserProfile().setRemoveRate(i);
+			exp.mUserProfile().setRemoveRate(i);
 			RouterNewsPopulator longRareInterest = new RouterNewsPopulator(turnProjectDir){
 				@Override
 				public void setGenarationRule() {
@@ -114,7 +114,7 @@ public class ThresholdExperiment {
 					Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
 			exp.setmUserProfile(new UserProfile(true));
-			exp.getmUserProfile().setRemoveRate(i);
+			exp.mUserProfile().setRemoveRate(i);
 			RouterNewsPopulator shortFreqInterest = new RouterNewsPopulator(turnProjectDir){
 				
 				@Override
@@ -139,7 +139,7 @@ public class ThresholdExperiment {
 			Tom_exp exp = new Tom_exp(turnProjectDir);
 			exp.setExperimentDays(15);
 			exp.setmUserProfile(new UserProfile(true));
-			exp.getmUserProfile().setRemoveRate(i);
+			exp.mUserProfile().setRemoveRate(i);
 			RouterNewsPopulator shortRareInterest = new RouterNewsPopulator(turnProjectDir){
 				
 				@Override

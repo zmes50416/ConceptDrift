@@ -6,12 +6,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Tom_exp {
 
-	BufferedReader documentReader, trainSortReader, testSortReader; // userProfileReader用來讀目前的user_profile，documentReader用來讀文件，trainSortReader用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
+	BufferedReader trainSortReader, testSortReader; // userProfileReader用來讀目前的user_profile，documentReader用來讀文件，trainSortReader用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
 	BufferedWriter bw2; // bw2用來紀錄讀取文件的順序，
 	IOWriter efficacyMeasurer;
 	PerformanceWriter performanceTimer; // EfficacyMeasure_w用來紀錄系統效能，performanceTimer用來紀錄系統執行時間
@@ -23,11 +28,12 @@ public class Tom_exp {
 	int preprocess_times = 0; // 某一天的第X篇文章
 	ArrayList<String> profile_label = new ArrayList<String>(); // 儲存用來訓練的標籤答案
 	ExperimentFilePopulater populater;
-	TOM_ComperRelateness comperRelatener = new TOM_ComperRelateness();
+	TopicMaper comperRelatener = new TopicMaper();
 
 	private UserProfile mUserProfile;
 	ConceptDrift_Forecasting driftForecaster;//Link predicition used
 
+	HashSet<TopicCluster> termActiveGraph = new HashSet<>();
 	
 	// 記錄user_profile各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
 	HashMap<Integer, HashMap<String, Double>> User_profile_term = new HashMap<Integer, HashMap<String, Double>>();
@@ -44,21 +50,20 @@ public class Tom_exp {
 	 */
 	public Tom_exp(String projectDir) {
 		this.projectDir = projectDir;
-		File project = new File(this.projectDir);
-		project.mkdirs(); // 創造出實驗資料匣
-		
-		new File(this.projectDir + "user_porfile").mkdirs(); // 創造出實驗使用者模型資料匣
-		try {
-			if(!new File(projectDir+".lock").createNewFile()){
-				throw new RuntimeException("The Project have been lock in others process, please clean the project dir first");
-			}
-			efficacyMeasurer = new IOWriter(this.projectDir + "EfficacyMeasure.txt");
-			performanceTimer = new PerformanceWriter(this.projectDir + "time.txt");
-		} catch (IOException e) {
+		Path project = Paths.get(this.projectDir);
+		Path userProfile = project.resolve("user_porfile");
+		// 創造出實驗資料匣
+		try{
+			Files.createDirectories(project);
+			Files.createDirectories(userProfile); // 創造出實驗使用者模型資料匣
+			Files.createFile(project.resolve(".lock"));
+			Files.createDirectories(project.resolve("training"));
+			Files.createDirectories(project.resolve("testing"));
+		} catch(FileAlreadyExistsException e){
+			throw new RuntimeException("The Project have been lock in others process, please clean the project dir first");
+		}catch (IOException e) {
 			throw new RuntimeException("IO have been Interrupted");
 		}
-		new File(this.projectDir + "training").mkdirs(); // 創造出實驗訓練集資料匣
-		new File(this.projectDir + "testing").mkdirs(); // 創造出實驗測試集資料匣
 	}
 	/*SHOULD NOT RUN THIS YET!!
 	public static void main(String[] args) {
@@ -76,8 +81,14 @@ public class Tom_exp {
 		
 		double docTF;
 		int train_times, test_times; // 設定每次訓練、測試互換的篇數
-		if((this.getmUserProfile()==null)){
+		if((this.mUserProfile()==null)){
 			throw new Error();
+		}
+		try{
+			efficacyMeasurer = new IOWriter(this.projectDir + "EfficacyMeasure.txt");
+			performanceTimer = new PerformanceWriter(this.projectDir + "time.txt");
+		}catch(IOException e){
+			e.printStackTrace();
 		}
 		comperRelatener.init_EfficacyMeasure();
 		StartTime = System.currentTimeMillis();
@@ -103,13 +114,13 @@ public class Tom_exp {
 			System.out.println("使用者模型天更新處理...");
 			StartTime = System.currentTimeMillis();
 			// 每日需執行的遺忘因子的作用
-			User_profile_term = getmUserProfile().update_OneDayTerm_Decay_Factor(
+			User_profile_term = mUserProfile().update_OneDayTerm_Decay_Factor(
 					projectDir, User_profile_term);
 			// 每日需執行的字詞去除
-			User_profile_term = getmUserProfile().interest_remove_term(projectDir,
+			User_profile_term = mUserProfile().interest_remove_term(projectDir,
 					User_profile_term, d);
 			// 每日需執行的興趣去除
-			User_profile_term = getmUserProfile().interest_remove_doc(projectDir,
+			User_profile_term = mUserProfile().interest_remove_doc(projectDir,
 					User_profile_term, d);
 			// 概念飄移預測
 			driftForecaster = new ConceptDrift_Forecasting(projectDir);
@@ -123,7 +134,7 @@ public class Tom_exp {
 			}
 
 			// 將更新後的profile寫入
-			getmUserProfile().out_new_user_profile(projectDir, preprocess_times,
+			mUserProfile().out_new_user_profile(projectDir, preprocess_times,
 					User_profile_term);
 			long endTime = System.currentTimeMillis();
 			sum_time_update_OneDayTerm = sum_time_update_OneDayTerm
@@ -138,7 +149,7 @@ public class Tom_exp {
 			System.out.println("查全度為 " + comperRelatener.get_recall());
 			System.out.println("F-measure為 " + comperRelatener.get_f_measure());
 			System.out.println("概念飄移次數為: "
-					+ (getmUserProfile().get_ConceptDrift_times() + comperRelatener
+					+ (mUserProfile().get_ConceptDrift_times() + comperRelatener
 							.get_ConceptDrift_times()));
 			System.out.println("預測而連接的主題關係邊數為: " + driftForecaster.getForecastingTimes());
 			double all_result[] = comperRelatener.get_all_result();
@@ -151,7 +162,7 @@ public class Tom_exp {
 			efficacyMeasurer.addRecorded("查全度為: " + comperRelatener.get_recall());
 			efficacyMeasurer.addRecorded("F-measure為: " + comperRelatener.get_f_measure());
 			efficacyMeasurer.addRecorded("概念飄移次數為: "
-					+ (getmUserProfile().get_ConceptDrift_times() + comperRelatener
+					+ (mUserProfile().get_ConceptDrift_times() + comperRelatener
 							.get_ConceptDrift_times()));
 			efficacyMeasurer.addRecorded("預測而連接的主題關係邊數為: "
 					+ driftForecaster.getForecastingTimes() + "\n\n");
@@ -219,6 +230,30 @@ public class Tom_exp {
 		this.populater = experimentPopulator;
 	}
 	
+	public void startAnotherTraining(int theDay){
+		Path training = Paths.get(projectDir, "/training/day_"+theDay);
+		for(File doc:training.toFile().listFiles()){
+			StartTime = System.currentTimeMillis();
+			
+			String topicName = ""; // 儲存標籤答案
+			// 開始讀取文件 TODO this must have some path dependent problem
+			//TODO 確認topicName是在我們要訓練的標籤之一
+			for (int j = 0; j < doc.getName().split("_").length; j++) {
+				if (j == 0) {
+					 topicName = doc.getName().split("_")[0];
+				} else {
+					char[] topicname_temp = doc.getName().split("_")[j]
+							.toCharArray();
+					if (!Character.isDigit(topicname_temp[0])) { // 如果第一個字元是數字代表到檔名結尾了
+						topicName = topicName + "_"
+								+ doc.getName().split("_")[j];
+					} else {
+						break;
+					}
+				}
+			}
+		}
+	}
 	public void startTraining(int theDay) {
 		File train_d = new File(projectDir + "training/day_" + theDay);
 
@@ -331,8 +366,8 @@ public class Tom_exp {
 					+ "/" + train_f.getName() + "\n");
 			
 
-			try {
-				documentReader = new BufferedReader(new FileReader(train_f));
+			try(BufferedReader documentReader = new BufferedReader(new FileReader(train_f));){
+				
 			
 				doc_ngd = Double.valueOf(documentReader.readLine()); // 文件的NGD門檻
 				System.out.print("取出文件NGD=" + doc_ngd + "\n");
@@ -359,9 +394,8 @@ public class Tom_exp {
 					doc_term.put(group, new HashMap<String, Double>(topic_term));
 				}
 			
-				getmUserProfile().sum_avg_docTF(docTF);
-				getmUserProfile().sum_avg_termTF(docTF, doc_term_count);
-				documentReader.close();
+				mUserProfile().sum_avg_docTF(docTF);
+				mUserProfile().sum_avg_termTF(docTF, doc_term_count);
 			} catch (Exception e) {
 				e.printStackTrace();
 				return;
@@ -435,13 +469,13 @@ public class Tom_exp {
 			// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
 			// 此步驟也會用到遺忘因子
 			StartTime = System.currentTimeMillis();
-			User_profile_term = getmUserProfile().add_user_profile_term(
+			User_profile_term = mUserProfile().add_user_profile_term(
 					User_profile_term, doc_term, topic_mapping);
 			EndTime = System.currentTimeMillis();
 			performanceTimer.trainTimeOfAddingUserProfile += (EndTime - StartTime) / 1000;
 
 			// 輸出使用者模型
-			getmUserProfile().out_new_user_profile(projectDir, preprocess_times,
+			mUserProfile().out_new_user_profile(projectDir, preprocess_times,
 					User_profile_term);
 			System.out.println("文件" + projectDir + "training/day_" + theDay
 					+ "/" + train_f.getName() + "處理結束");
@@ -452,7 +486,7 @@ public class Tom_exp {
 	public void startTesting(int theDay){
 		File testDir = new File(projectDir + "testing/day_" + theDay);
 		for (File testFile : testDir.listFiles()) {
-			try {
+			try(BufferedReader documentReader = new BufferedReader(new FileReader(testFile));) {
 				System.out.println("測試開始");
 				// File testFile = test_fs.get(test_fs_num);
 				// test_fs_num++;
@@ -466,7 +500,6 @@ public class Tom_exp {
 				 * File(dir+"testing/"+testing_order);
 				 */
 				// 開始讀取文件
-				documentReader = new BufferedReader(new FileReader(testFile));
 				System.out.print("讀取文件" + projectDir + "testing/day_" + theDay
 						+ "/" + testFile.getName() + "\n");
 				double doc_ngd = Double.valueOf(documentReader.readLine()); // 文件的NGD門檻
@@ -584,14 +617,14 @@ public class Tom_exp {
 		
 	}
 	
-	public UserProfile getmUserProfile() {
+	public UserProfile mUserProfile() {
 		return mUserProfile;
 	}
 	public void setmUserProfile(UserProfile mUserProfile) {
 		this.mUserProfile = mUserProfile;
 	}
 
-	class IOWriter {
+	class IOWriter implements AutoCloseable {
 		BufferedWriter timeWriter;
 		long StartTime;
 
@@ -622,7 +655,7 @@ public class Tom_exp {
 	}
 	
 	// use this class to store cross function performance related information. and it also extend IOWriter to do some printout job
-	class PerformanceWriter extends IOWriter{
+	class PerformanceWriter extends IOWriter implements AutoCloseable{
 		double testTimeOfreadingDocument = 0, trainTimeOfReadingDocument = 0;
 		double trainTimeOfReadingProfile = 0, testTimeOfReadingProfile = 0;
 		double trainTimeOfTopicMapping = 0, testTimeOfTopicMapping = 0;
