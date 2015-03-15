@@ -1,5 +1,7 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
+import java.io.File;
+
 public class CiteUlikePopulater implements ExperimentFilePopulater {
 	private String projectDir;
 	private String realPeople;// 選擇citeulike資料流 讀者的成員編號 ex."626838af45efa5ca465683ab3b3f303e"
@@ -25,6 +27,12 @@ public class CiteUlikePopulater implements ExperimentFilePopulater {
 		realPeople = trainerTom.get_real_people();
 		
 		return true;
+	}
+
+	@Override
+	public String getTopics(File document) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -40,10 +40,10 @@ public class UserProfileTest {
 		ObjectInputStream  readerR = null;
 		try {
 			tempProject = Files.createTempDirectory("UnitTest_");
-			Files.createDirectories(Paths.get(tempProject.toString(), "user_porfile"));
+			Files.createDirectories(tempProject.resolve(UserProfile.DEFUALT_USER_PROFILE));
 			m.store(tempProject.toString());
-			Path termDFile = Paths.get(tempProject.toString()+ UserProfile.TDF_FILENAME);
-			Path termRFile = Paths.get(tempProject.toString()+ UserProfile.TR_FILENAME);
+			Path termDFile = Paths.get(tempProject.toString(),UserProfile.DEFUALT_USER_PROFILE,UserProfile.TDF_FILENAME);
+			Path termRFile = Paths.get(tempProject.toString(),UserProfile.DEFUALT_USER_PROFILE,UserProfile.TR_FILENAME);
 			
 			reader = new ObjectInputStream(new FileInputStream(termDFile.toFile()));
 			Object o=reader.readObject();

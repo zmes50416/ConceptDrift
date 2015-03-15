@@ -13,10 +13,14 @@ import org.junit.Test;
 public class ExperimentTest {
 		Tom_exp exp;
 		Path tempDir;
+		DumpRouterNewsPopulator r;
 	@Before
 	public void setUp() throws Exception {
 		tempDir = Files.createTempDirectory("TomEXP_");
 		exp = new Tom_exp(tempDir.toString()+"\\");
+		r = new DumpRouterNewsPopulator(tempDir.toString());
+		r.addTestingTopics("acq");
+		r.addTrainingTopics("acq");
 	}
 
 	@After
@@ -31,30 +35,19 @@ public class ExperimentTest {
 
 	@Test
 	public void testStart() {
-		fail("Not yet implemented");
+		exp.setmUserProfile(new UserProfile(true));
+		exp.setExperementSource(r);
+		exp.start();
+		
+		
 	}
 
-	@Test
-	public void testSetExperementSource() {
-		
-		fail("Not yet implemented");
-	}
 
 	@Test
 	public void testStartAnotherTraining() {
-		RouterNewsPopulator r = new RouterNewsPopulator(tempDir.toString()){
-
-			@Override
-			public void setGenarationRule() {
-				this.setTestSize(2);
-				this.setTrainSize(2);
-			}
-			
-		};
-		r.addTestingTopics("acq");
-		r.addTrainingTopics("acq");
+		//TODO implement exp.startAnotherTraining(1);
 		r.populateExperiment(1);
-		exp.startAnotherTraining(1);
+		
 		fail("Not yet implemented");
 	}
 
@@ -93,4 +86,17 @@ public class ExperimentTest {
 		fail("Not yet implemented");
 	}
 
+	class DumpRouterNewsPopulator extends RouterNewsPopulator{
+
+		public DumpRouterNewsPopulator(String dir) {
+			super(dir);
+		}
+
+		@Override
+		public void setGenarationRule() {
+			this.setTestSize(2);
+			this.setTrainSize(2);
+		}
+		
+	}
 }

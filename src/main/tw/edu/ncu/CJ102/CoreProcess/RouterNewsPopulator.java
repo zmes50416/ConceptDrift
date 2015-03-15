@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FilenameUtils;
+
 /**
  * For Router News DataSet.
  * should Override the simulateNextDay for different Experiment requirment.
@@ -18,7 +20,7 @@ import java.util.Set;
  *
  */
 public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
-	String projectDir;
+	Path projectDir;
 	Collection<String> topics;
 	Set<String> trainTopics = new HashSet<String>();
 	Set<String> testTopics = new HashSet<String>() ;
@@ -29,7 +31,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	
 	int theDay;
 	public RouterNewsPopulator(String dir){
-		this.projectDir = dir;
+		this.projectDir = Paths.get(dir);
 		File topicDir= new File("Tom_reuters_0.4/single");
 		if(!topicDir.isDirectory()||topicDir.list().length==0){
 			throw new IllegalArgumentException("Can't Find the Topics Dir");//Nothing to add will break everythings
@@ -61,10 +63,10 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 		for (int i = 1; i <= days; i++) {
 			this.setGenarationRule();
 			// 創造出實驗訓練集,測試集第i天資料匣
-			Path traingPath = Paths.get(projectDir , "/training" ,"day_"
-					+ theDay);
-			Path testingPath = Paths.get(projectDir ,"/testing" , "day_"
-					+ theDay);
+			Path traingPath = projectDir.resolve(Paths.get("training" ,"day_"
+					+ theDay)) ;
+			Path testingPath = projectDir.resolve(Paths.get("testing" , "day_"
+					+ theDay));
 			try {
 				Files.createDirectories(traingPath);
 				Files.createDirectories(testingPath);
@@ -99,6 +101,20 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	 */
 	public abstract void setGenarationRule();
 	
+	@Override
+	public String getTopics(File document){
+		
+		if(!document.isFile()){
+			String topicName = document.getName().split("_")[0];
+			if(this.testTopics.contains(topicName)||this.trainTopics.contains(topicName)){
+				return topicName;
+			}else{
+				throw new IllegalArgumentException("File isn't in the topics or File Name are not in correct Format");
+			}
+		}else{
+			throw new IllegalArgumentException("can't use File: "+document);
+		}
+	}
 	public void setTrainSize(int size){
 		this.trainSize = size;
 	}

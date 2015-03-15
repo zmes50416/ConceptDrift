@@ -71,3 +71,4 @@ data.txt
 *.txt
 *.ser
 citeulikeData/
+*.lock

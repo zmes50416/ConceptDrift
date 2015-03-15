@@ -2,10 +2,13 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +29,7 @@ public class TopicMaper {
 	private double TP = 0, TN = 0, FP = 0, FN = 0;
 	int ConceptDrift_times = 0; // 概念飄移次數
 
+	HashMap<Integer, Integer> topic_mapping;
 	/**
 	 * 主題映射程序
 	 * @param exp_dir 實驗資料匣名稱
@@ -45,11 +49,10 @@ public class TopicMaper {
 		double threshold = 0; // ngd門檻值
 		double link_num = 0; // 某一文件主題與模型主題的密切連線數量
 		int topicSize = 0; // 模型的主題數
-		HashMap<Integer, Integer> topic_mapping = new HashMap<Integer, Integer>(); // 主題映射結果
-
-		try(BufferedReader br = new BufferedReader(new FileReader(exp_dir
-				+ "user_porfile/user_profile_TR.txt"));
-				BufferedWriter Comper_log = new BufferedWriter(new FileWriter(exp_dir + "Comper_topic_profile_doc.txt",
+		topic_mapping = new HashMap<Integer, Integer>(); // 主題映射結果
+		Path TR = Paths.get(exp_dir,"user_profile/user_profile_TR.txt");
+		try(BufferedReader br = new BufferedReader(new FileReader(TR.toString()));
+				BufferedWriter Comper_log = new BufferedWriter(new FileWriter(Paths.get(exp_dir,"Comper_topic_profile_doc.txt").toString(),
 						true))) {
 			
 			topicSize = Integer.valueOf(br.readLine()); // 模型的主題數
@@ -203,9 +206,7 @@ public class TopicMaper {
 			HashMap<Integer, HashMap<String, Double>> profile,
 			HashMap<Integer, HashMap<String, Double>> doc, double doc_ngd) {
 
-		HashMap<Integer, Integer> topic_mapping = new HashMap<Integer, Integer>(); // 主題映射結果
-		topic_mapping = Comper_topic_profile_doc_only(exp_dir, profile, doc,
-				doc_ngd, "train");
+		Comper_topic_profile_doc_only(exp_dir, profile, doc,doc_ngd, "train");
 		update_topic_relation(exp_dir, topic_mapping);
 		return topic_mapping;
 	}
@@ -214,8 +215,7 @@ public class TopicMaper {
 			HashMap<Integer, Integer> topic_mapping) {
 
 		// 目前等多考慮到一個文件有兩個主題，因此可能文件包含了單個主題或兩的主題對映到同一個或不同的模型主題
-		try (BufferedReader br = new BufferedReader(new FileReader(exp_dir
-				+ "user_porfile/user_profile_TR.txt"));){
+		try (BufferedReader br = new BufferedReader(new FileReader(Paths.get(exp_dir, "user_profile/user_profile_TR.txt").toString()));){
 			// 讀取主題關係文件 PS. TR = Topic Relation
 			
 			String line;
@@ -273,10 +273,9 @@ public class TopicMaper {
 					}
 				}
 			}
-
 			// 輸出新的主題關係文件
 			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir
-					+ "user_porfile/user_profile_TR.txt"));
+					+ "user_profile/user_profile_TR.txt"));
 			bw.write("" + Integer.valueOf(how_many_topic)); // 目前主題數
 			bw.newLine();
 			bw.flush();
@@ -312,7 +311,7 @@ public class TopicMaper {
 		BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader(exp_dir
-					+ "user_porfile/user_profile_TR.txt"));
+					+ "user_profile/user_profile_TR.txt"));
 			String line;
 			HashMap<String, Double> TR = new HashMap<String, Double>(); // 讀取出來的主題關係
 			String topics;
@@ -478,6 +477,23 @@ public class TopicMaper {
 
 	public double get_error() {
 		return (FP + FN) / (TP + TN + FP + FN);
+	}
+	
+	public void logTopicMapping(File logFile) throws IOException{
+		BufferedWriter Comper_log = new BufferedWriter(new FileWriter(logFile, true));
+		Comper_log.write("主題映射結果如下");
+		Comper_log.newLine();
+		// 觀看主題映射成果
+		for (int i : topic_mapping.keySet()) {
+			System.out.print("文件主題 " + i + " 映射於模型主題 "
+					+ topic_mapping.get(i) + "\n");
+			Comper_log.write("文件主題 " + i + " 映射於模型主題 "
+					+ topic_mapping.get(i));
+			Comper_log.newLine();
+		}
+		Comper_log.write("");
+		Comper_log.newLine();
+		Comper_log.close();
 	}
 }
 

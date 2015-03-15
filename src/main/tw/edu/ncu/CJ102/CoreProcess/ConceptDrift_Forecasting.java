@@ -56,7 +56,7 @@ public class ConceptDrift_Forecasting {
 	
 	public void readFromProject() throws IOException {
 			BufferedReader br = new BufferedReader(new FileReader(projectDir
-					+ "user_porfile/user_profile_TR.txt"));
+					+ "user_profile/user_profile_TR.txt"));
 			this.setTopicSize(Integer.parseInt(br.readLine())); // 得知目前主題數
 
 			for(String line = br.readLine();line != null;line = br.readLine()) {
@@ -186,7 +186,7 @@ public class ConceptDrift_Forecasting {
 		this.forecastingTimes = 0;
 
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
-				+ "user_porfile/Forecasting_Recorder.txt", true));
+				+ "user_profile/Forecasting_Recorder.txt", true));
 		
 		for(TopicNode node: this.topicCRGraph.getVertices()){
 			for(TopicNode anotherNode:this.topicCRGraph.getVertices()){
@@ -214,7 +214,7 @@ public class ConceptDrift_Forecasting {
 		this.forecastingTimes = 0;
 		
 		BufferedWriter bw2 = new BufferedWriter(new FileWriter(projectDir
-				+ "user_porfile/Forecasting_Recorder.txt", true));
+				+ "user_profile/Forecasting_Recorder.txt", true));
 		
 		// 預測步驟，計算兩兩邊之間的距離加總，如果總距離小於門檻值，相近的兩點即會產生連接的邊
 		for (TopicNode n : this.topics.values()) {
@@ -258,7 +258,7 @@ public class ConceptDrift_Forecasting {
 
 		// 將跑完預測的TR文件重新寫入
 		BufferedWriter bw = new BufferedWriter(new FileWriter(projectDir
-				+ "user_porfile/user_profile_TR.txt"));
+				+ "user_profile/user_profile_TR.txt"));
 		bw.write(String.valueOf(topicSize)); // 目前主題數
 		bw.newLine();
 		bw.flush();
@@ -356,7 +356,7 @@ public class ConceptDrift_Forecasting {
 			}
 			
 			//將跑完預測的TR文件重新寫入
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TR.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/user_profile_TR.txt"));
 			bw.write(""+topicSize); //目前主題數
 			bw.newLine();
 			bw.flush();

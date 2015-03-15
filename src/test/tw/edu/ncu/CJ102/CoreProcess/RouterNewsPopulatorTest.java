@@ -28,7 +28,8 @@ public class RouterNewsPopulatorTest {
 			}
 			
 		};
-		
+		p.addTrainingTopics("acq");
+		p.addTestingTopics("acq");
 	}
 	@After
 	public void tear() throws Exception {
@@ -39,17 +40,13 @@ public class RouterNewsPopulatorTest {
 
 	@Test
 	public void testAddTestingTopic() {
-		
-		p.addTestingTopics("acq");
 		assertTrue("test if it contain topic",p.testTopics.contains("acq"));
 		assertEquals("test if it all added sucessful",1,p.testTopics.size(),0);
 	}
 	
 	@Test
 	public void testAddTrainingTopic(){
-		p.addTrainingTopics("acq");
 		p.addTrainingTopics("earn");
-
 		assertTrue("test if it contain topic",p.trainTopics.contains("acq"));
 		assertEquals("test if it all added succesful",2, p.trainTopics.size(),0);
 	}
@@ -57,15 +54,20 @@ public class RouterNewsPopulatorTest {
 	@Test
 	public void testpopulateExperiment(){
 		int day=1;
-		p.addTestingTopics("acq");
-		p.addTrainingTopics("acq");
 		p.populateExperiment(day);
-		File test = Paths.get(p.projectDir+"training/").toFile();
+		File test = p.projectDir.resolve("training/").toFile();
 
 		assertEquals("",test.list().length,day);
 		for(File dayDir:test.listFiles()){
 			assertEquals("",dayDir.list().length,1);
 		}
+	}
+	
+	@Test
+	public void testgetTopics(){
+		File testDocument = new File("/Tom_reuters_0.4/single/acq/acq_0000005_concepts.txt"); 
+		assertEquals("Should be the acq tag",p.getTopics(testDocument),"acq");
+
 	}
 	
 	

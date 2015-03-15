@@ -37,9 +37,9 @@ public class UserProfile {
 	
 	HashSet<TopicCluster> topics = new HashSet<>();
 	HashMap<String,Double> terms = new HashMap<>();//遺忘因子紀錄
-	
-	public final static String TDF_FILENAME = "/user_porfile/user_profile_TDF";
-	public final static String TR_FILENAME = "/user_porfile/user_profile_TR";
+	public final static String DEFUALT_USER_PROFILE = "user_profile";
+	public final static String TDF_FILENAME = "user_profile_TDF";
+	public final static String TR_FILENAME = "user_profile_TR";
 
 	public UserProfile(boolean isDynamicDecayMode){
 		this.isDynamicDecayMode = isDynamicDecayMode;
@@ -131,7 +131,7 @@ public class UserProfile {
 		double this_term_tf = 0; //紀錄該次處理的某主題的某字詞的TF分數
 		double new_this_term_tf = 0; //更新後的的某主題的某字詞的TF分數
 		try{
-			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TDF.txt"));
+			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_profile/user_profile_TDF.txt"));
 			//紀錄字詞的編號，等等便於提出權重與更新時間點
 			HashMap<String,Integer> terms_info = new HashMap<String,Integer>(); //字詞
 			int update_time = Integer.valueOf(br.readLine()); //目前為止的更新編號
@@ -225,7 +225,7 @@ public class UserProfile {
 			}*/
 			
 			//輸出新的遺忘因子紀錄文件
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TDF.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/user_profile_TDF.txt"));
 			bw.write(""+Integer.valueOf(update_time));
 			bw.newLine();
 			bw.flush();
@@ -293,7 +293,7 @@ public class UserProfile {
 		double removal_threshold = sum_avg_docTF*interest_remove_rate;
 		double topic_sum_score; //模型內主題的總分
 		try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/interst_Remove_Recorder.txt",true));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/interst_Remove_Recorder.txt",true));
 			System.out.println("目前主題移除門檻值為"+removal_threshold);
 			for (Iterator iterator = User_profile_term.keySet().iterator(); iterator.hasNext();){
 				int j = (Integer)iterator.next();
@@ -332,7 +332,7 @@ public class UserProfile {
 		double removal_threshold = sum_avg_termTF*term_remove_rate;
 		BufferedWriter bw;
 		try {
-			bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/interst_Remove_Recorder.txt",true));
+			bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/interst_Remove_Recorder.txt",true));
 			System.out.println("目前字詞移除門檻值為"+removal_threshold);
 			for(int j: User_profile_term.keySet()){
 				for (Iterator iterator = User_profile_term.get(j).keySet().iterator(); iterator.hasNext();){
@@ -363,7 +363,7 @@ public class UserProfile {
 		//暫存字詞與分數
 		HashMap<String,Double> topic_term = new HashMap<String,Double>();
 		try {
-			bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_"+preprocess_times+".txt"));
+			bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/user_profile_"+preprocess_times+".txt"));
 			for(int i: User_profile_term.keySet()){
 				topic_term.clear();
 				topic_term = new HashMap(User_profile_term.get(i));
@@ -389,7 +389,7 @@ public class UserProfile {
 			String line="", v;
 			ArrayList<String> TDF = new ArrayList<String>();
 			BufferedReader br;
-			br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TDF.txt"));
+			br = new BufferedReader(new FileReader(exp_dir+"user_profile/user_profile_TDF.txt"));
 			String un = br.readLine(); //第一行不重要
 			boolean exis = false;
 			while((line=br.readLine())!=null){
@@ -406,7 +406,7 @@ public class UserProfile {
 			}
 			br.close();
 			
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TDF.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/user_profile_TDF.txt"));
 			bw.write(un);
 			bw.newLine();
 			bw.flush();
@@ -430,7 +430,7 @@ public class UserProfile {
 		try {
 			String line="", v1, v2;
 			ArrayList<String> TR = new ArrayList<String>();
-			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_porfile/user_profile_TR.txt"));
+			BufferedReader br = new BufferedReader(new FileReader(exp_dir+"user_profile/user_profile_TR.txt"));
 			String max_topic_index = br.readLine(); //第一行為最大主題編號
 			while((line=br.readLine())!=null){
 				TR.add(line);
@@ -444,7 +444,7 @@ public class UserProfile {
 					TR.remove(i);
 				}
 			}
-			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_porfile/user_profile_TR.txt"));
+			BufferedWriter bw = new BufferedWriter(new FileWriter(exp_dir+"user_profile/user_profile_TR.txt"));
 			bw.write(max_topic_index);
 			bw.newLine();
 			bw.flush();
@@ -476,9 +476,9 @@ public class UserProfile {
 	
 	public void store(String savePlace){
 		try (ObjectOutputStream tDRWriter = new ObjectOutputStream(
-				new FileOutputStream(Paths.get(savePlace,TDF_FILENAME).toString()));
+				new FileOutputStream(Paths.get(savePlace,DEFUALT_USER_PROFILE,TDF_FILENAME).toString()));
 				ObjectOutputStream tRWriter = new ObjectOutputStream(
-						new FileOutputStream(Paths.get(savePlace, TR_FILENAME).toString()));) {
+						new FileOutputStream(Paths.get(savePlace,DEFUALT_USER_PROFILE, TR_FILENAME).toString()));) {
 			//tDR:紀錄遺忘因子文件, TR:主題關係文件
 			// 存放格式為 字詞,字詞遺忘因子,此次更新編號,字詞總TF分數
 			tDRWriter.writeObject(terms);

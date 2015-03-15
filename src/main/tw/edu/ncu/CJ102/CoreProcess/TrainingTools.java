@@ -35,7 +35,7 @@ public final class TrainingTools {
 		String dir = "Tom_exp2/";
 		int days = 3; //實驗天數
 		new File(dir).mkdirs(); //創造出實驗資料匣
-		new File(dir+"user_porfile").mkdirs(); //創造出實驗使用者模型資料匣
+		new File(dir+"user_profile").mkdirs(); //創造出實驗使用者模型資料匣
 		new File(dir+"training").mkdirs(); //創造出實驗訓練集資料匣
 		new File(dir+"testing").mkdirs(); //創造出實驗測試集資料匣
 		for(int i=1; i<=days; i++){
