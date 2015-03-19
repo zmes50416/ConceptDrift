@@ -104,7 +104,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	@Override
 	public String getTopics(File document){
 		
-		if(!document.isFile()){
+		if(document.isFile()){
 			String topicName = document.getName().split("_")[0];
 			if(this.testTopics.contains(topicName)||this.trainTopics.contains(topicName)){
 				return topicName;
