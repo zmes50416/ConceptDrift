@@ -2,7 +2,9 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -64,10 +66,12 @@ public class RouterNewsPopulatorTest {
 	}
 	
 	@Test
-	public void testgetTopics(){
-		File testDocument = new File("/Tom_reuters_0.4/single/acq/acq_0000005_concepts.txt"); 
+	public void testgetTopics() throws IOException{
+		File testDocument = this.tempProject.resolve("acq_0000005_concepts.txt").toFile(); 
+		BufferedWriter b = new BufferedWriter(new FileWriter(testDocument));
+		b.write("test case");
 		assertEquals("Should be the acq tag",p.getTopics(testDocument),"acq");
-
+		b.close();
 	}
 	
 	
