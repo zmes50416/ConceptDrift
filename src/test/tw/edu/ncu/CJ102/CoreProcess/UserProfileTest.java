@@ -20,9 +20,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class UserProfileTest {
-	UserProfile m = new UserProfile(false);
+	UserProfile m ;
 	@Before
 	public void setUp() throws Exception {
+		m = new UserProfile(false);
+		m.init_docTF();
+		m.init_termTF();
 	}
 
 	@After
@@ -31,7 +34,14 @@ public class UserProfileTest {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		HashMap<Integer,HashMap<String,Double>> User_profile_test = new HashMap<Integer,HashMap<String,Double>>();
+		HashMap<Integer,HashMap<String,Double>> doc_test = new HashMap<Integer,HashMap<String,Double>>();
+		HashMap<Integer,Integer> topic_test = new HashMap<Integer,Integer>();
+		User_profile_test.put(0, null);
+		doc_test.put(0, null);
+		topic_test.put(0, null);
+		//m.add_user_profile_term(User_profile_test,doc_test,topic_test);
+		fail("Not yet Finished");
 	}
 	@Test
 	public void testStore(){
