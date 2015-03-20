@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class Tom_exp {
 
@@ -20,7 +21,7 @@ public class Tom_exp {
 	BufferedWriter bw2; // bw2用來紀錄讀取文件的順序，
 	IOWriter efficacyMeasurer;
 	PerformanceWriter performanceTimer; // EfficacyMeasure_w用來紀錄系統效能，performanceTimer用來紀錄系統執行時間
-	Path projectDir ;
+	Path projectDir, userProfile;
 
 	int experimentDays = 0; // 實驗天數
 	long StartTime;
@@ -50,7 +51,7 @@ public class Tom_exp {
 	 */
 	public Tom_exp(String _projectDir) {
 		this.projectDir= Paths.get(_projectDir);
-		Path userProfile = this.projectDir.resolve(UserProfile.DEFUALT_USER_PROFILE);
+		this.userProfile = this.projectDir.resolve(UserProfile.DEFUALT_USER_PROFILE);
 		// 創造出實驗資料匣
 		try{
 			Files.createDirectories(projectDir);
@@ -236,10 +237,9 @@ public class Tom_exp {
 	}
 	
 	public void startAnotherTraining(int theDay){
-		Path training = projectDir.resolve("/training/day_"+theDay);
+		Path training = this.projectDir.resolve("training/day_"+theDay);
 		for(File doc:training.toFile().listFiles()){
 			StartTime = System.currentTimeMillis();
-			// 開始讀取文件 TODO this must have some path dependent problem
 			String topicName = this.populater.getTopics(doc); // 儲存標籤答案
 			
 			
@@ -252,24 +252,37 @@ public class Tom_exp {
 				System.out.print("取出文件NGD=" + ngd + "\n");
 				// 暫存字詞與分數
 				HashMap<String, Double> terms = new HashMap<String, Double>();
-				TopicCluster t = new TopicCluster(1);
 				
 				
 				
-				
+				ArrayList<TopicCluster> documentTerms = new ArrayList<>();
 
 				double docTF = 0; // 單文件的TF值
 				int doc_term_count = 0; // 單文件內的字詞數量
 				// 記錄文件各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
-				HashMap<Integer, HashMap<String, Double>> documentTopicTerms = null;
+				HashMap<Integer, HashMap<String, Double>> documentTopicTerms = new HashMap<Integer, HashMap<String, Double>>();
 				for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
 					String term = line.split(",")[0]; // 字詞
 					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
 					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
+					TopicCluster c = null;
+					try{
+						c = documentTerms.get(group);
+						
+					}catch(IndexOutOfBoundsException e){
+						c = new TopicCluster(group);
+						documentTerms.add(c);
+
+					}finally{
+						boolean isAdd = c.graph.addVertex(new TermNode(term,TFScore));
+						if(!isAdd){
+							throw new RuntimeException("Term are duplicate in document! please check");
+						}
+					}
+						
 					docTF += TFScore;
 					doc_term_count++;
-					documentTopicTerms = new HashMap<Integer, HashMap<String, Double>>();
-					// System.out.print("取出文件資訊=>"+term+","+TFScore+","+group+"\n");
+					//FIXME there are a bug in this , only final group will left
 					if (documentTopicTerms.get(group) == null) { // 新的主題直接把字裝進去
 						terms.put(term, TFScore);
 					} else { // 舊主題就先取出目前的資料，再更新
@@ -291,45 +304,45 @@ public class Tom_exp {
 					System.out.println("該文件沒有任何特徵");
 				}
 				long EndTime = System.currentTimeMillis();
-				this.performanceTimer.testTimeOfreadingDocument += ((EndTime - StartTime) / 1000);
-
-				// 文件與模型的主題字詞資訊都萃取出來後就進行主題間的映射，以便於分辨文件主題是對應到模型的哪一個
-				// 此步驟也會紀錄主題關係
-				try(BufferedWriter Comper_log = new BufferedWriter(new FileWriter(projectDir.resolve("Comper_topic_profile_doc.txt").toFile(), true));){
-				StartTime = System.currentTimeMillis();
-				// Comper_log用來紀錄主題映射的數值 , true=append mode
-				Comper_log.write("訓練文件名稱:" + doc.getName());
-				Comper_log.newLine();
-				Comper_log.write("對映使用者模型:" + projectDir + "user_profile_"
-						+ preprocess_times + ".txt");
-				Comper_log.newLine();
-				Comper_log.close();
-				topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir.toString()+"/",
-						User_profile_term, doc_term, ngd);
-				EndTime = System.currentTimeMillis();
-				performanceTimer.trainTimeOfTopicMapping += (EndTime - StartTime) / 1000;
-
-				comperRelatener.logTopicMapping(Paths.get(projectDir.toString()+"/","Comper_topic_profile_doc.txt").toFile());
-				
-
-				// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
-				// 此步驟也會用到遺忘因子
-				StartTime = System.currentTimeMillis();
-				User_profile_term = mUserProfile().add_user_profile_term(
-						User_profile_term, doc_term, topic_mapping);
-				EndTime = System.currentTimeMillis();
-				performanceTimer.trainTimeOfAddingUserProfile += (EndTime - StartTime) / 1000;
-
-				// 輸出使用者模型
-				mUserProfile().out_new_user_profile(projectDir.toString()+"/", preprocess_times,
-						User_profile_term);
-				
-				
-				
-				}catch(IOException e){
-					e.printStackTrace();
-				}
-				
+//				this.performanceTimer.testTimeOfreadingDocument += ((EndTime - StartTime) / 1000);
+//
+//				// 文件與模型的主題字詞資訊都萃取出來後就進行主題間的映射，以便於分辨文件主題是對應到模型的哪一個
+//				// 此步驟也會紀錄主題關係
+//				try(BufferedWriter Comper_log = new BufferedWriter(new FileWriter(projectDir.resolve("Comper_topic_profile_doc.txt").toFile(), true));){
+//				StartTime = System.currentTimeMillis();
+//				// Comper_log用來紀錄主題映射的數值 , true=append mode
+//				Comper_log.write("訓練文件名稱:" + doc.getName());
+//				Comper_log.newLine();
+//				Comper_log.write("對映使用者模型:" + projectDir + "user_profile_"
+//						+ preprocess_times + ".txt");
+//				Comper_log.newLine();
+//				Comper_log.close();
+//				topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir.toString()+"/",
+//						User_profile_term, doc_term, ngd);
+//				EndTime = System.currentTimeMillis();
+//				performanceTimer.trainTimeOfTopicMapping += (EndTime - StartTime) / 1000;
+//
+//				comperRelatener.logTopicMapping(Paths.get(projectDir.toString()+"/","Comper_topic_profile_doc.txt").toFile());
+//				
+//
+//				// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
+//				// 此步驟也會用到遺忘因子
+//				StartTime = System.currentTimeMillis();
+//				User_profile_term = mUserProfile().add_user_profile_term(
+//						User_profile_term, doc_term, topic_mapping);
+//				EndTime = System.currentTimeMillis();
+//				performanceTimer.trainTimeOfAddingUserProfile += (EndTime - StartTime) / 1000;
+//
+//				// 輸出使用者模型
+//				mUserProfile().out_new_user_profile(projectDir.toString()+"/", preprocess_times,
+//						User_profile_term);
+//				
+//				
+//				
+//				}catch(IOException e){
+//					e.printStackTrace();
+//				}
+//				
 			}catch(IOException e){
 				e.printStackTrace();
 			}
@@ -467,7 +480,7 @@ public class Tom_exp {
 					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
 					docTF += TFScore;
 					doc_term_count++;
-					topic_term.clear();
+					topic_term.clear();//FIXME this look like a big bug!
 					// System.out.print("取出文件資訊=>"+term+","+TFScore+","+group+"\n");
 					if (doc_term.get(group) == null) { // 新的主題直接把字裝進去
 						topic_term.put(term, TFScore);
@@ -704,6 +717,14 @@ public class Tom_exp {
 		this.mUserProfile = mUserProfile;
 	}
 
+	private TopicCluster findTheTopicCluster(int id){
+		for(TopicCluster c:this.termActiveGraph){
+			if(c.getId() ==id){
+				return c;
+			}
+		}
+		return null;
+	}
 	class IOWriter implements AutoCloseable {
 		BufferedWriter timeWriter;
 		long StartTime;

@@ -13,14 +13,17 @@ import org.junit.Test;
 public class ExperimentTest {
 		Tom_exp exp;
 		Path tempDir;
-		DumpRouterNewsPopulator r;
+		MockRouterNewsPopulator r;
 	@Before
 	public void setUp() throws Exception {
 		tempDir = Files.createTempDirectory("TomEXP_");
-		exp = new Tom_exp(tempDir.toString()+"\\");
-		r = new DumpRouterNewsPopulator(tempDir.toString());
+		exp = new Tom_exp(tempDir.toString());
+		r = new MockRouterNewsPopulator(tempDir.toString());
 		r.addTestingTopics("acq");
 		r.addTrainingTopics("acq");
+		exp.setExperementSource(r);
+		exp.setmUserProfile(new UserProfile(true));
+
 	}
 
 	@After
@@ -35,9 +38,8 @@ public class ExperimentTest {
 
 	@Test
 	public void testStart() {
-		exp.setmUserProfile(new UserProfile(true));
-		exp.setExperementSource(r);
-		exp.start();
+		fail("Not yet implement");
+		//exp.start();
 		
 		
 	}
@@ -47,6 +49,7 @@ public class ExperimentTest {
 	public void testStartAnotherTraining() {
 		//TODO implement exp.startAnotherTraining(1);
 		r.populateExperiment(1);
+		exp.startAnotherTraining(1);
 		
 		fail("Not yet implemented");
 	}
@@ -86,9 +89,9 @@ public class ExperimentTest {
 		fail("Not yet implemented");
 	}
 
-	class DumpRouterNewsPopulator extends RouterNewsPopulator{
+	class MockRouterNewsPopulator extends RouterNewsPopulator{
 
-		public DumpRouterNewsPopulator(String dir) {
+		public MockRouterNewsPopulator(String dir) {
 			super(dir);
 		}
 
