@@ -10,15 +10,23 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
  *
  */
 @SuppressWarnings("serial")
-class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge>{
+public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge>{
 	private int id;
-
+	private HashSet<TermNode> coreTerm = new HashSet<>();
 	public TopicTermGraph(int id){
 		this.id = id;
 	}
 	
+	public HashSet<TermNode> getCoreTerm() {
+		return coreTerm;
+	}
+
 	public int getId() {
 		return id;
+	}
+	
+	public void computeCoreTerm(){
+		//TODO implement core term finding algorithm
 	}
 	
 	@Override
@@ -38,35 +46,6 @@ class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge>{
 	@Override
 	public int hashCode(){
 		return id;
-		
-	}
-	
-	
-}
-
-class TermNode{
-	double termFreq;
-	String term;
-	TermNode(String _term){
-		this.term = _term;
-	}
-	TermNode(String _term,double _termFreq){
-		this.term = _term;
-		this.termFreq = _termFreq;
-	}
-	@Override
-	public String toString(){
-		return term;
-		
-	}
-	@Override
-	public boolean equals(Object o){
-		TermNode anotherNode = (TermNode)o;
-		if(this.term.equals(anotherNode.term)){
-			return true;
-		}
-		return false;
-		
 	}
 	
 	
