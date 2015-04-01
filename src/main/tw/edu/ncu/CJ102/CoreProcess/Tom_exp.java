@@ -34,7 +34,7 @@ public class Tom_exp {
 	private UserProfile mUserProfile;
 	ConceptDrift_Forecasting driftForecaster;//Link predicition used
 
-	HashSet<TopicCluster> termActiveGraph = new HashSet<>();
+	HashSet<TopicTermGraph> termActiveGraph = new HashSet<>();
 	
 	// 記錄user_profile各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
 	HashMap<Integer, HashMap<String, Double>> User_profile_term = new HashMap<Integer, HashMap<String, Double>>();
@@ -255,7 +255,7 @@ public class Tom_exp {
 				
 				
 				
-				ArrayList<TopicCluster> documentTerms = new ArrayList<>();
+				ArrayList<TopicTermGraph> documentTerms = new ArrayList<>();
 
 				double docTF = 0; // 單文件的TF值
 				int doc_term_count = 0; // 單文件內的字詞數量
@@ -265,16 +265,16 @@ public class Tom_exp {
 					String term = line.split(",")[0]; // 字詞
 					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
 					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
-					TopicCluster c = null;
+					TopicTermGraph c = null;
 					try{
 						c = documentTerms.get(group);
 						
 					}catch(IndexOutOfBoundsException e){
-						c = new TopicCluster(group);
+						c = new TopicTermGraph(group);
 						documentTerms.add(c);
 
 					}finally{
-						boolean isAdd = c.graph.addVertex(new TermNode(term,TFScore));
+						boolean isAdd = c.addVertex(new TermNode(term,TFScore));
 						if(!isAdd){
 							throw new RuntimeException("Term are duplicate in document! please check");
 						}
@@ -297,52 +297,30 @@ public class Tom_exp {
 				
 				// 如果文件完全沒有特徵字詞會使得程式出錯，因此對這種文件放入一個temp字詞，之後再想辦法解決
 				
-				if (documentTopicTerms.get(1) == null) {
-					terms.clear();
-					terms.put("temp", 0.0);
-					documentTopicTerms.put(1, new HashMap<String, Double>(topic_term));
+				if (documentTerms.isEmpty()) {
 					System.out.println("該文件沒有任何特徵");
 				}
-				long EndTime = System.currentTimeMillis();
-//				this.performanceTimer.testTimeOfreadingDocument += ((EndTime - StartTime) / 1000);
-//
-//				// 文件與模型的主題字詞資訊都萃取出來後就進行主題間的映射，以便於分辨文件主題是對應到模型的哪一個
-//				// 此步驟也會紀錄主題關係
-//				try(BufferedWriter Comper_log = new BufferedWriter(new FileWriter(projectDir.resolve("Comper_topic_profile_doc.txt").toFile(), true));){
-//				StartTime = System.currentTimeMillis();
-//				// Comper_log用來紀錄主題映射的數值 , true=append mode
-//				Comper_log.write("訓練文件名稱:" + doc.getName());
-//				Comper_log.newLine();
-//				Comper_log.write("對映使用者模型:" + projectDir + "user_profile_"
-//						+ preprocess_times + ".txt");
-//				Comper_log.newLine();
-//				Comper_log.close();
-//				topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir.toString()+"/",
-//						User_profile_term, doc_term, ngd);
-//				EndTime = System.currentTimeMillis();
-//				performanceTimer.trainTimeOfTopicMapping += (EndTime - StartTime) / 1000;
-//
-//				comperRelatener.logTopicMapping(Paths.get(projectDir.toString()+"/","Comper_topic_profile_doc.txt").toFile());
-//				
-//
-//				// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
-//				// 此步驟也會用到遺忘因子
-//				StartTime = System.currentTimeMillis();
-//				User_profile_term = mUserProfile().add_user_profile_term(
-//						User_profile_term, doc_term, topic_mapping);
-//				EndTime = System.currentTimeMillis();
-//				performanceTimer.trainTimeOfAddingUserProfile += (EndTime - StartTime) / 1000;
-//
-//				// 輸出使用者模型
-//				mUserProfile().out_new_user_profile(projectDir.toString()+"/", preprocess_times,
-//						User_profile_term);
-//				
-//				
-//				
-//				}catch(IOException e){
-//					e.printStackTrace();
-//				}
-//				
+				// 文件與模型的主題字詞資訊都萃取出來後就進行主題間的映射，以便於分辨文件主題是對應到模型的哪一個
+				// 此步驟也會紀錄主題關係
+				StartTime = System.currentTimeMillis();
+				topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir.toString()+"/",
+						User_profile_term, doc_term, ngd);
+
+				comperRelatener.logTopicMapping(Paths.get(projectDir.toString()+"/","Comper_topic_profile_doc.txt").toFile());
+				
+
+				// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
+				// 此步驟也會用到遺忘因子
+				StartTime = System.currentTimeMillis();
+				User_profile_term = mUserProfile().add_user_profile_term(
+						User_profile_term, doc_term, topic_mapping);
+
+				// 輸出使用者模型
+				mUserProfile().out_new_user_profile(projectDir.toString()+"/", preprocess_times,
+						User_profile_term);
+				
+				
+				
 			}catch(IOException e){
 				e.printStackTrace();
 			}
@@ -717,8 +695,8 @@ public class Tom_exp {
 		this.mUserProfile = mUserProfile;
 	}
 
-	private TopicCluster findTheTopicCluster(int id){
-		for(TopicCluster c:this.termActiveGraph){
+	private TopicTermGraph findTheTopicCluster(int id){
+		for(TopicTermGraph c:this.termActiveGraph){
 			if(c.getId() ==id){
 				return c;
 			}

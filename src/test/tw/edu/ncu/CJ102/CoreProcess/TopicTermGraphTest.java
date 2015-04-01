@@ -7,14 +7,14 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TopicClusterTest {
-	TopicCluster c;
-	TopicCluster c2;
-	HashSet<TopicCluster> set;
+public class TopicTermGraphTest {
+	TopicTermGraph c;
+	TopicTermGraph c2;
+	HashSet<TopicTermGraph> set;
 	@Before
 	public void setUp() throws Exception {
-		c = new TopicCluster(1);
-		c2 = new TopicCluster(1);
+		c = new TopicTermGraph(1);
+		c2 = new TopicTermGraph(1);
 		set = new HashSet<>();
 	}
 

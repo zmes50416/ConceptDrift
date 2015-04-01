@@ -10,11 +10,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 
@@ -28,8 +27,9 @@ public class TopicMaper {
 	double relateness_threshold = 0.4; // 為0.525文羽學長實驗結果
 	private double TP = 0, TN = 0, FP = 0, FN = 0;
 	int ConceptDrift_times = 0; // 概念飄移次數
-
 	HashMap<Integer, Integer> topic_mapping;
+	HashSet<TopicTermGraph> topics;
+	
 	/**
 	 * 主題映射程序
 	 * @param exp_dir 實驗資料匣名稱
@@ -46,7 +46,7 @@ public class TopicMaper {
 		int doc_topic_num = 0; // 某一文件主題的字詞數量
 		int profile_topic_num = 0; // 某一模型主題的字詞數量
 		double profile_topic_tf_sum = 0; // 某一模型主題的總TF值
-		double threshold = 0; // ngd門檻值
+		double similityThreshold = 0; // 相似度門檻值
 		double link_num = 0; // 某一文件主題與模型主題的密切連線數量
 		int topicSize = 0; // 模型的主題數
 		topic_mapping = new HashMap<Integer, Integer>(); // 主題映射結果
@@ -75,19 +75,14 @@ public class TopicMaper {
 					Comper_log.write("模型主題" + j + " 字詞數為" + profile_topic_num
 							+ "個");
 					Comper_log.newLine();
-					// System.out.println("文件主題"+i+" 字詞數為"+doc_topic_num+"個");
-					// System.out.println("模型主題"+j+" 字詞數為"+profile_topic_num+"個");
 					profile_topic_tf_sum = 0;
 					for (String profile_term : profile.get(j).keySet()) {
 						double term_tf = profile.get(j).get(profile_term);
 						profile_topic_tf_sum = profile_topic_tf_sum + term_tf;
 					}
 					for (String doc_term : doc.get(i).keySet()) {
-						// Double TF = doc.get(i).get(doc_term);
-						// boolean term_doc_term_inmaybe = false;
 						for (String profile_term : profile.get(j).keySet()) {
 							double term_tf = profile.get(j).get(profile_term);
-							// System.out.println(doc_term+","+profile_term+" ngd計算");
 							double a = SolrSearcher.getHits("\"" + doc_term
 									+ "\"");
 							double b = SolrSearcher.getHits("\"" + profile_term
@@ -101,14 +96,8 @@ public class TopicMaper {
 							if (NGD <= doc_ngd) {
 								// link_num = link_num + 1; //累積連線數方法
 								link_num = link_num + term_tf; // TF方法
-								// term_doc_term_inmaybe = true;
 							}
 						}
-						/*
-						 * if(term_doc_term_inmaybe){
-						 * maybe_update_term.put(doc_term,TF); //唯有緊密的字詞有可能被保存下來
-						 * }
-						 */
 					}
 
 					// 方法2(累積連線數方法)判定可以映射的連線門檻值為比對的文件主題的字詞數*比對的模型主題字詞數*相關判定門檻值
@@ -124,8 +113,8 @@ public class TopicMaper {
 					// threshold =
 					// doc_topic_num*profile_topic_tf_sum*relateness_threshold;
 					// 方法5(TF方法)(相似度平分於連線版本)判定可以映射的連線門檻值為比對的文件主題的字詞數*比對的模型主題字詞TF值總合*相關判定門檻值
-					threshold = (doc_topic_num * profile_topic_tf_sum * relateness_threshold)
-							/ (doc_topic_num * profile_topic_num);
+					similityThreshold = (doc_topic_num * profile_topic_tf_sum * relateness_threshold)
+							/ (doc_topic_num * profile_topic_num);//TODO 文件的字詞總和可以分母分子化簡
 					link_num = link_num / (doc_topic_num * profile_topic_num);
 
 					// 方法1(學長實驗最佳值方法)判定可以映射的連線門檻值為0.525，此方法是利用
@@ -141,25 +130,20 @@ public class TopicMaper {
 					// (如果選方法1~5請註解下面7行程式碼)--(連線賺得總值-門檻值)/(門檻值)，最大超出比例的才會成為映射主題
 					// link_num = (link_num-threshold)/threshold;
 					Comper_log.write("文件主題" + i + "與模型主題" + j + "的相關門檻值為 "
-							+ threshold);
+							+ similityThreshold);
 					Comper_log.newLine();
 					Comper_log.write("文件主題" + i + "與模型主題" + j + "之緊密連線為 "
 							+ link_num);
 					Comper_log.newLine();
-					// System.out.println("文件主題"+i+"與模型主題"+j+"的相關門檻值為 "+threshold);
-					// System.out.println("文件主題"+i+"與模型主題"+j+"之緊密連線為 "+link_num);
-					if (link_num > threshold) {
-						// if(link_num>bigest_sim){
-						if (((link_num - threshold) / threshold) > bigest_sim) {
+
+					if (link_num > similityThreshold) {
+						if(link_num>bigest_sim){
+						//if (((link_num - similityThreshold) / similityThreshold) > bigest_sim) {//附註:此版本無在登祥論文上，但登祥有做忘了
 							Comper_log.write("文件主題" + i + " 暫定 映射於模型主題 " + j);
 							Comper_log.newLine();
-							// sure_update_term.clear();
-							// sure_update_term = new
-							// HashMap(maybe_update_term);
-							// //最終會被保留下來的字詞會跟隨相關性最大的那個主題的比對成果
 							topic_mapping.put(i, j);
-							// bigest_sim = link_num;
-							bigest_sim = ((link_num - threshold) / threshold);
+							bigest_sim = link_num;
+							//bigest_sim = ((link_num - similityThreshold) / similityThreshold);
 						}
 					}
 
@@ -494,6 +478,10 @@ public class TopicMaper {
 		Comper_log.write("");
 		Comper_log.newLine();
 		Comper_log.close();
+	}
+	public void  topicMapping(Collection<TopicTermGraph> user,Collection<TopicTermGraph> doc,double ngdThreshold){
+		
+		
 	}
 }
 

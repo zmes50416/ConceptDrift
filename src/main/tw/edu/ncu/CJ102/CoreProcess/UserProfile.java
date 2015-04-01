@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 public class UserProfile {
 	/**
+	 * old user profile, trying to redesign it
 	 * User profile data and decay
 	 * @param args
 	 */
@@ -35,7 +36,7 @@ public class UserProfile {
 	static ArrayList<String> term_had_changed = new ArrayList<String>();
 	int ConceptDrift_times = 0; //概念飄移次數
 	
-	HashSet<TopicCluster> topics = new HashSet<>();
+	HashSet<TopicTermGraph> topics = new HashSet<>();
 	HashMap<String,Double> terms = new HashMap<>();//遺忘因子紀錄
 	public final static String DEFUALT_USER_PROFILE = "user_profile";
 	public final static String TDF_FILENAME = "user_profile_TDF";
@@ -60,10 +61,10 @@ public class UserProfile {
 	}
 
 	
-	public HashSet<TopicCluster> getTopics() {
+	public HashSet<TopicTermGraph> getTopics() {
 		return topics;
 	}
-	public void setTopics(HashSet<TopicCluster> topics) {
+	public void setTopics(HashSet<TopicTermGraph> topics) {
 		this.topics = topics;
 	}
 	

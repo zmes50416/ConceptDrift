@@ -9,11 +9,11 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
  * @author TingWen
  *
  */
-class TopicCluster{
+@SuppressWarnings("serial")
+class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge>{
 	private int id;
 
-	Graph<TermNode,CEdge> graph = new UndirectedSparseGraph<TermNode,CEdge>();
-	public TopicCluster(int id){
+	public TopicTermGraph(int id){
 		this.id = id;
 	}
 	
@@ -21,19 +21,10 @@ class TopicCluster{
 		return id;
 	}
 	
-	public void addNode(TermNode node){
-		this.graph.addVertex(node);
-	}
-
-	
-	public void addEdge(CEdge c,TermNode nodeA,TermNode nodeB){
-		this.graph.addEdge(c, nodeA, nodeB);
-	}
-	
 	@Override
 	public boolean equals(Object o){
-		if(o.getClass()==TopicCluster.class){
-			TopicCluster c = (TopicCluster)o;
+		if(o.getClass()==TopicTermGraph.class){
+			TopicTermGraph c = (TopicTermGraph)o;
 			if(this.id == c.id){
 				return true;
 			}else{

@@ -56,6 +56,8 @@ public class ExperimentTest {
 
 	@Test
 	public void testStartTraining() {
+		r.populateExperiment(1);
+		exp.startTraining(1);
 		fail("Not yet implemented");
 	}
 

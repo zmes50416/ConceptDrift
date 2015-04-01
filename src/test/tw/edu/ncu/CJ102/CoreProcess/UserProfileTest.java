@@ -63,7 +63,7 @@ public class UserProfileTest {
 			readerR = new ObjectInputStream(new FileInputStream(termRFile.toFile()));
 			Object o2 =readerR.readObject();
 			@SuppressWarnings("unchecked")
-			HashSet<TopicCluster> topics = (HashSet<TopicCluster>)o2;
+			HashSet<TopicTermGraph> topics = (HashSet<TopicTermGraph>)o2;
 			assertEquals("Should be the same obj",topics,m.topics);
 			
 		} catch (Exception e) {
