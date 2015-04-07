@@ -5,6 +5,7 @@ public class TermNode{
 	String term;
 	TermNode(String _term){
 		this.term = _term;
+		this.termFreq = 1;
 	}
 	TermNode(String _term,double _termFreq){
 		this.term = _term;
@@ -23,6 +24,11 @@ public class TermNode{
 		}
 		return false;
 		
+	}
+	
+	@Override
+	public int hashCode(){
+		return this.term.hashCode();
 	}
 	
 	

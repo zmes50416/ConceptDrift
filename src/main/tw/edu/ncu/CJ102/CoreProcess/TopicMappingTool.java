@@ -35,11 +35,14 @@ public class TopicMappingTool {
 		for(TopicTermGraph userTopic:userTopics){
 			int userTopicSize = userTopic.getVertexCount(); // 某一模型主題的字詞數量
 			double userTopicTfSum = 0; // 某一模型主題的總TF值
+			
 			for(TermNode term:userTopic.getVertices()){//TF computing phase
 				userTopicTfSum += term.termFreq;
 			}
+			
 			similarityThreshold = (doc_topic_num * userTopicTfSum * relateness_threshold) / (doc_topic_num * userTopicSize);//文件的字詞總和可以分母分子化簡
 			double similarity = this.algorithm.computeSimilarity(_topic, userTopic);
+			
 			if(similarity>similarityThreshold&&similarity>maximumSimilarity){
 				maximumSimilarity = similarity;
 				mappedTopic = userTopic;

@@ -7,20 +7,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 @SuppressWarnings("serial")
-public abstract class AbstractUserProfile implements Serializable {
+public abstract class AbstractUserProfile implements Serializable{
+	/**
+	 * 使用者的辨識方法
+	 */
 	String id;
-	double decayFactorMAXIMUM;	//遺忘因子上限
-	double decayFactorMin;//遺忘因子下限
-	double decayFactorChange;
+
 	double remove_rate; //興趣去除比例
 	double interest_remove_rate; //主題去除的累計平均單文件總TF值比例
 	double term_remove_rate; //字詞去除的累計平均單字詞TF值比例
-	private HashSet<TopicTermGraph> userTopics = new HashSet<>();
-	private HashMap<TopicTermGraph,Double> forgettingFactorMap = new HashMap<>();
-	public AbstractUserProfile() {
-		// TODO Auto-generated constructor stub
-	}
-
+	
+	protected HashSet<TopicTermGraph> userTopics = new HashSet<>();
+	protected HashMap<TopicTermGraph,Double> interestValueMap = new HashMap<>();
+	/**
+	 * 主題共現圖形
+	 */
+	protected TopicCoOccuranceGraph topicCOGraph;
+	
 
 	/**
 	 * @return the userTopics
@@ -29,20 +32,26 @@ public abstract class AbstractUserProfile implements Serializable {
 		return userTopics;
 	}
 	
-	public HashMap<TopicTermGraph,Double> getForgettingFactorMap() {
-		return forgettingFactorMap;
-	}
-
-	public abstract void updateTopicRemoveThreshold();
-	public abstract void updateTermRemoveThreshold();
-	
-
-	
-	public void write(Path savePlace){
-		
-		
+	public HashMap<TopicTermGraph,Double> getInterestValueMap() {
+		return interestValueMap;
 	}
 	
-	
+	/**
+	 * @return the topicCOGraph
+	 */
+	public TopicCoOccuranceGraph getTopicCOGraph() {
+		return topicCOGraph;
+	}
+
+	/**
+	 * 實作使用者模型的遺忘公式
+	 * @param topic 使用者的興趣主題
+	 * @param length 經過的時間長度
+	 * @return 該主題的遺忘因子
+	 */
+	public abstract double getDecayRate(TopicTermGraph topic,int length);
+
+	public abstract double getTopicRemoveThreshold();
+	public abstract double getTermRemoveThreshold();
 
 }
