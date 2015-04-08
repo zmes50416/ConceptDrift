@@ -19,10 +19,10 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	private int id;
 	private boolean isLongTermInterest;
-	private int birthDate;
-	private int updateDate;
+	protected int birthDate;
+	protected int updateDate;
 	int numberOfDocument;
-	public TopicTermGraph(int id){
+	public TopicTermGraph(int id,int birthDay){
 		this.id = id;
 		this.setLongTermInterest(false);
 	}
@@ -66,16 +66,14 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 		}
 		for(CEdge edge: anotherGraph.getEdges()){
 			Pair<TermNode> pair = anotherGraph.getEndpoints(edge);
-			CEdge rightEdge = this.findEdge(pair.getFirst(), pair.getSecond());
-			if(rightEdge!=null){//edge exist
-				rightEdge.distance += 1;
-
-			}else{//edge not exist
-				this.addEdge(edge,pair);
-			}
+			this.addEdge(edge,pair.getFirst(),pair.getSecond());//Need to use this override method
 		}
+		if(this.updateDate<anotherGraph.updateDate){
+			this.updateDate = anotherGraph.updateDate;
+		}
+		
 	}
-	
+	//Know condition:add a edge that v1 and v2 is not already add will cause v1&v2 add into Edge but if node already exist it will not add the value! 
 	@Override
 	public boolean addEdge(CEdge e,TermNode v1,TermNode v2){
 		if(super.addEdge(e, v1, v2)){

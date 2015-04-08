@@ -236,7 +236,7 @@ public class Tom_exp {
 		this.populater = experimentPopulator;
 	}
 	
-	public void startAnotherTraining(int theDay){
+	public void startAnotherTraining(int theDay){//A new training process
 		Path training = this.projectDir.resolve("training/day_"+theDay);
 		for(File doc:training.toFile().listFiles()){
 			StartTime = System.currentTimeMillis();
@@ -270,7 +270,7 @@ public class Tom_exp {
 						c = documentTerms.get(group);
 						
 					}catch(IndexOutOfBoundsException e){
-						c = new TopicTermGraph(group);
+						c = new TopicTermGraph(group,theDay);
 						documentTerms.add(c);
 
 					}finally{

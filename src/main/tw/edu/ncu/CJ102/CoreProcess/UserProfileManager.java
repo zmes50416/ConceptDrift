@@ -87,7 +87,7 @@ public class UserProfileManager {
 	}
 	
 	/**
-	 * 
+	 * 將每一個文件主題映射並且加入至使用者模型
 	 * @param user 使用者模型
 	 * @param doc_term 文件內容資訊
 	 */
@@ -97,8 +97,7 @@ public class UserProfileManager {
 			if(mappedTopic==topic){
 				user.getUserTopics().add(topic);// Add new user topic if mapper can't find the better topic
 			}else{//find the right topic and merge all term and edge into it
-				
-				
+				mappedTopic.merge(topic);				
 			}
 		}
 		

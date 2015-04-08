@@ -5,103 +5,65 @@ import static org.junit.Assert.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ExperimentTest {
-		Tom_exp exp;
-		Path tempDir;
-		MockRouterNewsPopulator r;
+import tw.edu.ncu.CJ102.algorithm.NgdReverseTfTopicSimilarity;
+
+public class ExperimentTest{
+
+	Experiment exp;
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+	}
+
+	@AfterClass
+	public static void tearDownAfterClass() throws Exception {
+	}
+
 	@Before
 	public void setUp() throws Exception {
-		tempDir = Files.createTempDirectory("TomEXP_");
-		exp = new Tom_exp(tempDir.toString());
-		r = new MockRouterNewsPopulator(tempDir.toString());
-		r.addTestingTopics("acq");
-		r.addTrainingTopics("acq");
-		exp.setExperementSource(r);
-		exp.setmUserProfile(new UserProfile(true));
-
+		Path p = Files.createTempDirectory("ExperimentClass");
+		exp = new Experiment(p.toString());
+		this.
+		maper.algorithm = new NgdReverseTfTopicSimilarity();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		FileUtils.deleteDirectory(tempDir.toFile());
-	}
-
-	@Test(expected=RuntimeException.class)
-	public void testTom_expLockDetection() {
-		Tom_exp exp2 = new Tom_exp(tempDir.toString());
 	}
 
 	@Test
-	public void testStart() {
-		fail("Not yet implement");
-		//exp.start();
-		
-		
-	}
-
-
-	@Test
-	public void testStartAnotherTraining() {
-		//TODO implement exp.startAnotherTraining(1);
-		r.populateExperiment(1);
-		exp.startAnotherTraining(1);
-		
+	public void testExperiment() {
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testStartTraining() {
-		r.populateExperiment(1);
-		exp.startTraining(1);
+	public void testGetProjectPath() {
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testStartTesting() {
+	public void testGetUser() {
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testSetDynamicDecayMode() {
+	public void testSetUser() {
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testSetExperimentDays() {
+	public void testInitialize() {
 		fail("Not yet implemented");
 	}
 
 	@Test
-	public void testReRandomize() {
+	public void testRun() {
 		fail("Not yet implemented");
 	}
 
-	@Test
-	public void testMUserProfile() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetmUserProfile() {
-		fail("Not yet implemented");
-	}
-
-	class MockRouterNewsPopulator extends RouterNewsPopulator{
-
-		public MockRouterNewsPopulator(String dir) {
-			super(dir);
-		}
-
-		@Override
-		public void setGenarationRule() {
-			this.setTestSize(2);
-			this.setTrainSize(2);
-		}
-		
-	}
 }
