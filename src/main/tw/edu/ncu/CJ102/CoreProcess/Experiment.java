@@ -16,7 +16,7 @@ public class Experiment {
 	private AbstractUserProfile user;
 	ExperimentFilePopulater newsPopulater;
 	TopicMappingTool maper;
-	int experimentDays;
+	protected int experimentDays;
 	Boolean isInitialized = false;
 	
 	public Experiment(String project) {		// 創造出實驗資料匣
@@ -26,9 +26,6 @@ public class Experiment {
 		
 			Files.createDirectories(projectPath);
 			Files.createDirectories(userProfile); // 創造出實驗使用者模型資料匣
-			
-			Files.createDirectories(projectPath.resolve("training"));
-			Files.createDirectories(projectPath.resolve("testing"));
 			
 			Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been creat but not finish yet.
 		} catch(FileAlreadyExistsException e){
@@ -48,11 +45,28 @@ public class Experiment {
 	public void setUser(AbstractUserProfile user) {
 		this.user = user;
 	}
+	public int getExperimentDays() {
+		return experimentDays;
+	}
+
+	public void setExperimentDays(int experimentDays) {
+		this.experimentDays = experimentDays;
+	}
+
+	/**
+	 * prepare the experiment traininig & testing data
+	 * insure every data is ready to use
+	 * @throws IOException 
+	 */
 	
-	public void initialize(){
+	public void initialize() throws IOException{
 		if(this.experimentDays==0){
 			throw new RuntimeException("Haven't set the experiment days yet");
+		}else if(this.user == null){
+			throw new RuntimeException("Haven't set the user yet");
 		}
+		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TESTINGPATH));
+		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TRAININGPATH));
 		this.newsPopulater.populateExperiment(experimentDays);
 	}
 	public void run() {
