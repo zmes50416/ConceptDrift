@@ -57,6 +57,11 @@ public class RouterNewsPopulatorTest {
 	public void testpopulateExperiment(){
 		int day=1;
 		p.populateExperiment(day);
+		Path traingDir = this.p.projectDir.resolve(ExperimentFilePopulater.TRAININGPATH);
+		Path testingDir = this.p.projectDir.resolve(ExperimentFilePopulater.TESTINGPATH);
+		assertTrue("experiment should have create the training directory",Files.isDirectory(traingDir));
+		assertTrue("experiment should have create the testing directory",Files.isDirectory(testingDir));
+		
 		File test = p.projectDir.resolve("training/").toFile();
 
 		assertEquals("",test.list().length,day);

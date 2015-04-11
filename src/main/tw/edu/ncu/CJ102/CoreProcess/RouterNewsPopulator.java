@@ -28,6 +28,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	private int trainSize,testSize;
 	static final String test[] = { "acq", "earn", "crude", "coffee", "sugar",
 			"trade", "cocoa" };
+
 	
 	int theDay;
 	public RouterNewsPopulator(String dir){
@@ -60,6 +61,9 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 
 	@Override
 	public boolean populateExperiment(int days) {
+		if(this.trainTopics.isEmpty()||this.testTopics.isEmpty()){
+			throw new RuntimeException("topic is empty, nothing will be generate!");
+		}
 		for (int i = 1; i <= days; i++) {
 			this.setGenarationRule();
 			// 創造出實驗訓練集,測試集第i天資料匣
@@ -75,10 +79,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 						+ "training/" + "day_" + theDay);
 				e.printStackTrace();
 			}
-
-			if(this.trainTopics.isEmpty()||this.testTopics.isEmpty()){
-				throw new RuntimeException("topic is empty, nothing will be generate!");
-			}
+			
 			for (String topic : this.trainTopics) {
 				trainerTom.point_topic_doc_generateSet(
 						"Tom_reuters_0.4/single", traingPath.toString(), topic, trainSize, theDay);

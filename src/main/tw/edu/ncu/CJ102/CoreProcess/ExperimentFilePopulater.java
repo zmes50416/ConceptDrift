@@ -8,6 +8,8 @@ import java.io.File;
  *
  */
 public interface ExperimentFilePopulater {
+	static final String TRAININGPATH ="training";
+	static final String TESTINGPATH = "testing";
 	/**
 	 * generate the file from specification sources
 	 * @return whether the file dir have been successfully populated
