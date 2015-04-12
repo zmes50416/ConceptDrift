@@ -37,58 +37,11 @@ public class Tom_ExperimentTest {
 	}
 
 	@Test
-	public void testStart() {
-		fail("Not yet implement");
-		//exp.start();
-		
-		
-	}
-
-
-	@Test
 	public void testStartAnotherTraining() {
 		//TODO implement exp.startAnotherTraining(1);
 		r.populateExperiment(1);
 		exp.startAnotherTraining(1);
 		
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testStartTraining() {
-		r.populateExperiment(1);
-		exp.startTraining(1);
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testStartTesting() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetDynamicDecayMode() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetExperimentDays() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testReRandomize() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testMUserProfile() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testSetmUserProfile() {
-		fail("Not yet implemented");
 	}
 
 	class MockRouterNewsPopulator extends RouterNewsPopulator{

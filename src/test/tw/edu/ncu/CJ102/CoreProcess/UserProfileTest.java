@@ -33,7 +33,7 @@ public class UserProfileTest {
 	}
 
 	@Test
-	public void test() {
+	public void test() {//This test case have test nothing, just storing old api usage
 		HashMap<Integer,HashMap<String,Double>> User_profile_test = new HashMap<Integer,HashMap<String,Double>>();
 		HashMap<Integer,HashMap<String,Double>> doc_test = new HashMap<Integer,HashMap<String,Double>>();
 		HashMap<Integer,Integer> topic_test = new HashMap<Integer,Integer>();
@@ -41,8 +41,8 @@ public class UserProfileTest {
 		doc_test.put(0, null);
 		topic_test.put(0, null);
 		//m.add_user_profile_term(User_profile_test,doc_test,topic_test);
-		fail("Not yet Finished");
 	}
+	
 	@Test
 	public void testStore(){
 		Path tempProject = null;

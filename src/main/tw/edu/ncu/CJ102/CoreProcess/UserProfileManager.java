@@ -14,6 +14,9 @@ public class UserProfileManager {
 	TopicMappingTool mapper;
 	int currentDate;
 	public UserProfileManager(TopicMappingTool _mapper) {
+		if(_mapper == null){
+			throw new NullPointerException("Cant work without a mapper algorithm");
+		}
 		this.mapper = _mapper;
 		this.currentDate = 1;
 	}
@@ -40,11 +43,11 @@ public class UserProfileManager {
 			}else{
 				double tempTopicInterest = 0; 
 				for(TermNode term:topic.getVertices()){
-					term.termFreq = term.termFreq*topicInterest;
+					term.termFreq = term.termFreq*decayFactor;
 					tempTopicInterest += term.termFreq;
 				}
 				if(topicInterest != tempTopicInterest){
-					System.err.println("Value count differnt");
+					System.err.println("Warning! topic Value in differnt from counting of term node");
 				}
 				intersetValue.put(topic, tempTopicInterest);
 				

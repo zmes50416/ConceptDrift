@@ -5,7 +5,9 @@ import static org.easymock.EasyMock.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.easymock.*;
 import org.junit.After;
@@ -15,7 +17,6 @@ import org.junit.Test;
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
 public class UserProfileManagerTest{
-	private TopicMappingAlgorithm algo;
 	private TopicMappingTool tool;
 	private AbstractUserProfile user;
 	private HashSet<TopicTermGraph> mockdata;
@@ -24,50 +25,54 @@ public class UserProfileManagerTest{
 	
 	@Before
 	public void setUp() throws Exception {
-		algo = createMock(TopicMappingAlgorithm.class);
+		createMock(TopicMappingAlgorithm.class);
 		tool = createMock(TopicMappingTool.class);
 		manager = new UserProfileManager(tool);
 		topic1 = new TopicTermGraph(0, 0);
 		user = createMock(AbstractUserProfile.class);
 		mockdata = new HashSet<TopicTermGraph>();
 		mockdata.add(topic1);
-		
-
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 
-	@Test
+	@Test(expected=NullPointerException.class)
 	public void testUserProfileManager() {
-		fail("Not yet implemented");
+		this.manager = new UserProfileManager(null);
 	}
 
 	@Test
 	public void testUpdateUserProfile() {
-
-		expect(user.getDecayRate(null, 0)).andReturn(0.5);
+		topic1.addVertex(new TermNode("test1",5.0));
+		topic1.addVertex(new TermNode("test2",5.0));
+		expect(user.getDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
 		expect(user.getUserTopics()).andReturn(mockdata);
+		Map<TopicTermGraph,Double> mockInterset = new HashMap<>();
+		mockInterset.put(topic1, 10.0);
+		expect(user.getInterestValueMap()).andReturn(mockInterset);
+		expect(user.getTopicRemoveThreshold()).andReturn(0.0);
 		replay(user);
 		
 		this.manager.updateUserProfile(2, user);
-		double score = 0;
-		for(TermNode t:topic1.getVertices()){
-			score += t.termFreq;
-		}
-		assertEquals("This is not ",0.0,score,0.1);
-		//fail("Not yet implemented");
+		double score = mockInterset.get(topic1);
+		assertEquals("Decay are not function normally",5.0,score,0.1);
 	}
 
 	@Test
 	public void testRemoveTerm() {
-		TermNode term = new TermNode("google");
-		topic1.addVertex(term);
-		expect(user.getUserTopics()).andReturn(mockdata);
-		replay(user);
-		this.manager.removeTerm(topic1, term);
-		assertTrue("Topic term"+term.toString()+"should have been removed",!topic1.containsVertex(term));
+		String termName = "google";
+		topic1.addVertex(new TermNode(termName));
+
+		this.manager.removeTerm(topic1, new TermNode(termName));
+		assertTrue("Topic term "+termName+" should have been removed",!topic1.containsVertex(new TermNode(termName)));
+	}
+	@Test(expected=IllegalArgumentException.class)
+	public void testRemoveTermDoNotExsitInTheTopic(){
+		TermNode term = new TermNode("Google");
+		
+		this.manager.removeTerm(topic1,term);
 	}
 
 	@Test
@@ -79,11 +84,6 @@ public class UserProfileManagerTest{
 		manager.removeTopic(user, topic1);
 		assertTrue(mockdata.isEmpty());
 		
-	}
-
-	@Test
-	public void testGetAverageDocumentTermFreq() {
-		fail("Not yet implemented");
 	}
 
 	@Test
