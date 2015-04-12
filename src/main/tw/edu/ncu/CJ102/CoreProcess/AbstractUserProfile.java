@@ -14,9 +14,8 @@ public abstract class AbstractUserProfile implements Serializable{
 	String id;
 
 	double remove_rate; //興趣去除比例
-	double interest_remove_rate; //主題去除的累計平均單文件總TF值比例
-	double term_remove_rate; //字詞去除的累計平均單字詞TF值比例
-	
+	double docTermFreq;
+	double averagedocTf;
 	protected HashSet<TopicTermGraph> userTopics = new HashSet<>();
 	protected HashMap<TopicTermGraph,Double> interestValueMap = new HashMap<>();
 	/**

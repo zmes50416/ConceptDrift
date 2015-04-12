@@ -19,6 +19,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	private int id;
 	private boolean isLongTermInterest;
+	double averageTermTf;
 	protected int birthDate;
 	protected int updateDate;
 	int numberOfDocument;

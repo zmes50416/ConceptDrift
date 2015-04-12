@@ -35,7 +35,8 @@ public class UserProfileManager {
 		HashSet<TopicTermGraph> userTopics = user.getUserTopics();
 		HashMap<TopicTermGraph,Double> intersetValue = user.getInterestValueMap();
 		if(userTopics.isEmpty()){
-			throw new IllegalStateException("User have no topic to update!");
+			System.out.println("System have no topic to update. decay Process will end!");
+			return;
 		}
 		Iterator<TopicTermGraph> i = userTopics.iterator();//filiter remove element, so we can not use java default for each
 		while(i.hasNext()){//遺忘因子流程
@@ -79,11 +80,6 @@ public class UserProfileManager {
 			return false;
 		}
 		
-	}
-
-	public double getAverageDocumentTermFreq(AbstractUserProfile user){
-		//TODO implement
-		return 0;
 	}
 	
 	/**
