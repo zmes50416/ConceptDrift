@@ -1,18 +1,8 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-
-import edu.uci.ics.jung.graph.util.Pair;
+import java.util.Map;
 
 /**
  * use for interact with user profile,ex:update decay factor or add document into
@@ -32,8 +22,8 @@ public class UserProfileManager {
 	 * 包含遺忘因子的作用與主題、字詞的去除
 	 */
 	public void updateUserProfile(int theDay,AbstractUserProfile user){
-		HashSet<TopicTermGraph> userTopics = user.getUserTopics();
-		HashMap<TopicTermGraph,Double> intersetValue = user.getInterestValueMap();
+		Collection<TopicTermGraph> userTopics = user.getUserTopics();
+		Map<TopicTermGraph,Double> intersetValue = user.getInterestValueMap();
 		if(userTopics.isEmpty()){
 			System.out.println("System have no topic to update. decay Process will end!");
 			return;
@@ -73,7 +63,7 @@ public class UserProfileManager {
 		
 	}
 	public boolean removeTopic(AbstractUserProfile user,TopicTermGraph topic){
-		HashSet<TopicTermGraph> topics = user.getUserTopics();
+		Collection<TopicTermGraph> topics = user.getUserTopics();
 		if(topics.remove(topic)){
 			return true;
 		}else{

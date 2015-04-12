@@ -2,9 +2,11 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.Serializable;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public abstract class AbstractUserProfile implements Serializable{
@@ -16,8 +18,8 @@ public abstract class AbstractUserProfile implements Serializable{
 	double remove_rate; //興趣去除比例
 	double docTermFreq;
 	double averagedocTf;
-	protected HashSet<TopicTermGraph> userTopics = new HashSet<>();
-	protected HashMap<TopicTermGraph,Double> interestValueMap = new HashMap<>();
+	protected Collection<TopicTermGraph> userTopics = new ArrayList<>();
+	protected Map<TopicTermGraph,Double> interestValueMap = new HashMap<>();
 	/**
 	 * 主題共現圖形
 	 */
@@ -27,11 +29,11 @@ public abstract class AbstractUserProfile implements Serializable{
 	/**
 	 * @return the userTopics
 	 */
-	public HashSet<TopicTermGraph> getUserTopics() {
+	public Collection<TopicTermGraph> getUserTopics() {
 		return userTopics;
 	}
 	
-	public HashMap<TopicTermGraph,Double> getInterestValueMap() {
+	public Map<TopicTermGraph,Double> getInterestValueMap() {
 		return interestValueMap;
 	}
 	

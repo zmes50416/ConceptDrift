@@ -102,7 +102,7 @@ public class UserProfileManagerTest{
 		
 		replay(topic1);
 		
-		HashSet<TopicTermGraph> topics = user.getUserTopics();
+		Collection<TopicTermGraph> topics = user.getUserTopics();
 		assertTrue("topic should not be empty",!topics.isEmpty());
 	}
 

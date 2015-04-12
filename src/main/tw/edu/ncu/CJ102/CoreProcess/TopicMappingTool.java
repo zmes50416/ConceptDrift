@@ -1,8 +1,7 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
@@ -26,7 +25,7 @@ public class TopicMappingTool {
 	 * @return 相對映的主題
 	 */
 	public TopicTermGraph map(TopicTermGraph _topic,AbstractUserProfile user){
-		HashSet<TopicTermGraph> userTopics = user.getUserTopics();
+		Collection<TopicTermGraph> userTopics = user.getUserTopics();
 		TopicTermGraph mappedTopic = _topic; //
 		
 		int doc_topic_num = _topic.getVertexCount(); // 某一主題的字詞數量
