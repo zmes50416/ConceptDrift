@@ -27,7 +27,7 @@ public class Experiment {
 			Files.createDirectories(projectPath);
 			Files.createDirectories(userProfile); // 創造出實驗使用者模型資料匣
 			
-			Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been creat but not finish yet.
+			Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been create but not finish yet.
 		} catch(FileAlreadyExistsException e){
 			throw new RuntimeException("The Project have been lock in others process, please clean the project dir first");
 		}catch (IOException e) {
@@ -69,10 +69,14 @@ public class Experiment {
 		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TRAININGPATH));
 		this.newsPopulater.populateExperiment(experimentDays);
 	}
-	public void run() {
-		for(int day=1;day<=this.experimentDays;day++){
-			trainFromSimpleText(day);
-			test(day);
+	/**
+	 * 執行第n天的
+	 * @param dayN
+	 */
+	public void run(int dayN) {
+		if(dayN<=this.experimentDays){
+			trainFromSimpleText(dayN);
+			test(dayN);
 		}
 		
 	}
@@ -84,7 +88,7 @@ public class Experiment {
 	private void trainFromSimpleText(int theDay){
 		Path training = this.projectPath.resolve("training/day_"+theDay);
 		UserProfileManager userManager = new UserProfileManager(this.maper);
-
+		userManager.updateUserProfile(theDay, user);
 		for(File doc:training.toFile().listFiles()){
 			try(BufferedReader documentReader = new BufferedReader(new FileReader(doc));){
 				double ngd = Double.valueOf(documentReader.readLine());
@@ -106,9 +110,6 @@ public class Experiment {
 					}finally{
 						boolean isAdd = c.addVertex(new TermNode(term,TFScore));
 						c.setUpdateDate(theDay);
-						if(!isAdd){
-							throw new RuntimeException("Term are duplicate in document! please check");
-						}
 					}
 				}//end of For
 				

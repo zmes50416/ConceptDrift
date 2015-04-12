@@ -41,12 +41,12 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	}
 
 	@Override
-	public double getDecayRate(TopicTermGraph topic,int length) {
+	public double getDecayRate(TopicTermGraph topic,int updateDate) {
 		double decayRate;
 		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(Math.E, -Math.log10(length-topic.getBirthDate())*0.02);
+			decayRate = Math.pow(Math.E, -Math.log10(updateDate-topic.getUpdateDate())*0.02);
 		}else{
-			decayRate = Math.pow(Math.E, -Math.log10(length-topic.getUpdateDate())*this.getSizeOfShortTerm()/Math.log10(topic.numberOfDocument));
+			decayRate = Math.pow(Math.E, -Math.log10(updateDate-topic.getUpdateDate())*this.getSizeOfShortTerm()/Math.log10(topic.numberOfDocument));
 		}
 		return 0;
 	}

@@ -458,7 +458,7 @@ public class Tom_exp {
 					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
 					docTF += TFScore;
 					doc_term_count++;
-					topic_term.clear();//FIXME this look like a big bug!
+					topic_term.clear();//FIXME this look like a big bug! everytime it clear before the set get, so it will never have second group
 					// System.out.print("取出文件資訊=>"+term+","+TFScore+","+group+"\n");
 					if (doc_term.get(group) == null) { // 新的主題直接把字裝進去
 						topic_term.put(term, TFScore);

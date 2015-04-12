@@ -7,7 +7,7 @@ import javax.swing.JFileChooser;
 /*
  * 需要調整寫法，目前調用設定需要呼叫太長了
  * TODO 增加一個檢查路徑方法並且應該要可以替換實驗集
- * TODO 
+ * 
  */
 public class SettingManager {
 	/** 
