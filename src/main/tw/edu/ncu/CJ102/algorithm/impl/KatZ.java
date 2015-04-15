@@ -1,9 +1,10 @@
-package tw.edu.ncu.CJ102.algorithm;
+package tw.edu.ncu.CJ102.algorithm.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
 import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import edu.uci.ics.jung.algorithms.matrix.GraphMatrixOperations;
 import edu.uci.ics.jung.graph.Graph;

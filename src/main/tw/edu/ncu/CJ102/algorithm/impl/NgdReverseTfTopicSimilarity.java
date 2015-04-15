@@ -1,8 +1,9 @@
-package tw.edu.ncu.CJ102.algorithm;
+package tw.edu.ncu.CJ102.algorithm.impl;
 
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 import tw.edu.ncu.CJ102.CoreProcess.*;
+import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
 public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm {
 

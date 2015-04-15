@@ -1,5 +1,6 @@
-package tw.edu.ncu.CJ102.algorithm;
+package tw.edu.ncu.CJ102.algorithm.impl;
 
+import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
 import edu.uci.ics.jung.graph.Graph;
 
 /**

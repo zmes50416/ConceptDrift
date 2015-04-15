@@ -1,7 +1,9 @@
-package tw.edu.ncu.CJ102.algorithm;
+package tw.edu.ncu.CJ102.algorithm.impl;
 
 import java.util.Set;
 
+import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
+import tw.edu.ncu.CJ102.algorithm.Transformable;
 import edu.uci.ics.jung.graph.Graph;
 
 public class TriangleDistance<V,E> implements LinkPrediction<V, E>,Transformable<V, E> {

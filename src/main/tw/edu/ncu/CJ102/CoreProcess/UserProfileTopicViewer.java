@@ -14,6 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import tw.edu.ncu.CJ102.algorithm.*;
+import tw.edu.ncu.CJ102.algorithm.impl.CN;
+import tw.edu.ncu.CJ102.algorithm.impl.KatZ;
+import tw.edu.ncu.CJ102.algorithm.impl.LP;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.BasicVisualizationServer;

@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import tw.edu.ncu.CJ102.algorithm.NgdReverseTfTopicSimilarity;
+import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
 
 public class ExperimentTest{
 

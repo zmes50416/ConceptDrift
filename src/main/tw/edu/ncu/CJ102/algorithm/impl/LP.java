@@ -1,8 +1,9 @@
-package tw.edu.ncu.CJ102.algorithm;
+package tw.edu.ncu.CJ102.algorithm.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
 
+import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
 import edu.uci.ics.jung.graph.Graph;
 /**
  * 
