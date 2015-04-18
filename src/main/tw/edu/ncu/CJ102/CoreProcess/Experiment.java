@@ -115,28 +115,32 @@ public class Experiment {
 	 * @param doc 
 	 * @return List of Document topic or Null if Exception happened
 	 */
-	private List<TopicTermGraph> readFromSimpleText(int theDay, File doc){
+	public List<TopicTermGraph> readFromSimpleText(int theDay, File doc){
 		try(BufferedReader documentReader = new BufferedReader(new FileReader(doc));){
-			double ngd = Double.valueOf(documentReader.readLine());
-			System.out.print("取出文件NGD=" + ngd + "\n");
-			TopicTermGraph[] documentTopics = new TopicTermGraph[5];
-			
-			double docTF = 0; // 單文件的TF值
+			documentReader.readLine(); //Skip first NGD line
+			TopicTermGraph[] documentTopics = new TopicTermGraph[1];//因為無法得知大小，因此先給1個空間，當空間不夠時再產生新的陣列
+			//不使用List，因為無法保證插入順序 if 1 > 3 > 2  then it will be 1 2[3] 3[2]
 			for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
 				String term = line.split(",")[0]; // 字詞
-				int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
+				int group = Integer.valueOf(line.split(",")[2])-1; // 字詞所屬群別
 				double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
-				docTF += TFScore;
+
 				TopicTermGraph c = null;
 				try{
 					c = documentTopics[group];
-				}catch(IndexOutOfBoundsException e){
+				}catch(ArrayIndexOutOfBoundsException e){ 
+					TopicTermGraph[] temp = documentTopics;
+					documentTopics = new TopicTermGraph[group+1];
+					System.arraycopy(temp, 0, documentTopics, 0, temp.length);
+				}
+				
+				if(c==null){
 					c = new TopicTermGraph(theDay);
 					documentTopics[group] = c;
-				}finally{
+				}
 					c.addVertex(new TermNode(term,TFScore));
 					c.setUpdateDate(theDay);
-				}
+				
 			}
 			return Arrays.asList(documentTopics);
 		}catch(IOException e){

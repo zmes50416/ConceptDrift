@@ -2,9 +2,12 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -36,24 +39,12 @@ public class ExperimentTest{
 		exp.setUser(user);
 		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), 0.1);
 		exp.setExperimentDays(14);
-		exp.newsPopulater = new RouterNewsPopulator(expPath.toString()){
-			@Override
-			public void setGenarationRule() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		};
+		
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		FileUtils.deleteDirectory(this.expPath.toFile());
-	}
-
-	@Test
-	public void testExperiment() {
-		fail("Not yet implemented");
 	}
 
 	@Test
@@ -74,8 +65,19 @@ public class ExperimentTest{
 	}
 
 	@Test
-	public void testRun() {
-		fail("Not yet implemented");
+	public void testReadFromSimpleTXT() throws IOException {
+		File simpleTxt = Files.createTempFile("exp_", null).toFile();
+		FileWriter writer = new FileWriter(simpleTxt);
+		writer.write("1"+System.getProperty("line.separator"));
+		writer.write("QUALITY+PRODUCTS,1,1"+System.getProperty("line.separator"));
+		writer.write("Google,2,2");
+		
+		writer.close();
+		List<TopicTermGraph> doc = this.exp.readFromSimpleText(0, simpleTxt);
+		assertNotNull("Should not be null",doc);
+		assertSame("should have two topic",2,doc.size());
+		Files.delete(simpleTxt.toPath());
+		
 	}
 
 }

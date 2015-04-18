@@ -23,7 +23,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	/**
 	 * 主題共現圖形
 	 */
-	protected TopicCoOccuranceGraph topicCOGraph;
+	protected TopicCoOccuranceGraph topicCOGraph = new TopicCoOccuranceGraph();
 	
 
 	/**

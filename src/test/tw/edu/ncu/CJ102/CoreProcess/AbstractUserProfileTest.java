@@ -10,16 +10,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 @RunWith(value=Parameterized.class)
 public class AbstractUserProfileTest{
-	AbstractUserProfile user;
+	@Parameter
+	public AbstractUserProfile user;
 	@Parameters
-	public static Collection<AbstractUserProfile> getTestParameters(){
-		return Arrays.asList(new AbstractUserProfile[]{
-				new MemoryBasedUserProfile()
-		});
+	public static Collection<AbstractUserProfile[]> getTestParameters(){
+		AbstractUserProfile[][] initArray = new AbstractUserProfile[][]{
+				new AbstractUserProfile[]{new MemoryBasedUserProfile()},new AbstractUserProfile[]{new MemoryBasedUserProfile()
+				}
+		};
+		return Arrays.asList(initArray);
 	}
+
 	@Before
 	public void setUp() throws Exception {
 		user = new MemoryBasedUserProfile();
@@ -39,7 +44,7 @@ public class AbstractUserProfileTest{
 	
 	@Test
 	public void testGetSizeOfShortTerm(){
-		
+		fail("Not yet implemented");
 	}
 
 }
