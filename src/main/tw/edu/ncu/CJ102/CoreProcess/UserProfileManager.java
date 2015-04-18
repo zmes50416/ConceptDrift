@@ -1,6 +1,7 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -76,17 +77,32 @@ public class UserProfileManager {
 	}
 	
 	/**
-	 * 將每一個文件主題映射並且加入至使用者模型
+	 * 將每一個文件主題映射並且加入至使用者模型，並且記錄多主題的關係
 	 * @param user 使用者模型
 	 * @param doc_term 文件內容資訊
 	 */
 	public void addTopic(Collection<TopicTermGraph> documentTopics, AbstractUserProfile user){
+		HashSet<TopicTermGraph> mappedTopics = new HashSet<>();
 		for(TopicTermGraph topic:documentTopics){
 			TopicTermGraph mappedTopic = this.mapper.map(topic, user);
-			if(mappedTopic==topic){
-				user.getUserTopics().add(topic);// Add new user topic if mapper can't find the better topic
+			if(mappedTopic==topic){	// Add new user topic if mapper can't find the better topic
+				Collection<TopicTermGraph> userTopics = user.getUserTopics();
+				if(!userTopics.add(topic)){
+					throw new RuntimeException("Cant add topic");
+				}
 			}else{//find the right topic and merge all term and edge into it
 				mappedTopic.merge(topic);				
+			}
+			
+			mappedTopics.add(mappedTopic);
+		}//end of for
+		
+		for(TopicTermGraph topic:mappedTopics){//For topic coOccurance graph
+			for(TopicTermGraph anotherTopic:mappedTopics){
+				if(topic!=anotherTopic){
+					TopicCoOccuranceGraph graph = user.getTopicCOGraph();
+					graph.addEdge(new CEdge(topic.toString() + "+" + anotherTopic.toString()), topic, anotherTopic);
+				}
 			}
 		}
 		

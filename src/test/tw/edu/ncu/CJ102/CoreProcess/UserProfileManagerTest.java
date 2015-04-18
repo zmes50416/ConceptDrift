@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 
 import org.easymock.*;
 import org.junit.After;
@@ -16,22 +17,22 @@ import org.junit.Test;
 
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
-public class UserProfileManagerTest{
+public class UserProfileManagerTest extends EasyMockSupport{
 	private TopicMappingTool tool;
 	private AbstractUserProfile user;
-	private HashSet<TopicTermGraph> mockdata;
+	private HashSet<TopicTermGraph> mockUserTopics;
 	private TopicTermGraph topic1;
 	UserProfileManager manager;
 	
 	@Before
 	public void setUp() throws Exception {
 		createMock(TopicMappingAlgorithm.class);
-		tool = createMock(TopicMappingTool.class);
+		tool = createMock("mockMappingTool",TopicMappingTool.class);
 		manager = new UserProfileManager(tool);
-		topic1 = new TopicTermGraph(0, 0);
-		user = createMock(AbstractUserProfile.class);
-		mockdata = new HashSet<TopicTermGraph>();
-		mockdata.add(topic1);
+		topic1 = new TopicTermGraph(0);
+		user = createMock("mockUserProfile",AbstractUserProfile.class);
+		mockUserTopics = new HashSet<TopicTermGraph>();
+		mockUserTopics.add(topic1);
 	}
 
 	@After
@@ -48,7 +49,7 @@ public class UserProfileManagerTest{
 		topic1.addVertex(new TermNode("test1",5.0));
 		topic1.addVertex(new TermNode("test2",5.0));
 		expect(user.getDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
-		expect(user.getUserTopics()).andReturn(mockdata);
+		expect(user.getUserTopics()).andReturn(mockUserTopics);
 		Map<TopicTermGraph,Double> mockInterset = new HashMap<>();
 		mockInterset.put(topic1, 10.0);
 		expect(user.getInterestValueMap()).andReturn(mockInterset);
@@ -78,32 +79,61 @@ public class UserProfileManagerTest{
 	@Test
 	public void testRemoveTopic() {
 		
-		expect(user.getUserTopics()).andReturn(mockdata);
+		expect(user.getUserTopics()).andReturn(mockUserTopics);
 		replay(user);
 		
 		manager.removeTopic(user, topic1);
-		assertTrue(mockdata.isEmpty());
+		assertTrue(mockUserTopics.isEmpty());
 		
 	}
-
+	
 	@Test
 	public void testAddTopic() {
-		topic1 = createMock(TopicTermGraph.class);
-		expect(tool.map(notNull(TopicTermGraph.class), notNull(AbstractUserProfile.class))).andReturn(topic1);
-		replay(tool);
+		topic1 = new TopicTermGraph(0);
+		TopicTermGraph topic2 = new TopicTermGraph(0);
+		mockUserTopics.add(topic2);
+
+		expect(tool.map(notNull(TopicTermGraph.class), notNull(AbstractUserProfile.class))).andDelegateTo(new stubTool()).anyTimes();
 		
 		Collection<TopicTermGraph> documentTopics = new ArrayList<>();
-		TopicTermGraph x = new TopicTermGraph(1,0);
+		TopicTermGraph x = new TopicTermGraph(0);
+		TopicTermGraph y = new TopicTermGraph(0);
 		documentTopics.add(x);
-		expect(user.getUserTopics()).andReturn(mockdata);
-		replay(user);
+		documentTopics.add(y);
+		documentTopics.add(new TopicTermGraph(0));
+		
+		TopicCoOccuranceGraph tcoGraph = new TopicCoOccuranceGraph();
+
+		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();		
+		expect(user.getTopicCOGraph()).andReturn(tcoGraph).anyTimes();
+		replayAll();
 		
 		manager.addTopic(documentTopics , user);
 		
-		replay(topic1);
-		
 		Collection<TopicTermGraph> topics = user.getUserTopics();
+		
 		assertTrue("topic should not be empty",!topics.isEmpty());
+		assertNotEquals("Co Occurance Topic should not be empty",0,tcoGraph.getEdgeCount()); //There are chances that 
+	}
+	
+	private class stubTool extends TopicMappingTool{
+
+		public stubTool() {
+			super(null, 0);
+		}
+		@Override
+		public TopicTermGraph map(TopicTermGraph theTopic,AbstractUserProfile user){ //simulate method : random topic in user profile will be return or the topic itself
+			int size = mockUserTopics.size();
+			int randPosition = new Random().nextInt(size+1);
+			int i = 0;
+			for(TopicTermGraph topic:mockUserTopics){
+				if(i++ == randPosition){
+					return topic;
+				}
+			}
+			return theTopic;//should never reach this line
+		}
+		
 	}
 
 }
