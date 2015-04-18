@@ -274,9 +274,14 @@ public class TopicMaper {
 			e.printStackTrace();
 		}
 	}
-
-	// 接收的參數為 String實驗資料匣, hashmap文件與模型主題的映射, String文件的標籤主題,
-	// ArrayList<String>系統目前保有的標籤主題
+	/**
+	 * 主題關係判斷
+	 * @param exp_dir 實驗資料匣
+	 * @param topic_mapping 文件與模型主題的映射
+	 * @param doc_label 文件的標籤主題
+	 * @param profile_label 系統目前保有的標籤主題
+	 * @return ArrayList<String>系統目前保有的標籤主題
+	 */
 	public String Comper_relateness_profile_doc(String exp_dir,
 			HashMap<Integer, Integer> topic_mapping, String doc_label,
 			ArrayList<String> profile_label) {
