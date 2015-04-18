@@ -77,7 +77,7 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 			Pair<TermNode> pair = this.getEndpoints(e);
 			CEdge rightEdge = this.findEdge(pair.getFirst(), pair.getSecond());
 			if(rightEdge!=null){//edge exist
-				e.distance += 1;
+				e.coScore += 1;
 				return false;
 			}else{//edge not exist
 				throw new RuntimeException("problem in add Edge");

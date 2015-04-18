@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import edu.uci.ics.jung.graph.util.Pair;
+
 /**
  * use for interact with user profile,ex:update decay factor or add document into
  * @author TingWen
@@ -101,7 +103,7 @@ public class UserProfileManager {
 			for(TopicTermGraph anotherTopic:mappedTopics){
 				if(topic!=anotherTopic){
 					TopicCoOccuranceGraph graph = user.getTopicCOGraph();
-					graph.addEdge(new CEdge(topic.toString() + "+" + anotherTopic.toString()), topic, anotherTopic);
+					graph.addEdge(new CEdge(new Pair<TopicTermGraph>(topic, anotherTopic)), topic, anotherTopic);
 				}
 			}
 		}

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import edu.uci.ics.jung.graph.util.Pair;
+
 public class TopicTermGraphTest {
 	TopicTermGraph c;
 	TopicTermGraph c2;
@@ -27,7 +29,7 @@ public class TopicTermGraphTest {
 		TermNode testNode2 = new TermNode("Samsung");
 		c2.addVertex(new TermNode("test"));
 		c2.addVertex(testNode1);
-		CEdge edge = new CEdge("Google-Samsung");
+		CEdge<TermNode> edge = new CEdge<>(new Pair<TermNode>(testNode1,testNode2));
 		c2.addEdge(edge, testNode1,testNode2);
 		c.merge(c2);
 		assertEquals("Should have 1 edge after merge",1,c.getEdgeCount());
@@ -48,10 +50,11 @@ public class TopicTermGraphTest {
 	public void testAddEdge(){
 		TermNode testNode1 = new TermNode("Google");
 		TermNode testNode2 = new TermNode("Samsung");
-		CEdge e=new CEdge("Google-Samsung");
+		Pair<TermNode> pair = new Pair<TermNode>(testNode1,testNode2);
+		CEdge<TermNode> e=new CEdge<>(pair);
 		assertTrue("First time add should be true",this.c.addEdge(e, testNode1, testNode2));
 		this.c.addEdge(e, testNode1, testNode2);
-		assertEquals("Second time the value should be 2",2,e.distance,0.5);
+		assertEquals("Second time the value should be 2",2,e.coScore,0.5);
 	}
 
 }

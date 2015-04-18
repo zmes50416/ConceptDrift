@@ -16,7 +16,7 @@ public class TopicCoOccuranceGraph extends UndirectedSparseGraph<TopicTermGraph,
 		}else{
 			CEdge rightEdge= super.findEdge(v1, v2);
 			if(rightEdge.equals(e)){
-				rightEdge.distance += 1;
+				rightEdge.coScore += 1;
 				return true;
 			}
 			throw new RuntimeException("Problem in add Edge");

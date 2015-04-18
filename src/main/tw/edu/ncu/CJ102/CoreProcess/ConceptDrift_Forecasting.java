@@ -41,7 +41,7 @@ public class ConceptDrift_Forecasting {
 	TreeMap<CEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<CEdge>(){
 		@Override
 		public int compare(CEdge o1, CEdge o2) {
-			return o1.distance>=o2.distance?1:-1;
+			return o1.coScore>=o2.coScore?1:-1;
 		}
 		
 	});
@@ -158,9 +158,12 @@ public class ConceptDrift_Forecasting {
 					// System.out.println("邊"+two_topic+"的NGD值為"+NGD);
 					TR_NGD.put(topicPair, NGD);
 					//I should put in the index instead of value, because no two edge can be the same
-					CEdge c =  new CEdge(String.valueOf(count),NGD);
+					TopicNode firstTopic = topics.get(topic);
+					TopicNode secondTopic = topics.get(anotherTopic);
+					Pair<TopicNode> pair = new Pair<>(firstTopic,secondTopic); 
+					CEdge<TopicNode> c =  new CEdge<>(pair,NGD);
 					this.edges.put(String.valueOf(count++), c);
-					this.topicCRGraph.addEdge(c, topics.get(topic), topics.get(anotherTopic));
+					this.topicCRGraph.addEdge(c, pair);
 				}
 			}
 			
@@ -194,8 +197,9 @@ public class ConceptDrift_Forecasting {
 				if(!node.equals(anotherNode)&& index>0){
 					this.forecastingTimes++;
 					String newID = String.valueOf(this.edges.size()+this.PredictionRank.size()+1);
-					CEdge newEdge = new CEdge(newID,index);
-					this.PredictionRank.put(newEdge, new Pair<TopicNode>(node, anotherNode));
+					Pair<TopicNode> nodeConnected = new Pair<TopicNode>(node, anotherNode);
+					CEdge<TopicNode> newEdge = new CEdge<TopicNode>(nodeConnected,index);
+					this.PredictionRank.put(newEdge, nodeConnected );
 					//TODO Haven't deterime NGD Distance yet	
 					//this.topicCRGraph.addEdge(new CEdge("sd",1.0), node, anotherNode);
 					
@@ -205,6 +209,7 @@ public class ConceptDrift_Forecasting {
 			
 		}
 	}
+	@SuppressWarnings("unchecked")
 	@Deprecated
 	public void forecastingByNGD() throws IOException {
 		if(!this.isLoaded){//Need read project first
@@ -221,21 +226,22 @@ public class ConceptDrift_Forecasting {
 			for (TopicNode neighborOfN : this.topicCRGraph.getNeighbors(n)) {
 				for (TopicNode n2 : this.topicCRGraph.getNeighbors(neighborOfN)) {
 					if ((this.topicCRGraph.findEdge(n2, n)) == null) {
-						CEdge edge = this.topicCRGraph.findEdge(n, neighborOfN);
-						CEdge anotherEdge = this.topicCRGraph.findEdge(
+						CEdge<TopicNode> edge = this.topicCRGraph.findEdge(n, neighborOfN);
+						CEdge<TopicNode> anotherEdge = this.topicCRGraph.findEdge(
 								neighborOfN, n2);
-						if (edge.distance + anotherEdge.distance <= this.topic_close_threshold) {
-							CEdge newEdge;
+						if (edge.coScore + anotherEdge.coScore <= this.topic_close_threshold) {
+							CEdge<TopicNode> newEdge;
 							double maxOfFreq = Math.max(sum_topic_freq.get(n.id),
 										sum_topic_freq.get(n2.id));
 							double minOfFreq = Math.min(sum_topic_freq.get(n.id),sum_topic_freq.get(n2.id));
 							
-							double should = maxOfFreq - ((edge.distance + anotherEdge.distance) * (sum_topics_relation - minOfFreq));
+							double should = maxOfFreq - ((edge.coScore + anotherEdge.coScore) * (sum_topics_relation - minOfFreq));
 							// SIM反推
 							// double should =
 							// (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
 							String newID = String.valueOf(this.edges.size()+1);
-							newEdge = new CEdge(newID,should);
+							Pair<TopicNode> pair = new Pair<>(n,n2);
+							newEdge = new CEdge<TopicNode>(pair,should);
 							edges.put(newID, newEdge);
 							TR.put(newEdge.id, should);
 							// 預測紀錄
@@ -434,32 +440,42 @@ public class ConceptDrift_Forecasting {
  * @author TingWen
  *
  */
-class CEdge{
+class CEdge<T>{
 	String id;
-	double distance;
-	
-	public CEdge(String id){
-		this(id, 1.0);
+	double coScore;
+	Pair<T> terms;
+	public CEdge(Pair<T> _terms){
+		this(_terms, 1.0);
 	}
 	
-	public CEdge(String id, double dist){
-		this.id = id;
-		this.distance = dist;
+	public CEdge(Pair<T> _terms, double score){
+		this.terms = _terms;
+		this.coScore = score;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean equals(Object o){
-		if(o instanceof CEdge){
-			CEdge anotherEdge = (CEdge)o;
-			return this.id.equals(anotherEdge.id);
-		}else{
+	public boolean equals(Object o) {
+		if (o instanceof CEdge) {
+			CEdge<T> anotherEdge = (CEdge<T>) o;
+			T anotherFirst = anotherEdge.terms.getFirst();
+			T anotherSecond = anotherEdge.terms.getSecond();
+			if (this.terms.getFirst().equals(anotherFirst)
+					&& this.terms.getSecond().equals(anotherSecond)
+					|| this.terms.getFirst().equals(anotherSecond)
+					&& this.terms.getSecond().equals(anotherFirst)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
 			return false;
 		}
 	}
 	
 	@Override
 	public String toString(){
-		return "id:"+id+" - "+(float)distance;
+		return "id:"+id+" - "+(float)coScore;
 		
 	}
 }
