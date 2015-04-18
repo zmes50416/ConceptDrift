@@ -33,8 +33,6 @@ public class Tom_exp {
 
 	private UserProfile mUserProfile;
 	ConceptDrift_Forecasting driftForecaster;//Link predicition used
-
-	HashSet<TopicTermGraph> termActiveGraph = new HashSet<>();
 	
 	// 記錄user_profile各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
 	HashMap<Integer, HashMap<String, Double>> User_profile_term = new HashMap<Integer, HashMap<String, Double>>();
@@ -236,100 +234,100 @@ public class Tom_exp {
 		this.populater = experimentPopulator;
 	}
 	
-	public void startAnotherTraining(int theDay){//A new training process
-		Path training = this.projectDir.resolve("training/day_"+theDay);
-		for(File doc:training.toFile().listFiles()){
-			StartTime = System.currentTimeMillis();
-			String topicName = this.populater.getTopics(doc); // 儲存標籤答案
-			
-			
-			if(this.profile_label.add(topicName)){
-				//TODO　shortterm longterm not yet
-			}
-			
-			try(BufferedReader documentReader = new BufferedReader(new FileReader(doc));){
-				double ngd = Double.valueOf(documentReader.readLine());
-				System.out.print("取出文件NGD=" + ngd + "\n");
-				// 暫存字詞與分數
-				HashMap<String, Double> terms = new HashMap<String, Double>();
-				
-				
-				
-				ArrayList<TopicTermGraph> documentTerms = new ArrayList<>();
-
-				double docTF = 0; // 單文件的TF值
-				int doc_term_count = 0; // 單文件內的字詞數量
-				// 記錄文件各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
-				HashMap<Integer, HashMap<String, Double>> documentTopicTerms = new HashMap<Integer, HashMap<String, Double>>();
-				for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
-					String term = line.split(",")[0]; // 字詞
-					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
-					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
-					TopicTermGraph c = null;
-					try{
-						c = documentTerms.get(group);
-						
-					}catch(IndexOutOfBoundsException e){
-						c = new TopicTermGraph(group,theDay);
-						documentTerms.add(c);
-
-					}finally{
-						boolean isAdd = c.addVertex(new TermNode(term,TFScore));
-						if(!isAdd){
-							throw new RuntimeException("Term are duplicate in document! please check");
-						}
-					}
-						
-					docTF += TFScore;
-					doc_term_count++;
-					//FIXME there are a bug in this , only final group will left
-					if (documentTopicTerms.get(group) == null) { // 新的主題直接把字裝進去
-						terms.put(term, TFScore);
-					} else { // 舊主題就先取出目前的資料，再更新
-						terms = documentTopicTerms.get(group);
-						terms.put(term, TFScore);
-					}
-					documentTopicTerms.put(group, new HashMap<String, Double>(terms));
-				}
-			
-				mUserProfile().sum_avg_docTF(docTF);
-				mUserProfile().sum_avg_termTF(docTF, doc_term_count);
-				
-				// 如果文件完全沒有特徵字詞會使得程式出錯，因此對這種文件放入一個temp字詞，之後再想辦法解決
-				
-				if (documentTerms.isEmpty()) {
-					System.out.println("該文件沒有任何特徵");
-				}
-				// 文件與模型的主題字詞資訊都萃取出來後就進行主題間的映射，以便於分辨文件主題是對應到模型的哪一個
-				// 此步驟也會紀錄主題關係
-				StartTime = System.currentTimeMillis();
-				topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir.toString()+"/",
-						User_profile_term, doc_term, ngd);
-
-				comperRelatener.logTopicMapping(Paths.get(projectDir.toString()+"/","Comper_topic_profile_doc.txt").toFile());
-				
-
-				// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
-				// 此步驟也會用到遺忘因子
-				StartTime = System.currentTimeMillis();
-				User_profile_term = mUserProfile().add_user_profile_term(
-						User_profile_term, doc_term, topic_mapping);
-
-				// 輸出使用者模型
-				mUserProfile().out_new_user_profile(projectDir.toString()+"/", preprocess_times,
-						User_profile_term);
-				
-				
-				
-			}catch(IOException e){
-				e.printStackTrace();
-			}
-			
-			System.out.println("文件" + projectDir + "training/day_" + theDay
-					+ "/" + doc.getName() + "處理結束");
-						
-		}
-	}
+//	public void startAnotherTraining(int theDay){//A new training process
+//		Path training = this.projectDir.resolve("training/day_"+theDay);
+//		for(File doc:training.toFile().listFiles()){
+//			StartTime = System.currentTimeMillis();
+//			String topicName = this.populater.getTopics(doc); // 儲存標籤答案
+//			
+//			
+//			if(this.profile_label.add(topicName)){
+//				//TODO　shortterm longterm not yet
+//			}
+//			
+//			try(BufferedReader documentReader = new BufferedReader(new FileReader(doc));){
+//				double ngd = Double.valueOf(documentReader.readLine());
+//				System.out.print("取出文件NGD=" + ngd + "\n");
+//				// 暫存字詞與分數
+//				HashMap<String, Double> terms = new HashMap<String, Double>();
+//				
+//				
+//				
+//				ArrayList<TopicTermGraph> documentTerms = new ArrayList<>();
+//
+//				double docTF = 0; // 單文件的TF值
+//				int doc_term_count = 0; // 單文件內的字詞數量
+//				// 記錄文件各主題的主題字詞，格式<主題編號,<主題字詞,字詞分數>>
+//				HashMap<Integer, HashMap<String, Double>> documentTopicTerms = new HashMap<Integer, HashMap<String, Double>>();
+//				for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
+//					String term = line.split(",")[0]; // 字詞
+//					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
+//					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
+//					TopicTermGraph c = null;
+//					try{
+//						c = documentTerms.get(group);
+//						
+//					}catch(IndexOutOfBoundsException e){
+//						c = new TopicTermGraph(group,theDay);
+//						documentTerms.add(c);
+//
+//					}finally{
+//						boolean isAdd = c.addVertex(new TermNode(term,TFScore));
+//						if(!isAdd){
+//							throw new RuntimeException("Term are duplicate in document! please check");
+//						}
+//					}
+//						
+//					docTF += TFScore;
+//					doc_term_count++;
+//					//FIXME there are a bug in this , only final group will left
+//					if (documentTopicTerms.get(group) == null) { // 新的主題直接把字裝進去
+//						terms.put(term, TFScore);
+//					} else { // 舊主題就先取出目前的資料，再更新
+//						terms = documentTopicTerms.get(group);
+//						terms.put(term, TFScore);
+//					}
+//					documentTopicTerms.put(group, new HashMap<String, Double>(terms));
+//				}
+//			
+//				mUserProfile().sum_avg_docTF(docTF);
+//				mUserProfile().sum_avg_termTF(docTF, doc_term_count);
+//				
+//				// 如果文件完全沒有特徵字詞會使得程式出錯，因此對這種文件放入一個temp字詞，之後再想辦法解決
+//				
+//				if (documentTerms.isEmpty()) {
+//					System.out.println("該文件沒有任何特徵");
+//				}
+//				// 文件與模型的主題字詞資訊都萃取出來後就進行主題間的映射，以便於分辨文件主題是對應到模型的哪一個
+//				// 此步驟也會紀錄主題關係
+//				StartTime = System.currentTimeMillis();
+//				topic_mapping = comperRelatener.Comper_topic_profile_doc(projectDir.toString()+"/",
+//						User_profile_term, doc_term, ngd);
+//
+//				comperRelatener.logTopicMapping(Paths.get(projectDir.toString()+"/","Comper_topic_profile_doc.txt").toFile());
+//				
+//
+//				// 使用使用者模型主題字詞更新，來取得更新後的主題字詞
+//				// 此步驟也會用到遺忘因子
+//				StartTime = System.currentTimeMillis();
+//				User_profile_term = mUserProfile().add_user_profile_term(
+//						User_profile_term, doc_term, topic_mapping);
+//
+//				// 輸出使用者模型
+//				mUserProfile().out_new_user_profile(projectDir.toString()+"/", preprocess_times,
+//						User_profile_term);
+//				
+//				
+//				
+//			}catch(IOException e){
+//				e.printStackTrace();
+//			}
+//			
+//			System.out.println("文件" + projectDir + "training/day_" + theDay
+//					+ "/" + doc.getName() + "處理結束");
+//						
+//		}
+//	}
 	
 	public void startTraining(int theDay) {
 		Path userProfilePath = this.projectDir.resolve(UserProfile.DEFUALT_USER_PROFILE);
@@ -694,15 +692,7 @@ public class Tom_exp {
 	public void setmUserProfile(UserProfile mUserProfile) {
 		this.mUserProfile = mUserProfile;
 	}
-
-	private TopicTermGraph findTheTopicCluster(int id){
-		for(TopicTermGraph c:this.termActiveGraph){
-			if(c.getId() ==id){
-				return c;
-			}
-		}
-		return null;
-	}
+	
 	class IOWriter implements AutoCloseable {
 		BufferedWriter timeWriter;
 		long StartTime;

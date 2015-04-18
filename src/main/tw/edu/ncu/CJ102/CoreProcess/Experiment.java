@@ -9,7 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Experiment {
 	private Path projectPath;
@@ -75,7 +77,7 @@ public class Experiment {
 	 */
 	public void run(int dayN) {
 		if(dayN<=this.experimentDays){
-			trainFromSimpleText(dayN);
+			train(dayN);
 			test(dayN);
 		}
 		
@@ -85,44 +87,62 @@ public class Experiment {
 	 * 應該進行讀取當天文件、主題映射、更新前一天的遺忘因子、加入新的文章主題進入使用者模型、記錄主題共現
 	 * @param days
 	 */
-	private void trainFromSimpleText(int theDay){
+	private void train(int theDay){
 		Path training = this.projectPath.resolve("training/day_"+theDay);
 		UserProfileManager userManager = new UserProfileManager(this.maper);
+		
 		userManager.updateUserProfile(theDay, user);
 		for(File doc:training.toFile().listFiles()){
-			try(BufferedReader documentReader = new BufferedReader(new FileReader(doc));){
-				double ngd = Double.valueOf(documentReader.readLine());
-				System.out.print("取出文件NGD=" + ngd + "\n");
-				ArrayList<TopicTermGraph> documentTopics = new ArrayList<>();
-
-				double docTF = 0; // 單文件的TF值
-				for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
-					String term = line.split(",")[0]; // 字詞
-					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
-					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
-					docTF += TFScore;
-					TopicTermGraph c = null;
-					try{
-						c = documentTopics.get(group);
-					}catch(IndexOutOfBoundsException e){
-						c = new TopicTermGraph(group,theDay);
-						documentTopics.add(c);
-					}finally{
-						boolean isAdd = c.addVertex(new TermNode(term,TFScore));
-						c.setUpdateDate(theDay);
-					}
-				}//end of For
-				
-				userManager.addTopic(documentTopics, user);
-				
-			}catch(IOException e){
-				e.printStackTrace();
-			}
-		}//end of for(Doc)
+			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay,doc);
+			String topicLabel = this.newsPopulater.getTopics(doc);
+			userManager.addTopic(documentTopics, user);
+		}
+		
 		userManager.updateUserProfile(theDay, user);
 		
 	}
-	private void test(int days){
+	
+	private void test(int theDay){
+		//TODO implement testing phase
+		Path testingPath = this.projectPath.resolve("testing/day_" + theDay);
+		for(File doc:testingPath.toFile().listFiles()){
+			
+		}
+	}
+	/**
+	 * Read the Simple txt file from preprocess to get document topic
+	 * @param theDay
+	 * @param doc 
+	 * @return List of Document topic or Null if Exception happened
+	 */
+	private List<TopicTermGraph> readFromSimpleText(int theDay, File doc){
+		try(BufferedReader documentReader = new BufferedReader(new FileReader(doc));){
+			double ngd = Double.valueOf(documentReader.readLine());
+			System.out.print("取出文件NGD=" + ngd + "\n");
+			TopicTermGraph[] documentTopics = new TopicTermGraph[5];
+			
+			double docTF = 0; // 單文件的TF值
+			for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
+				String term = line.split(",")[0]; // 字詞
+				int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
+				double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
+				docTF += TFScore;
+				TopicTermGraph c = null;
+				try{
+					c = documentTopics[group];
+				}catch(IndexOutOfBoundsException e){
+					c = new TopicTermGraph(theDay);
+					documentTopics[group] = c;
+				}finally{
+					c.addVertex(new TermNode(term,TFScore));
+					c.setUpdateDate(theDay);
+				}
+			}
+			return Arrays.asList(documentTopics);
+		}catch(IOException e){
+			e.printStackTrace();
+			return null;
+		}
 		
 	}
 

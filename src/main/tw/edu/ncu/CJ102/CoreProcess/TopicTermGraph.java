@@ -17,19 +17,13 @@ import edu.uci.ics.jung.graph.util.Pair;
  */
 @SuppressWarnings("serial")
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
-	private int id;
 	private boolean isLongTermInterest;
 	double averageTermTf;
 	protected int birthDate;
 	protected int updateDate;
 	int numberOfDocument;
-	public TopicTermGraph(int id,int birthDay){
-		this.id = id;
+	public TopicTermGraph(int birthDay){
 		this.setLongTermInterest(false);
-	}
-
-	public int getId() {
-		return id;
 	}
 	
 	/**
@@ -124,24 +118,6 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 		return core;
 	}
 	
-	@Override
-	public boolean equals(Object o){
-		if(o.getClass()==TopicTermGraph.class){
-			TopicTermGraph c = (TopicTermGraph)o;
-			if(this.id == c.id){
-				return true;
-			}else{
-				return false;
-			}
-		}else{
-			throw new ClassCastException();
-		}
-		
-	}
-	@Override
-	public int hashCode(){
-		return id;
-	}
 	
 	
 }

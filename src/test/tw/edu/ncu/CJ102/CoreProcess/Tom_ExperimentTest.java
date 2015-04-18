@@ -36,14 +36,6 @@ public class Tom_ExperimentTest {
 		Tom_exp exp2 = new Tom_exp(tempDir.toString());
 	}
 
-	@Test
-	public void testStartAnotherTraining() {
-		//TODO implement exp.startAnotherTraining(1);
-		r.populateExperiment(1);
-		exp.startAnotherTraining(1);
-		
-	}
-
 	class MockRouterNewsPopulator extends RouterNewsPopulator{
 
 		public MockRouterNewsPopulator(String dir) {

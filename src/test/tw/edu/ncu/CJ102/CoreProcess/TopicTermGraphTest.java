@@ -13,22 +13,11 @@ public class TopicTermGraphTest {
 	HashSet<TopicTermGraph> set;
 	@Before
 	public void setUp() throws Exception {
-		c = new TopicTermGraph(1,0);
-		c2 = new TopicTermGraph(1,0);
+		c = new TopicTermGraph(0);
+		c2 = new TopicTermGraph(0);
 		set = new HashSet<>();
 	}
-
-	@Test
-	public void testEquals() {//To Test if equal are override correctly
-		
-		assertEquals("same id should be the same cluster",c ,c2);
-	}
 	
-	@Test
-	public void testHashCode(){
-		set.add(c);
-		assertTrue("same id should not be able to added into same HashSet",!set.add(c2));
-	}
 	@Test
 	public void testMerge(){
 		TermNode testNode = new TermNode("test");
