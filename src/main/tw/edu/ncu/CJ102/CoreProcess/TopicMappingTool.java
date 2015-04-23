@@ -50,9 +50,5 @@ public class TopicMappingTool {
 		
 		return mappedTopic;
 	}
-	
-	public void log(Path writePath){
-		
-	}
 
 }

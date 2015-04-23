@@ -67,9 +67,9 @@ public class BCCalculator {
 	//參數: 分群資料來源, 分群後資料存放地點, 檔名
 	public Map<String, Integer> betweenness_cal(String source_dir, String resultDir, String conceptFile, boolean changeSimMin){
 		ngdList = new LinkedList<String>();
-		vertices = new HashSet<String>();
-		edges = new HashSet<String>();
-		map = new HashMap<String, Double>();
+		vertices = new HashSet<String>();//節點的集合
+		edges = new HashSet<String>();//邊的集合
+		map = new HashMap<String, Double>();//邊與數值的配對
 		linkmap = new HashMap<String, link>();
 		concepts = new LinkedList<Set<String>>();
 		allConcepts = new LinkedList<Set<String>>();
@@ -145,18 +145,14 @@ public class BCCalculator {
 			} 
 			
 			long t1 = System.currentTimeMillis();
-			
-			Set<Set<String>> clusterSet = transform(g,  (int) (map.size()*betweeness_threshold));
-			
+			Set<Set<String>> clusterSet = transform(g,  (int) (map.size()*betweeness_threshold));//移除多少邊是由邊的數量以及threshold值決定
 			long t2 = System.currentTimeMillis();
 			
 			bw3.write(g.getEdgeCount()+","+map.size()*betweeness_threshold+":SpendTime:"+(t2-t1));
 			bw3.newLine();
 			bw3.close();
 			
-			
 			//移除邊後再算degree
-			
 			for(link l : edges_removed.keySet()){
 				//g.removeEdge(l);
 				boolean s = edges.remove(l.id);
@@ -164,7 +160,6 @@ public class BCCalculator {
 					//System.out.println("Remove: "+l.id);
 				}
 			}
-			
 			
 			int i = 1;
 			for(Set<String> v :clusterSet){
@@ -174,7 +169,6 @@ public class BCCalculator {
 					concepts.add(v);
 				}
 			}
-			
 			for(Set<String> v: allConcepts){
 				for(String s: v){
 					clustermap.put(s, i);
@@ -188,27 +182,19 @@ public class BCCalculator {
 				}
 			});
 			
-			
 			i = 1;
 			for(Set<String> c : concepts){
-				//System.err.println("Cluster "+i+" :");
 				degreemap = new HashMap<String,Integer>();
 				
 				for(String s : c){
 					int degree = getDegree(s);
-					
 					degreemap.put(s, degree);
-					
-					//System.out.println(s+","+degree+","+g.degree(s)+","+i);
-					
 					if(TF_term.get(s)!=null){
 						bw.write(s+"," + TF_term.get(s) +","+ i); //字,TF分數,群 (concepts
 					}else{
 						bw.write(s+"," + 0 +","+ i); //字,TF分數,群 (concepts
 					}
-					bw.newLine();
-					bw.flush();				
-					
+					bw.newLine();					
 				}
 				
 				//排序並取得degree排行前n的term
@@ -225,9 +211,7 @@ public class BCCalculator {
 				
 				i++;
 			}
-			bw.close();
-			//bw2.close();
-	
+			bw.close();	
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -268,12 +252,13 @@ public class BCCalculator {
             		new BetweennessCentrality<String,link>(graph, wtTransformer);
             link to_remove = null;
             double score = 0;
-            for (link e : graph.getEdges())
+            for (link e : graph.getEdges()){
                 if (bc.getEdgeScore(e) > score)
                 {
                     to_remove = e;
                     score = bc.getEdgeScore(e);
                 }
+            }
             edges_removed.put(to_remove, graph.getEndpoints(to_remove));
             graph.removeEdge(to_remove);
         }
@@ -289,7 +274,7 @@ public class BCCalculator {
         return clusterSet;
 
 	}
-	// TODO what is this for? Ask 學長
+	// TODO 用來測試分的群集是否是一個好的群集
 	public <V,E> double computeModularity (Graph<V,E> g, Map<String,Integer> moduleMembership) {
 		System.err.println("Computing Modularity...");
 		
