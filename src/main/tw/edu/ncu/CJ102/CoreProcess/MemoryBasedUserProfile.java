@@ -12,19 +12,19 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	private static final long serialVersionUID = 1L;
 
 	public MemoryBasedUserProfile() {
-		// TODO Auto-generated constructor stub
+		this.remove_rate = 0.1;
 	}
 
 	@Override
 	public double getTopicRemoveThreshold() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 0.1;
 	}
 
 	@Override
 	public double getTermRemoveThreshold() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 0.1;
 	}
 	
 	/**

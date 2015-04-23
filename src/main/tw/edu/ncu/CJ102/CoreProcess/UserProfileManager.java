@@ -27,37 +27,45 @@ public class UserProfileManager {
 	 * 執行的使用者模型的一日更新
 	 * 包含遺忘因子的作用與主題、字詞的去除
 	 */
-	public void updateUserProfile(int theDay,AbstractUserProfile user){
+	public void updateUserProfile(int theDay, AbstractUserProfile user) {
 		Collection<TopicTermGraph> userTopics = user.getUserTopics();
-		Map<TopicTermGraph,Double> intersetValue = user.getInterestValueMap();
-		if(userTopics.isEmpty()){
-			System.out.println("System have no topic to update. decay Process will end!");
+
+		if (userTopics.isEmpty()) {
+			System.out
+					.println("System have no topic to update. decay Process will end!");
 			return;
 		}
-		Iterator<TopicTermGraph> i = userTopics.iterator();//filiter remove element, so we can not use java default for each
-		while(i.hasNext()){//遺忘因子流程
+		Iterator<TopicTermGraph> i = userTopics.iterator();// filiter remove element,do not use java default for each
+		while (i.hasNext()) {// 遺忘因子流程
 			TopicTermGraph topic = i.next();
-			double topicInterest = intersetValue.get(topic);
-			double decayFactor = user.getDecayRate(topic,theDay);
-			topicInterest = topicInterest * decayFactor;
+			double decayFactor = user.getDecayRate(topic, theDay);
+			double topicInterest = 0;
 			
-			if(topicInterest<user.getTopicRemoveThreshold()){//先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
+			for (TermNode term : topic.getVertices()) {
+				term.termFreq = term.termFreq * decayFactor;
+				topicInterest += term.termFreq;
+			}
+
+			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
+				System.out.println("System remove a topic:"+topic.toString());
 				i.remove();
-			}else{
-				double tempTopicInterest = 0; 
-				for(TermNode term:topic.getVertices()){
-					term.termFreq = term.termFreq*decayFactor;
-					tempTopicInterest += term.termFreq;
-				}
-				if(topicInterest != tempTopicInterest){
-					System.err.println("Warning! topic Value in differnt from counting of term node");
-				}
-				intersetValue.put(topic, tempTopicInterest);
-				
+			}
+			
+		}
+		
+		//TODO implement TopicCoOccurance Forgetting
+		TopicCoOccuranceGraph topicCoGraph = user.getTopicCOGraph();
+		for (Iterator<CEdge> iterator = topicCoGraph.getEdges().iterator(); iterator
+				.hasNext();) {
+			CEdge<TopicNode> edge = iterator.next();
+			edge.coScore = edge.coScore*0.9;
+			
+			if(edge.coScore < user.getCoOccranceThreshold()){
+				System.out.println("CEdge removed:"+edge.toString());
+				iterator.remove();
 			}
 		}
-	
-		
+
 	}
 	
 	public boolean removeTerm(TopicTermGraph topic,TermNode term)throws IllegalArgumentException{

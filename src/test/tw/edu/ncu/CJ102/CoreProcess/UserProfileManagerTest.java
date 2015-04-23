@@ -50,14 +50,16 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		topic1.addVertex(new TermNode("test2",5.0));
 		expect(user.getDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
 		expect(user.getUserTopics()).andReturn(mockUserTopics);
-		Map<TopicTermGraph,Double> mockInterset = new HashMap<>();
-		mockInterset.put(topic1, 10.0);
-		expect(user.getInterestValueMap()).andReturn(mockInterset);
 		expect(user.getTopicRemoveThreshold()).andReturn(0.0);
+		expect(user.getTopicCOGraph()).andReturn(new TopicCoOccuranceGraph());
 		replay(user);
 		
 		this.manager.updateUserProfile(2, user);
-		double score = mockInterset.get(topic1);
+		double score = 0;
+		for(TermNode term:topic1.getVertices()){//sum up
+			score += term.termFreq;
+		}
+		
 		assertEquals("Decay are not function normally",5.0,score,0.1);
 	}
 
@@ -93,14 +95,14 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		TopicTermGraph topic2 = new TopicTermGraph(0);
 		mockUserTopics.add(topic2);
 
-		expect(tool.map(notNull(TopicTermGraph.class), notNull(AbstractUserProfile.class))).andDelegateTo(new stubTool()).anyTimes();
+		expect(tool.map(notNull(TopicTermGraph.class), notNull(AbstractUserProfile.class))).andReturn(topic1).times(1).andReturn(topic2).times(1);
+		//First Topic will be map to topic1, second will be map to topic2
 		
 		Collection<TopicTermGraph> documentTopics = new ArrayList<>();
 		TopicTermGraph x = new TopicTermGraph(0);
 		TopicTermGraph y = new TopicTermGraph(0);
 		documentTopics.add(x);
 		documentTopics.add(y);
-		documentTopics.add(new TopicTermGraph(0));
 		
 		TopicCoOccuranceGraph tcoGraph = new TopicCoOccuranceGraph();
 
@@ -113,7 +115,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		Collection<TopicTermGraph> topics = user.getUserTopics();
 		
 		assertTrue("topic should not be empty",!topics.isEmpty());
-		assertNotEquals("Co Occurance Topic should not be empty",0,tcoGraph.getEdgeCount()); //There are chances that 
+		assertEquals("Co Occurance Topic should not be empty",1,tcoGraph.getEdgeCount()); 
 	}
 	
 	private class stubTool extends TopicMappingTool{

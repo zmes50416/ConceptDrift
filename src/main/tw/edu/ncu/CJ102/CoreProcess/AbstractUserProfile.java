@@ -16,10 +16,11 @@ public abstract class AbstractUserProfile implements Serializable{
 	String id;
 
 	double remove_rate; //興趣去除比例
+	double topicRemoveThreshold;
+	double termRemoveThreshold;
 	double docTermFreq;
 	double averagedocTf;
 	protected Collection<TopicTermGraph> userTopics = new ArrayList<>();
-	protected Map<TopicTermGraph,Double> interestValueMap = new HashMap<>();
 	/**
 	 * 主題共現圖形
 	 */
@@ -31,10 +32,6 @@ public abstract class AbstractUserProfile implements Serializable{
 	 */
 	public Collection<TopicTermGraph> getUserTopics() {
 		return userTopics;
-	}
-	
-	public Map<TopicTermGraph,Double> getInterestValueMap() {
-		return interestValueMap;
 	}
 	
 	/**
