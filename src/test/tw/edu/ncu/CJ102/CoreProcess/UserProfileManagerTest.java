@@ -90,7 +90,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 	}
 	
 	@Test
-	public void testAddTopic() {
+	public void testInsertTopic() {
 		topic1 = new TopicTermGraph(0);
 		TopicTermGraph topic2 = new TopicTermGraph(0);
 		mockUserTopics.add(topic2);
@@ -106,35 +106,15 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		
 		TopicCoOccuranceGraph tcoGraph = new TopicCoOccuranceGraph();
 
-		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();		
-		expect(user.getTopicCOGraph()).andReturn(tcoGraph).anyTimes();
+		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();
+		user.addDocument(notNull(Map.class));
+		expectLastCall();
 		replayAll();
 		
-		manager.addTopic(documentTopics , user);
-		
-		Collection<TopicTermGraph> topics = user.getUserTopics();
-		
-		assertTrue("topic should not be empty",!topics.isEmpty());
-		assertEquals("Co Occurance Topic should not be empty",1,tcoGraph.getEdgeCount()); 
-	}
-	
-	private class stubTool extends TopicMappingTool{
-
-		public stubTool() {
-			super(null, 0);
-		}
-		@Override
-		public TopicTermGraph map(TopicTermGraph theTopic,AbstractUserProfile user){ //simulate method : random topic in user profile will be return or the topic itself
-			int size = mockUserTopics.size();
-			int randPosition = new Random().nextInt(size+1);
-			int i = 0;
-			for(TopicTermGraph topic:mockUserTopics){
-				if(i++ == randPosition){
-					return topic;
-				}
-			}
-			return theTopic;//should never reach this line
-		}
+		Map<TopicTermGraph, TopicTermGraph> topicMap = manager.mapTopics(documentTopics , user);
+		assertEquals(2,topicMap.size());
+		assertSame(topic1,topicMap.get(x));
+		assertSame(topic2,topicMap.get(y));
 		
 	}
 

@@ -95,7 +95,7 @@ public class Experiment {
 		for(File doc:training.toFile().listFiles()){
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay,doc);
 			String topicLabel = this.newsPopulater.getTopics(doc);
-			userManager.addTopic(documentTopics, user);
+			userManager.mapTopics(documentTopics, user);
 		}
 		
 		userManager.updateUserProfile(theDay, user);

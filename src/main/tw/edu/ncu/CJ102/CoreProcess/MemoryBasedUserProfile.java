@@ -1,4 +1,14 @@
 package tw.edu.ncu.CJ102.CoreProcess;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Stack;
+
+import edu.uci.ics.jung.graph.util.Pair;
+
 /**
  * 基於長期以及短期記憶區塊的使用者模型，
  * @author TingWen
@@ -50,6 +60,61 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}
 		return 0;
 	}
+
+	@Override
+	public double getCoOccranceThreshold() {
+		// TODO implement complext threshold compute
+		return 0.1;
+	}
+	
+	@Override
+	public void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap) {
+		if(topicMap.isEmpty()){//document should have something to add
+			throw new IllegalArgumentException("document topic should not be empty!");
+		}
+		
+		HashSet<TopicTermGraph> documentTopics = new HashSet<>();//use for CoOccurance topic in document
+		double documentTf = 0;
+		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
+			TopicTermGraph topic = topicPair.getKey();
+			TopicTermGraph mappedTopic = topicPair.getValue();
+			if(this.userTopics.contains(mappedTopic)){
+				mappedTopic.merge(topic);
+			}else{
+				if(!this.userTopics.add(topic)){
+					throw new RuntimeException("Cant add topic");
+				}
+			}
+			documentTopics.add(mappedTopic);
+			for(TermNode term:topic.getVertices()){//Record tf of new Term & document
+				this.updateTermRemoveThreshold(term.termFreq);
+				documentTf += term.termFreq;
+			}
+			
+		}//end of CoOccurance Topics
+		
+		for(TopicTermGraph userTopic:topicMap.values()){//For topic coOccurance graph
+			for(TopicTermGraph anotherUserTopic:documentTopics){
+				if(userTopic!=anotherUserTopic){
+					this.topicCOGraph.addEdge(new CEdge<TopicTermGraph>(new Pair<TopicTermGraph>(userTopic, anotherUserTopic)), userTopic, anotherUserTopic);
+				}
+			}
+			documentTopics.remove(userTopic);
+			
+		}
+		
+		this.updateTopicRemoveThreshold(documentTf);
+	}
+
+	protected void updateTopicRemoveThreshold(double newDocumentTf) {
+		this.topicRemoveThreshold = newDocumentTf + (this.topicRemoveThreshold/2);
+
+	}
+
+	protected void updateTermRemoveThreshold(double newTermTf) {
+		this.termRemoveThreshold = newTermTf + (this.termRemoveThreshold/2);
+	}
+	
 
 
 }

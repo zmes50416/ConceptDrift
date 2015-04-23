@@ -1,6 +1,7 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -90,31 +91,17 @@ public class UserProfileManager {
 	 * 將每一個文件主題映射並且加入至使用者模型，並且記錄多主題的關係
 	 * @param user 使用者模型
 	 * @param doc_term 文件內容資訊
+	 * @return 文件主題(Key)與該使用者主題(Value)的配對
 	 */
-	public void addTopic(Collection<TopicTermGraph> documentTopics, AbstractUserProfile user){
-		HashSet<TopicTermGraph> mappedTopics = new HashSet<>();
+	public Map<TopicTermGraph,TopicTermGraph> mapTopics(Collection<TopicTermGraph> documentTopics, AbstractUserProfile user){
+		HashMap<TopicTermGraph,TopicTermGraph> mappedTopics = new HashMap<>();
 		for(TopicTermGraph topic:documentTopics){
 			TopicTermGraph mappedTopic = this.mapper.map(topic, user);
-			if(mappedTopic==topic){	// Add new user topic if mapper can't find the better topic
-				Collection<TopicTermGraph> userTopics = user.getUserTopics();
-				if(!userTopics.add(topic)){
-					throw new RuntimeException("Cant add topic");
-				}
-			}else{//find the right topic and merge all term and edge into it
-				mappedTopic.merge(topic);				
-			}
-			
-			mappedTopics.add(mappedTopic);
+			mappedTopics.put(topic, mappedTopic);
 		}//end of for
+		user.addDocument(mappedTopics);
+		return mappedTopics;
 		
-		for(TopicTermGraph topic:mappedTopics){//For topic coOccurance graph
-			for(TopicTermGraph anotherTopic:mappedTopics){
-				if(topic!=anotherTopic){
-					TopicCoOccuranceGraph graph = user.getTopicCOGraph();
-					graph.addEdge(new CEdge(new Pair<TopicTermGraph>(topic, anotherTopic)), topic, anotherTopic);
-				}
-			}
-		}
 		
 	}
 	
