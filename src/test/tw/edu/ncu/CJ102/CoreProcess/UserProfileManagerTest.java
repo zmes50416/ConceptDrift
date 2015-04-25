@@ -15,6 +15,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
+import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.CJ102.Data.TopicCoOccuranceGraph;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
 public class UserProfileManagerTest extends EasyMockSupport{

@@ -3,6 +3,9 @@ package tw.edu.ncu.CJ102.CoreProcess;
 import java.nio.file.Path;
 import java.util.*;
 
+import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
+import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
 /**

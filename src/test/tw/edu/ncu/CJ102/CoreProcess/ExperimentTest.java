@@ -16,6 +16,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
+import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
 
 public class ExperimentTest{

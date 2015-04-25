@@ -15,6 +15,7 @@ import java.util.TreeSet;
 import java.util.Comparator;
 
 import tw.edu.ncu.CJ102.algorithm.*;
+import tw.edu.ncu.CJ102.Data.*;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -41,7 +42,7 @@ public class ConceptDrift_Forecasting {
 	TreeMap<CEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<CEdge>(){
 		@Override
 		public int compare(CEdge o1, CEdge o2) {
-			return o1.coScore>=o2.coScore?1:-1;
+			return o1.getCoScore()>=o2.getCoScore()?1:-1;
 		}
 		
 	});
@@ -229,13 +230,13 @@ public class ConceptDrift_Forecasting {
 						CEdge<TopicNode> edge = this.topicCRGraph.findEdge(n, neighborOfN);
 						CEdge<TopicNode> anotherEdge = this.topicCRGraph.findEdge(
 								neighborOfN, n2);
-						if (edge.coScore + anotherEdge.coScore <= this.topic_close_threshold) {
+						if (edge.getCoScore() + anotherEdge.getCoScore() <= this.topic_close_threshold) {
 							CEdge<TopicNode> newEdge;
-							double maxOfFreq = Math.max(sum_topic_freq.get(n.id),
-										sum_topic_freq.get(n2.id));
-							double minOfFreq = Math.min(sum_topic_freq.get(n.id),sum_topic_freq.get(n2.id));
+							double maxOfFreq = Math.max(sum_topic_freq.get(n.getId()),
+										sum_topic_freq.get(n2.getId()));
+							double minOfFreq = Math.min(sum_topic_freq.get(n.getId()),sum_topic_freq.get(n2.getId()));
 							
-							double should = maxOfFreq - ((edge.coScore + anotherEdge.coScore) * (sum_topics_relation - minOfFreq));
+							double should = maxOfFreq - ((edge.getCoScore() + anotherEdge.getCoScore()) * (sum_topics_relation - minOfFreq));
 							// SIM反推
 							// double should =
 							// (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
@@ -243,10 +244,10 @@ public class ConceptDrift_Forecasting {
 							Pair<TopicNode> pair = new Pair<>(n,n2);
 							newEdge = new CEdge<TopicNode>(pair,should);
 							edges.put(newID, newEdge);
-							TR.put(newEdge.id, should);
+							TR.put(newEdge.getId(), should);
 							// 預測紀錄
 							bw2.write(edge+ "與"+ anotherEdge
-									+ "相加的NGD為"+ (TR_NGD.get(edge.id) + TR_NGD.get(anotherEdge.id)));
+									+ "相加的NGD為"+ (TR_NGD.get(edge.getId()) + TR_NGD.get(anotherEdge.getId())));
 							bw2.newLine();
 							bw2.write("新建立邊" + newEdge + " NGD為" + should);
 							bw2.newLine();
@@ -432,76 +433,5 @@ public class ConceptDrift_Forecasting {
 	
 	public Graph<TopicNode, CEdge> getTopicCooccurGrahp(){
 		return this.topicCRGraph;
-	}
-}
-/**
- * customized Co-ouccrence Edge to use In JUNG Graph
- *
- * @author TingWen
- *
- */
-class CEdge<T>{
-	String id;
-	double coScore;
-	Pair<T> terms;
-	public CEdge(Pair<T> _terms){
-		this(_terms, 1.0);
-	}
-	
-	public CEdge(Pair<T> _terms, double score){
-		this.terms = _terms;
-		this.coScore = score;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof CEdge) {
-			CEdge<T> anotherEdge = (CEdge<T>) o;
-			T anotherFirst = anotherEdge.terms.getFirst();
-			T anotherSecond = anotherEdge.terms.getSecond();
-			if (this.terms.getFirst().equals(anotherFirst)
-					&& this.terms.getSecond().equals(anotherSecond)
-					|| this.terms.getFirst().equals(anotherSecond)
-					&& this.terms.getSecond().equals(anotherFirst)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-	
-	@Override
-	public String toString(){
-		return "id:"+id+" - "+(float)coScore;
-		
-	}
-}
-/**
- * customized Topic Node to use in JUNG Graph
- * @author TingWen
- *
- */
-class TopicNode{
-	String id;
-	public TopicNode(String id){
-		this.id = id;
-	}
-	@Override
-	public boolean equals(Object o){
-		if(o instanceof TopicNode){
-			TopicNode anotherEdge = (TopicNode)o;
-			return this.id.equals(anotherEdge.id);
-		}else{
-			return false;
-		}
-	}
-	
-	@Override
-	public String toString(){
-		return id;
-		
 	}
 }

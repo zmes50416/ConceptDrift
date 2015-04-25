@@ -13,6 +13,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
+import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+
 public class Experiment {
 	private Path projectPath;
 	private AbstractUserProfile user;

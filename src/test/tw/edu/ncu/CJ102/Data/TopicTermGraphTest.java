@@ -1,4 +1,4 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,8 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
+import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class TopicTermGraphTest {
@@ -54,7 +56,7 @@ public class TopicTermGraphTest {
 		CEdge<TermNode> e=new CEdge<>(pair);
 		assertTrue("First time add should be true",this.c.addEdge(e, testNode1, testNode2));
 		this.c.addEdge(e, testNode1, testNode2);
-		assertEquals("Second time the value should be 2",2,e.coScore,0.5);
+		assertEquals("Second time the value should be 2",2,e.getCoScore(),0.5);
 	}
 
 }

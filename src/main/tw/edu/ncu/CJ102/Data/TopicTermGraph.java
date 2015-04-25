@@ -1,4 +1,4 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
 import java.io.Serializable;
 import java.util.HashMap;

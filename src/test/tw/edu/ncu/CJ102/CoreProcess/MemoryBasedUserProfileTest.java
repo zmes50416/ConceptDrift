@@ -8,6 +8,9 @@ import java.util.HashMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 public class MemoryBasedUserProfileTest{
 	public MemoryBasedUserProfile user;
 

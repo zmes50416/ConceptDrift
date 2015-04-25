@@ -6,6 +6,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
+import tw.edu.ncu.CJ102.Data.CEdge;
+import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.CJ102.Data.TopicCoOccuranceGraph;
+import tw.edu.ncu.CJ102.Data.TopicNode;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 /**
@@ -59,9 +65,9 @@ public class UserProfileManager {
 		for (Iterator<CEdge> iterator = topicCoGraph.getEdges().iterator(); iterator
 				.hasNext();) {
 			CEdge<TopicNode> edge = iterator.next();
-			edge.coScore = edge.coScore*0.9;
+			edge.setCoScore(edge.getCoScore()*0.9);
 			
-			if(edge.coScore < user.getCoOccranceThreshold()){
+			if(edge.getCoScore() < user.getCoOccranceThreshold()){
 				System.out.println("CEdge removed:"+edge.toString());
 				iterator.remove();
 			}

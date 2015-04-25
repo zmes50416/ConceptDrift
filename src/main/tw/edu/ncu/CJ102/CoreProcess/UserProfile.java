@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+
 
 public class UserProfile {
 	/**

@@ -19,6 +19,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+
 public class UserProfileTest {
 	UserProfile m ;
 	@Before

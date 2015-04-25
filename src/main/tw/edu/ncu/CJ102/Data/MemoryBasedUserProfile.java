@@ -1,4 +1,4 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +22,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	private static final long serialVersionUID = 1L;
 
 	public MemoryBasedUserProfile() {
-		this.remove_rate = 0.1;
+		this.setRemove_rate(0.1);
 	}
 
 	@Override

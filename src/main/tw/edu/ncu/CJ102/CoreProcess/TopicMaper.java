@@ -16,6 +16,7 @@ import java.util.HashSet;
 
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 
 public class TopicMaper {
 

@@ -1,4 +1,4 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -15,7 +15,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	 */
 	String id;
 
-	double remove_rate; //興趣去除比例
+	private double remove_rate; //興趣去除比例
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
 	double docTermFreq;
@@ -65,5 +65,13 @@ public abstract class AbstractUserProfile implements Serializable{
 		return this.termRemoveThreshold;
 	}
 	public abstract double getCoOccranceThreshold();
+
+	public double getRemove_rate() {
+		return remove_rate;
+	}
+
+	public void setRemove_rate(double remove_rate) {
+		this.remove_rate = remove_rate;
+	}
 
 }

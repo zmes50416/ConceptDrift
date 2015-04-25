@@ -1,13 +1,13 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
 public class TermNode{
 	public double termFreq;
 	String term;
-	TermNode(String _term){
+	public TermNode(String _term){
 		this.term = _term;
 		this.termFreq = 1;
 	}
-	TermNode(String _term,double _termFreq){
+	public TermNode(String _term,double _termFreq){
 		this.term = _term;
 		this.termFreq = _termFreq;
 	}

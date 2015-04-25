@@ -1,5 +1,6 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
+import tw.edu.ncu.CJ102.Data.CEdge;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 
 public class TopicCoOccuranceGraph extends UndirectedSparseGraph<TopicTermGraph, CEdge> {
@@ -16,7 +17,7 @@ public class TopicCoOccuranceGraph extends UndirectedSparseGraph<TopicTermGraph,
 		}else{
 			CEdge rightEdge= super.findEdge(v1, v2);
 			if(rightEdge.equals(e)){
-				rightEdge.coScore += 1;
+				rightEdge.setCoScore(rightEdge.getCoScore() + 1);
 				return true;
 			}
 			throw new RuntimeException("Problem in add Edge");
