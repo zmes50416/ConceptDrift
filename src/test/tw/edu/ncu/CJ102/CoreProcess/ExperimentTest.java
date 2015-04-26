@@ -83,4 +83,16 @@ public class ExperimentTest{
 		
 	}
 
+	@Test
+	public void testTrain(){
+		//TODO implement test
+		fail("Not yet implement");
+	}
+	
+	@Test
+	public void testTest(){
+		//TODO implement test
+		fail("Not yet implment");
+		
+	}
 }

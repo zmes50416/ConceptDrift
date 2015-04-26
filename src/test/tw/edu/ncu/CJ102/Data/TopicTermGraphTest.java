@@ -58,5 +58,13 @@ public class TopicTermGraphTest {
 		this.c.addEdge(e, testNode1, testNode2);
 		assertEquals("Second time the value should be 2",2,e.getCoScore(),0.5);
 	}
+	
+	@Test
+	public void testGetCoreTerm(){
+		for(int i=0;i<=9;i++){
+			//TODO implement TEST
+		};
+		fail("Not yet implement");
+	}
 
 }

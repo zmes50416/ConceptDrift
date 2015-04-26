@@ -1,4 +1,4 @@
-package tw.edu.ncu.CJ102.CoreProcess;
+package tw.edu.ncu.CJ102.Data;
 
 import static org.junit.Assert.*;
 
