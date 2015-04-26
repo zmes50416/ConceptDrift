@@ -1,11 +1,8 @@
 package tw.edu.ncu.CJ102.Data;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Stack;
 
 import edu.uci.ics.jung.graph.util.Pair;
 
@@ -24,17 +21,8 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	public MemoryBasedUserProfile() {
 		this.setRemove_rate(0.1);
 	}
-
-	@Override
-	public double getTopicRemoveThreshold() {
-		// TODO Auto-generated method stub
-		return 0.1;
-	}
-
-	@Override
-	public double getTermRemoveThreshold() {
-		// TODO Auto-generated method stub
-		return 0.1;
+	public MemoryBasedUserProfile(double _removeRate){
+		this.setRemove_rate(_removeRate);
 	}
 	
 	/**
@@ -58,7 +46,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}else{
 			decayRate = Math.pow(Math.E, -Math.log10(updateDate-topic.getUpdateDate())*this.getSizeOfShortTerm()/Math.log10(topic.numberOfDocument));
 		}
-		return 0;
+		return decayRate;
 	}
 
 	@Override
@@ -114,7 +102,6 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	protected void updateTermRemoveThreshold(double newTermTf) {
 		this.termRemoveThreshold = newTermTf + (this.termRemoveThreshold/2);
 	}
-	
 
 
 }

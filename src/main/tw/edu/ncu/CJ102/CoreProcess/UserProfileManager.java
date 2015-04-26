@@ -22,13 +22,11 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class UserProfileManager {
 //use for manipulate user profile, decoupling user profile's high dependency
 	TopicMappingTool mapper;
-	int currentDate;
 	public UserProfileManager(TopicMappingTool _mapper) {
 		if(_mapper == null){
 			throw new NullPointerException("Cant work without a mapper algorithm");
 		}
 		this.mapper = _mapper;
-		this.currentDate = 1;
 	}
 	/**
 	 * 執行的使用者模型的一日更新
@@ -68,7 +66,7 @@ public class UserProfileManager {
 			edge.setCoScore(edge.getCoScore()*0.9);
 			
 			if(edge.getCoScore() < user.getCoOccranceThreshold()){
-				System.out.println("CEdge removed:"+edge.toString());
+				System.out.println("TopicCoOccurance CEdge removed:"+edge.toString());
 				iterator.remove();
 			}
 		}
@@ -94,7 +92,7 @@ public class UserProfileManager {
 	}
 	
 	/**
-	 * 將每一個文件主題映射並且加入至使用者模型，並且記錄多主題的關係
+	 * 將每一個文件進行主題映射找出最相似的使用者主題
 	 * @param user 使用者模型
 	 * @param doc_term 文件內容資訊
 	 * @return 文件主題(Key)與該使用者主題(Value)的配對
@@ -105,9 +103,7 @@ public class UserProfileManager {
 			TopicTermGraph mappedTopic = this.mapper.map(topic, user);
 			mappedTopics.put(topic, mappedTopic);
 		}//end of for
-		user.addDocument(mappedTopics);
 		return mappedTopics;
-		
 		
 	}
 	

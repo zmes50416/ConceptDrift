@@ -1,11 +1,18 @@
 package tw.edu.ncu.CJ102.Data;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
+
+import org.apache.commons.collections15.buffer.CircularFifoBuffer;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
@@ -105,17 +112,31 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 		}
 	}
 
-	public Set<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
-		Set<TermNode> core = new HashSet<>();
-		//HashMap<TermNode,Double> termRank = new HashMap<TermNode,Double>();
+	public Collection<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
+		int maximumSize = 10;
+		PriorityQueue<TermNode> core = new PriorityQueue<>(maximumSize, new nodeComparator());
 		for(TermNode term:this.getVertices()){
-			int degree = this.getNeighborCount(term);
-			if(degree>=3){
-				core.add(term);
+			if(core.size()==maximumSize){
+				TermNode minTerm = core.poll();
+				if(this.getNeighborCount(minTerm)>=this.getNeighborCount(term)){
+					core.offer(minTerm);
+					continue;
+				}
 			}
+				core.offer(term);
+		
+		}
+		return core;
+	}
+	class nodeComparator implements Comparator<TermNode>{
+
+		@Override
+		public int compare(TermNode arg0, TermNode arg1) {
+			int degree0 = getNeighborCount(arg0);
+			int degree1 = getNeighborCount(arg1);
+			return degree0-degree1;
 		}
 		
-		return core;
 	}
 	
 	

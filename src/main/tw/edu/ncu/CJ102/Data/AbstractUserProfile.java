@@ -11,15 +11,13 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public abstract class AbstractUserProfile implements Serializable{
 	/**
-	 * 使用者的辨識方法
+	 * 使用者的辨識方法,目前無實作
 	 */
 	String id;
 
 	private double remove_rate; //興趣去除比例
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
-	double docTermFreq;
-	double averagedocTf;
 	protected Collection<TopicTermGraph> userTopics = new ArrayList<>();
 	/**
 	 * 主題共現圖形

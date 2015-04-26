@@ -281,7 +281,7 @@ public class TopicMaper {
 	 * @param topic_mapping 文件與模型主題的映射
 	 * @param doc_label 文件的標籤主題
 	 * @param profile_label 系統目前保有的標籤主題
-	 * @return ArrayList<String>系統目前保有的標籤主題
+	 * @return 文件判斷結果
 	 */
 	public String Comper_relateness_profile_doc(String exp_dir,
 			HashMap<Integer, Integer> topic_mapping, String doc_label,

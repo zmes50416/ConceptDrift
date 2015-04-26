@@ -63,10 +63,7 @@ public class Tom_exp {
 			throw new RuntimeException("IO have been Interrupted");
 		}
 	}
-	/*SHOULD NOT RUN THIS YET!!
-	public static void main(String[] args) {
-		new Tom_exp("exp/").start();
-	}*/
+
 	//Start Experiment from here
 	public void start() {
 		double train_sum_time_read_doc = 0, test_sum_time_read_doc = 0; // 讀取文件的總時間
