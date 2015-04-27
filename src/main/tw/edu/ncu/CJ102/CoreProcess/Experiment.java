@@ -1,8 +1,10 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
@@ -10,25 +12,32 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 
 public class Experiment {
-	private Path projectPath;
+	private Path projectPath,userProfile;
 	private AbstractUserProfile user;
 	ExperimentFilePopulater newsPopulater;
 	TopicMappingTool maper;
 	protected int experimentDays;
 	Boolean isInitialized = false;
-	
+	protected HashSet<String> traingLabel= new HashSet<>();
+	protected HashMap<TopicTermGraph,PerformanceMonitor> monitors= new HashMap<>();
+	protected PerformanceMonitor systemPerformance = new PerformanceMonitor();
 	public Experiment(String project) {		// 創造出實驗資料匣
 		try{
 			this.projectPath = Paths.get(project);
-			Path userProfile = projectPath.resolve("user_profile");
+			this.userProfile = projectPath.resolve("user_profile");
 		
 			Files.createDirectories(projectPath);
 			Files.createDirectories(userProfile); // 創造出實驗使用者模型資料匣
@@ -91,27 +100,41 @@ public class Experiment {
 	 * 應該進行讀取當天文件、主題映射、更新前一天的遺忘因子、加入新的文章主題進入使用者模型、記錄主題共現
 	 * @param days
 	 */
-	private void train(int theDay){
+	protected void train(int theDay){
 		Path training = this.projectPath.resolve("training/day_"+theDay);
 		UserProfileManager userManager = new UserProfileManager(this.maper);
 		
 		userManager.updateUserProfile(theDay, user);
 		for(File doc:training.toFile().listFiles()){
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay,doc);
-			String topicLabel = this.newsPopulater.getTopics(doc);
-			userManager.mapTopics(documentTopics, user);
+			String docTopic = this.newsPopulater.getTopics(doc);
+			this.traingLabel.add(docTopic);
+			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
+			
+			for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
+				if(topicPair.getKey()==topicPair.getValue()){//new Topic, add a monitor
+					this.monitors.put(topicPair.getKey(), new PerformanceMonitor());
+				}
+			}
+			
+			user.addDocument(topicMap);
 		}
 		
-		userManager.updateUserProfile(theDay, user);
-		
+		this.removeOutdatedMonitor();
 	}
 	
-	private void test(int theDay){
-		//TODO implement testing phase
+	protected void test(int theDay){
 		Path testingPath = this.projectPath.resolve("testing/day_" + theDay);
+		UserProfileManager userManager = new UserProfileManager(this.maper);
+		
 		for(File doc:testingPath.toFile().listFiles()){
-			
+			String docTopic = this.newsPopulater.getTopics(doc);
+			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay, doc);
+			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
+			this.performanceTest(topicMap, docTopic);
 		}
+		
+		
 	}
 	/**
 	 * Read the Simple txt file from preprocess to get document topic
@@ -152,6 +175,93 @@ public class Experiment {
 			return null;
 		}
 		
+	}
+	/**
+	 * 測試此文件是否為相關文件
+	 * @param topicMap
+	 * @param documentTopicLabel
+	 */
+	protected void performanceTest(Map<TopicTermGraph, TopicTermGraph> topicMap,String documentTopicLabel){
+		boolean realAnswer = false;
+		if(this.traingLabel.contains(documentTopicLabel)){
+			realAnswer = true;
+		}
+		boolean systemAnswer = true;
+		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
+			if(topicPair.getKey()==topicPair.getValue()){//the same topic mean no likliy topic in user profile
+				systemAnswer = false;
+				break;
+			}
+		}
+		Collection<TopicTermGraph> matchedTopics = topicMap.values();
+		if (realAnswer == true) {// two possible Type: TP,FN
+			for (TopicTermGraph topic : user.getUserTopics()) {
+				if (matchedTopics.contains(topic)) {// topic is matched -- TP
+					PerformanceMonitor monitor = this.monitors.get(topic);
+					monitor.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
+				} else {// topic is not matched -- FN
+					PerformanceMonitor monitor = this.monitors.get(topic);
+					monitor.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
+				}
+			}
+			if(systemAnswer==true){
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
+			}else{
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
+			}
+
+		} else { // two possible type: FP,TN
+			for (TopicTermGraph topic : user.getUserTopics()) {
+				if (matchedTopics.contains(topic)) {// topic is matched but not
+													// relative -- FP
+					PerformanceMonitor monitor = this.monitors.get(topic);
+					monitor.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
+
+				} else { // topic is not matched, and it is not relative too --
+							// TN
+					PerformanceMonitor monitor = this.monitors.get(topic);
+					monitor.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
+
+				}
+			}
+			if(systemAnswer==true){
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
+			}else{
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
+			}
+		}//end of RealAnswer if
+		
+	}
+	
+	protected void removeOutdatedMonitor(){
+		Collection<TopicTermGraph> userTopics = this.user.getUserTopics();
+		Iterator<Entry<TopicTermGraph, PerformanceMonitor>> iterator = this.monitors.entrySet().iterator();
+		while(iterator.hasNext()){
+			Entry<TopicTermGraph, PerformanceMonitor> entry = iterator.next();
+			if(!userTopics.contains(entry.getKey())){
+				iterator.remove();
+			}
+		}
+	}
+	
+	protected void simplelog(int theDay){
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.userProfile.resolve("userLog.txt").toFile(),true))){
+			writer.append("==Day"+theDay+"==");
+			writer.newLine();
+			Collection<TopicTermGraph> topics = user.getUserTopics();
+			writer.append("Size of Topics:"+topics.size());
+			writer.newLine();
+			int i = 1;
+			for(TopicTermGraph topic:topics){
+				writer.append("topic:"+topic.hashCode()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+user.getDecayRate(topic, theDay)+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
+				writer.newLine();
+				
+			}
+			writer.append("System Performance:"+this.systemPerformance);
+			writer.newLine();
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 
 }

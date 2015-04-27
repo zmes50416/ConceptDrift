@@ -1,85 +1,72 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
-public class PerformanceMonitor {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
-	private double TP = 0, TN = 0, FP = 0, FN = 0;
-	public PerformanceMonitor() {
-		// TODO Auto-generated constructor stub
+import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+
+public class PerformanceMonitor {
+	private double TP, TN, FP, FN;
+	public PerformanceMonitor(){
+		TP = 0;
+		TN = 0;
+		FP = 0;
+		FN = 0;
 	}
+
 	/**
 	 * @return the true Positive
 	 */
 	public double getTP() {
 		return TP;
 	}
-	/**
-	 * @param tP the true positive to set
-	 */
-	public void setTP(double tP) {
-		TP = tP;
-	}
+
 	/**
 	 * @return the true negative 
 	 */
 	public double getTN() {
 		return TN;
 	}
-	/**
-	 * @param tN the true negative  to set
-	 */
-	public void setTN(double tN) {
-		TN = tN;
-	}
+
 	/**
 	 * @return the false Positive
 	 */
 	public double getFP() {
 		return FP;
 	}
-	/**
-	 * @param fP the false Positive to set
-	 */
-	public void setFP(double fP) {
-		FP = fP;
-	}
+
 	/**
 	 * @return the false negative 
 	 */
 	public double getFN() {
 		return FN;
 	}
-	/**
-	 * @param fN the false negative to set
-	 */
-	public void setFN(double fN) {
-		FN = fN;
-	}
+
 
 	
-	public void set_EfficacyMeasure(String result) {
-		System.out.println("此文件被判定為" + result);
-		if (result == "TP") {
+	public void set_EfficacyMeasure(PerformanceType type) {
+		if (type == PerformanceType.TRUEPOSTIVE) {
 			TP++;
 		}
-		if (result == "TN") {
+		if (type == PerformanceType.TRUENEGATIVE) {
 			TN++;
 		}
-		if (result == "FP") {
+		if (type == PerformanceType.FALSEPOSTIVE) {
 			FP++;
 		}
-		if (result == "FN") {
+		if (type == PerformanceType.FALSENEGATIVE) {
 			FN++;
 		}
 	}
 
-	public void show_all_result() {
-		System.out.println("TP=" + TP + ", TN=" + TN + ", FP=" + FP + ", FN="
-				+ FN);
-	}
-
-	public double[] get_all_result() {
-		double all_result[] = { TP, TN, FP, FN };
-		return all_result;
+	public Map<PerformanceType,Double> get_all_result() {
+		Map<PerformanceType,Double> results = new HashMap<>();
+		results.put(PerformanceType.TRUENEGATIVE, this.TN);
+		results.put(PerformanceType.TRUEPOSTIVE, this.TP);
+		results.put(PerformanceType.FALSENEGATIVE, this.FN);
+		results.put(PerformanceType.FALSEPOSTIVE, this.FP);
+		return results;
 	}
 
 	public double get_precision() {
@@ -102,4 +89,14 @@ public class PerformanceMonitor {
 	public double get_error() {
 		return (FP + FN) / (TP + TN + FP + FN);
 	}
+	public String toString(){
+		return "F-measure:"+this.get_f_measure()+", Accuracy:"+this.get_accuracy()+",Recall:"+this.get_recall()+",Precision:"+this.get_precision();
+	}
+	public boolean phTest(){
+		return true;
+	}
+}
+enum PerformanceType{
+	TRUENEGATIVE,TRUEPOSTIVE,FALSENEGATIVE,FALSEPOSTIVE;
+	
 }
