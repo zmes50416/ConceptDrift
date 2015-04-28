@@ -68,6 +68,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			TopicTermGraph mappedTopic = topicPair.getValue();
 			if(this.userTopics.contains(mappedTopic)){
 				mappedTopic.merge(topic);
+				mappedTopic.numberOfDocument++;
 			}else{
 				if(!this.userTopics.add(topic)){
 					throw new RuntimeException("Cant add topic");

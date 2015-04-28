@@ -52,7 +52,7 @@ public class UserProfileManager {
 			}
 
 			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
-				System.out.println("System remove a topic:"+topic.toString());
+				System.out.println("System remove a topic:"+topic.toString()+"Because it's interest value only "+topicInterest);
 				i.remove();
 			}
 			

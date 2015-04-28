@@ -25,7 +25,7 @@ import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 
 public class Experiment {
-	private Path projectPath,userProfile;
+	private Path projectPath,userProfilePath;
 	private AbstractUserProfile user;
 	ExperimentFilePopulater newsPopulater;
 	TopicMappingTool maper;
@@ -37,10 +37,10 @@ public class Experiment {
 	public Experiment(String project) {		// 創造出實驗資料匣
 		try{
 			this.projectPath = Paths.get(project);
-			this.userProfile = projectPath.resolve("user_profile");
+			this.userProfilePath = projectPath.resolve("user_profile");
 		
 			Files.createDirectories(projectPath);
-			Files.createDirectories(userProfile); // 創造出實驗使用者模型資料匣
+			Files.createDirectories(userProfilePath); // 創造出實驗使用者模型資料匣
 			
 			Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been create but not finish yet.
 		} catch(FileAlreadyExistsException e){
@@ -52,6 +52,13 @@ public class Experiment {
 	
 	public Path getProjectPath() {
 		return projectPath;
+	}
+
+	/**
+	 * @return the userProfilePath
+	 */
+	public Path getUserProfilePath() {
+		return userProfilePath;
 	}
 
 	public AbstractUserProfile getUser() {
@@ -100,13 +107,13 @@ public class Experiment {
 	 * 應該進行讀取當天文件、主題映射、更新前一天的遺忘因子、加入新的文章主題進入使用者模型、記錄主題共現
 	 * @param days
 	 */
-	protected void train(int theDay){
-		Path training = this.projectPath.resolve("training/day_"+theDay);
+	protected void train(int today){
+		Path training = this.projectPath.resolve("training/day_"+today);
 		UserProfileManager userManager = new UserProfileManager(this.maper);
 		
-		userManager.updateUserProfile(theDay, user);
+		userManager.updateUserProfile(today, user);
 		for(File doc:training.toFile().listFiles()){
-			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay,doc);
+			List<TopicTermGraph> documentTopics = this.readFromSimpleText(today,doc);
 			String docTopic = this.newsPopulater.getTopics(doc);
 			this.traingLabel.add(docTopic);
 			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
@@ -245,7 +252,7 @@ public class Experiment {
 	}
 	
 	protected void simplelog(int theDay){
-		try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.userProfile.resolve("userLog.txt").toFile(),true))){
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.userProfilePath.resolve("userLog.txt").toFile(),true))){
 			writer.append("==Day"+theDay+"==");
 			writer.newLine();
 			Collection<TopicTermGraph> topics = user.getUserTopics();

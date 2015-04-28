@@ -33,7 +33,7 @@ public class TopicMappingTool {
 		
 		int doc_topic_num = _topic.getVertexCount(); // 某一主題的字詞數量
 		double similarityThreshold = 0; // 相似度門檻值
-		double maximumSimilarity = 0;
+		double maximumSimilarity = 0; //目前最大相似者
 		for(TopicTermGraph userTopic:userTopics){
 			int userTopicSize = userTopic.getVertexCount(); // 某一模型主題的字詞數量
 			double userTopicTfSum = 0; // 某一模型主題的總TF值

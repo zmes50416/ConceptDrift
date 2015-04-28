@@ -24,6 +24,7 @@ import edu.uci.ics.jung.graph.util.Pair;
  */
 @SuppressWarnings("serial")
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
+	public static int MAXCORESIZE = 10; //Default Core size
 	private boolean isLongTermInterest;
 	double averageTermTf;
 	protected int birthDate;
@@ -31,6 +32,7 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	int numberOfDocument;
 	public TopicTermGraph(int birthDay){
 		this.setLongTermInterest(false);
+		numberOfDocument = 1;
 	}
 	
 	/**
@@ -113,10 +115,9 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	}
 
 	public Collection<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
-		int maximumSize = 10;
-		PriorityQueue<TermNode> core = new PriorityQueue<>(maximumSize, new nodeComparator());
+		PriorityQueue<TermNode> core = new PriorityQueue<>(MAXCORESIZE, new nodeComparator());
 		for(TermNode term:this.getVertices()){
-			if(core.size()==maximumSize){
+			if(core.size()==MAXCORESIZE){
 				TermNode minTerm = core.poll();
 				if(this.getNeighborCount(minTerm)>=this.getNeighborCount(term)){
 					core.offer(minTerm);
@@ -137,6 +138,11 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 			return degree0-degree1;
 		}
 		
+	}
+	
+	@Override
+	public String toString(){
+		return Integer.toHexString(hashCode());
 	}
 	
 	
