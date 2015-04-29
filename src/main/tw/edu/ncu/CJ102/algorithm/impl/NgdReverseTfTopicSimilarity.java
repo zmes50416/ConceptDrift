@@ -1,5 +1,7 @@
 package tw.edu.ncu.CJ102.algorithm.impl;
 
+import java.util.Collection;
+
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 import tw.edu.ncu.CJ102.CoreProcess.*;
@@ -18,8 +20,10 @@ public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm {
 	public double computeSimilarity(TopicTermGraph theTopic,
 			TopicTermGraph userTopic) {
 		double sumScore = 0;
-		for (TermNode term : theTopic.getVertices()) {
-			for (TermNode keyTerm : userTopic.getCoreTerm()) {
+		Collection<TermNode> topicTerms = theTopic.getVertices();
+		Collection<TermNode> userTopicTerms = userTopic.getCoreTerm();
+		for (TermNode term : topicTerms) {
+			for (TermNode keyTerm : userTopicTerms) {
 					double a = SolrSearcher.getHits("\"" + keyTerm + "\"");
 					double b = SolrSearcher.getHits("\"" + term + "\"");
 					double mValue = SolrSearcher
@@ -32,7 +36,7 @@ public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm {
 				}
 			
 			}
-		double similarity = sumScore / theTopic.getVertexCount()*userTopic.getVertexCount();
+		double similarity = sumScore / (topicTerms.size()*userTopicTerms.size());
 		return similarity;
 	}
 
