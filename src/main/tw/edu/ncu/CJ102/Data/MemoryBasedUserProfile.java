@@ -17,6 +17,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private int longTermThreshold = 200; // Just for test
 
 	public MemoryBasedUserProfile() {
 		this.setRemove_rate(0.1);
@@ -39,12 +40,20 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	}
 
 	@Override
-	public double getDecayRate(TopicTermGraph topic,int updateDate) {
+	public double getDecayRate(TopicTermGraph topic,int today) {
+		if(topic.getUpdateDate()==today){
+			return 1;
+		}
 		double decayRate;
+		double timeFactor = Math.log10(today-topic.getUpdateDate());
 		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(Math.E, -Math.log10(updateDate-topic.getUpdateDate())*0.02);
+			decayRate = Math.pow(Math.E, -timeFactor*0.2);
 		}else{
-			decayRate = Math.pow(Math.E, -Math.log10(updateDate-topic.getUpdateDate())*this.getSizeOfShortTerm()/Math.log10(topic.numberOfDocument));
+			double strength = Math.log10(topic.numberOfDocument);
+			if(strength == 0){//when document only have 1, it will be 0
+				strength = 1;//bug problme ,may need to think a better function
+			}
+			decayRate = Math.pow(Math.E, -timeFactor*this.getSizeOfShortTerm()/strength);
 		}
 		return decayRate;
 	}
@@ -56,7 +65,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	}
 	
 	@Override
-	public void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap) {
+	public void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap,int today) {
 		if(topicMap.isEmpty()){//document should have something to add
 			throw new IllegalArgumentException("document topic should not be empty!");
 		}
@@ -69,18 +78,30 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			if(this.userTopics.contains(mappedTopic)){
 				mappedTopic.merge(topic);
 				mappedTopic.numberOfDocument++;
+				mappedTopic.setUpdateDate(today);
 			}else{
 				if(!this.userTopics.add(topic)){
 					throw new RuntimeException("Cant add topic");
 				}
 			}
 			documentTopics.add(mappedTopic);
+			double sumInterest = 0;
+			if(!mappedTopic.isLongTermInterest()){
+				for(TermNode term:mappedTopic.getVertices()){
+					sumInterest += term.termFreq;
+					if(sumInterest>=this.longTermThreshold){
+						mappedTopic.setLongTermInterest(true);
+						break;//reduce computing when long term is sured!
+					}
+				}
+			}
+			
 			for(TermNode term:topic.getVertices()){//Record tf of new Term & document
 				this.updateTermRemoveThreshold(term.termFreq);
 				documentTf += term.termFreq;
 			}
 			
-		}//end of CoOccurance Topics
+		}
 		
 		for(TopicTermGraph userTopic:topicMap.values()){//For topic coOccurance graph
 			for(TopicTermGraph anotherUserTopic:documentTopics){
@@ -90,7 +111,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			}
 			documentTopics.remove(userTopic);
 			
-		}
+		}//end of CoOccurance Topics
 		
 		this.updateTopicRemoveThreshold(documentTf);
 	}

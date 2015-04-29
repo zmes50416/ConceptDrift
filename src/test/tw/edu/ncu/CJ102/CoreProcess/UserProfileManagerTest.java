@@ -111,7 +111,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		TopicCoOccuranceGraph tcoGraph = new TopicCoOccuranceGraph();
 
 		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();
-		user.addDocument(notNull(Map.class));
+		user.addDocument(notNull(Map.class), 0);
 		expectLastCall();
 		replayAll();
 		

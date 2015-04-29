@@ -123,8 +123,7 @@ public class Experiment {
 					this.monitors.put(topicPair.getKey(), new PerformanceMonitor());
 				}
 			}
-			
-			user.addDocument(topicMap);
+			user.addDocument(topicMap,today);
 		}
 		
 		this.removeOutdatedMonitor();

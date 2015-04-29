@@ -50,8 +50,9 @@ public abstract class AbstractUserProfile implements Serializable{
 	/**
 	 * 將配對好的文件主題加入至使用者主題內,並且記錄使用者主題共同出現的次數
 	 * @param topicMap 文件主題(key)與使用者主題(value)的配對
+	 * @param today 閱讀的日期
 	 */
-	public abstract void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap);
+	public abstract void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap,int today);
 	/**
 	 * 取得主題移除門檻
 	 * @return	主題移除門檻

@@ -26,7 +26,15 @@ public class MemoryBasedUserProfileTest{
 	}
 
 	@Test
-	public void testDecay() {
+	public void testDecayFactor() {
+		TopicTermGraph aTopic = new TopicTermGraph(1);
+		TopicTermGraph anotherTopic = new TopicTermGraph(1);
+		anotherTopic.setLongTermInterest(true);
+		user.userTopics.add(aTopic);
+		user.userTopics.add(anotherTopic);
+		aTopic.numberOfDocument = 1;
+		System.out.println(user.getDecayRate(aTopic, 1));
+		System.out.println(user.getDecayRate(anotherTopic, 1));
 		fail("Not yet implemented");
 	}
 	
@@ -56,11 +64,11 @@ public class MemoryBasedUserProfileTest{
 		topicMap.put(documentTopic1, userTopic1);
 		topicMap.put(documentTopic2, userTopic2);
 		topicMap.put(documentTopic3, documentTopic3);//Doesn't map to any exist user topic
-		this.user.addDocument(topicMap);
+		this.user.addDocument(topicMap,1);
 		
 		assertEquals("user should have 3 user topic now",3,topics.size());
 		assertNotNull("Co Occurance Topic should have topic1 and 2",this.user.getTopicCOGraph().findEdge(userTopic1, userTopic2)); 
-		
+		//TODO test whether a topic will be longTerm or not
 	}
 
 }
