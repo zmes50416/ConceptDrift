@@ -2,6 +2,7 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.TermNode;
@@ -17,12 +18,14 @@ public class TopicMappingTool {
 
 	TopicMappingAlgorithm algorithm;
 	double relateness_threshold;
+	
+	
 	public TopicMappingTool(TopicMappingAlgorithm _algorithm,double threshold) {
 		this.algorithm = _algorithm;
 		this.relateness_threshold = threshold;
 	}
 	/**
-	 * 將一個topic與user內的所有Topic比較相似度，若大於門檻值則
+	 * 將一個topic與user內的所有Topic比較相似度，若大於門檻值則將相似度最高者放入配對，若小於則將自己放入配對(代表當作新的使用者興趣)
 	 * @param _topic
 	 * @param user
 	 * @return 相對映的主題
@@ -43,6 +46,7 @@ public class TopicMappingTool {
 			}
 			
 			similarityThreshold = (doc_topic_num * userTopicTfSum * relateness_threshold) / (doc_topic_num * userTopicSize);//文件的字詞總和可以分母分子化簡
+			
 			double similarity = this.algorithm.computeSimilarity(_topic, userTopic);
 			
 			if(similarity>similarityThreshold&&similarity>maximumSimilarity){
