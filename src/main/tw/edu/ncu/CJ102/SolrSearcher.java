@@ -22,8 +22,8 @@ import org.apache.solr.common.SolrDocumentList;
 
 public class SolrSearcher {
 	private static CommonsHttpSolrServer server=null; // Singleton Design pattern only access it by getServer() to ensure connection
-	public static HashMap<String,Double> hitmap = null;//TODO Find out what these two var does
-	public static boolean temp = false;
+	public static HashMap<String,Double> hitmap = null;// cache map; value = google distance
+	public static boolean temp = false;// Whether Cache is turn on or ont
 	private static Boolean initialize(){
 		
 		if(temp){
@@ -162,34 +162,20 @@ public class SolrSearcher {
 			e.printStackTrace();
 		}
 	}
-	public static double getHits(String key){
-		//TODO reimplement the method from UtilServer
+	/**
+	 * Return the number of document found by the key term
+	 * @param key
+	 * @return 
+	 */
+	public static double getHits(String key) {
+		// TODO reimplement the method from UtilServer
 		double hits;
-		
-		if(temp){
-			if(hitmap.containsKey(key)){
-				hits = hitmap.get(key);
-			}
-			else{
-				SolrQuery query = new SolrQuery();
-				query.setQuery(key);
-				QueryResponse rsp = execQuery(query);
-				SolrDocumentList docs = rsp.getResults();
-				hits = docs.getNumFound();
-				//System.err.println("Query 命中文件數量: "+hits);
-			
-				hitmap.put(key, hits);
-			}
-		}else{			
-			SolrQuery query = new SolrQuery();
-			query.setQuery(key);
-			//System.err.println("Query: "+q);
-			QueryResponse rsp = execQuery(query);
-			SolrDocumentList docs = rsp.getResults();
-			hits = docs.getNumFound();
+		SolrQuery query = new SolrQuery();
+		query.setQuery(key);
+		QueryResponse rsp = execQuery(query);
+		SolrDocumentList docs = rsp.getResults();
+		hits = docs.getNumFound();
 
-		}
-		
 		return hits;
 	}
 }
