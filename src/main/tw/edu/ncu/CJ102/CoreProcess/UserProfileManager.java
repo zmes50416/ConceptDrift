@@ -34,12 +34,13 @@ public class UserProfileManager {
 	 */
 	public void updateUserProfile(int theDay, AbstractUserProfile user) {
 		Collection<TopicTermGraph> userTopics = user.getUserTopics();
-
+		
 		if (userTopics.isEmpty()) {
 			System.out
 					.println("System have no topic to update. decay Process will end!");
 			return;
 		}
+		
 		Iterator<TopicTermGraph> i = userTopics.iterator();// filiter remove element,do not use java default for each
 		while (i.hasNext()) {// 遺忘因子流程
 			TopicTermGraph topic = i.next();
@@ -52,7 +53,7 @@ public class UserProfileManager {
 			}
 
 			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
-				System.out.println("System remove a topic:"+topic.toString()+"Because it's interest value only "+topicInterest);
+				System.out.println("System remove a topic:"+topic.toString()+" ,Because it's interest value only "+topicInterest);
 				i.remove();
 			}
 			

@@ -34,6 +34,7 @@ public class Experiment {
 	protected HashSet<String> traingLabel= new HashSet<>();
 	protected HashMap<TopicTermGraph,PerformanceMonitor> monitors= new HashMap<>();
 	protected PerformanceMonitor systemPerformance = new PerformanceMonitor();
+	public boolean debugMode;
 	public Experiment(String project) {		// 創造出實驗資料匣
 		try{
 			this.projectPath = Paths.get(project);
@@ -48,6 +49,7 @@ public class Experiment {
 		}catch (IOException e) {
 			throw new RuntimeException("IO have been Interrupted");
 		}
+		
 	}
 	
 	public Path getProjectPath() {
@@ -87,6 +89,18 @@ public class Experiment {
 		}else if(this.user == null){
 			throw new RuntimeException("Haven't set the user yet");
 		}
+		if(this.debugMode ==true){
+			try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.projectPath.resolve("setting.txt").toFile(),true))){
+				writer.write("主題相關門檻值:"+this.maper.relateness_threshold);
+				writer.newLine();
+				writer.write("實驗天數:"+this.experimentDays);
+				writer.newLine();
+				writer.write("去除比例:"+this.user.getRemove_rate());
+				writer.newLine();
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
 		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TESTINGPATH));
 		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TRAININGPATH));
 		this.newsPopulater.populateExperiment(experimentDays);
@@ -111,7 +125,6 @@ public class Experiment {
 		Path training = this.projectPath.resolve("training/day_"+today);
 		UserProfileManager userManager = new UserProfileManager(this.maper);
 		
-		userManager.updateUserProfile(today, user);
 		for(File doc:training.toFile().listFiles()){
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(today,doc);
 			String docTopic = this.newsPopulater.getTopics(doc);
@@ -125,7 +138,10 @@ public class Experiment {
 			}
 			user.addDocument(topicMap,today);
 		}
-		
+		if(debugMode == true){
+			this.simplelog(today);
+		}
+		userManager.updateUserProfile(today, user);
 		this.removeOutdatedMonitor();
 	}
 	
@@ -256,6 +272,8 @@ public class Experiment {
 			writer.newLine();
 			Collection<TopicTermGraph> topics = user.getUserTopics();
 			writer.append("Size of Topics:"+topics.size());
+			writer.newLine();
+			writer.append("Topic remove threshold:"+user.getTopicRemoveThreshold());
 			writer.newLine();
 			int i = 1;
 			for(TopicTermGraph topic:topics){
