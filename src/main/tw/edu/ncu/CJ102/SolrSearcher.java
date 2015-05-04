@@ -66,10 +66,10 @@ public class SolrSearcher {
 		}
 		server.setSoTimeout(3000); // socket read timeout
 		server.setConnectionTimeout(3000);
-		server.setDefaultMaxConnectionsPerHost(100);
-		server.setMaxTotalConnections(100);
+		server.setDefaultMaxConnectionsPerHost(1000);
+		server.setMaxTotalConnections(1000);
 		server.setFollowRedirects(false); // defaults to false
-		server.setAllowCompression(false);
+		server.setAllowCompression(true);
 		server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
 		return true;
 	}

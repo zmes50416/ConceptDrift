@@ -1,17 +1,12 @@
 package tw.edu.ncu.CJ102.algorithm.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -19,8 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,10 +40,17 @@ public class testParallexWork {
 	
 	public TermNode termA, termB;
 	
+	public double expecetedNumber;
 	@Before
 	public void setup() throws Exception{
 		termA = new TermNode("Google");
 		termB = new TermNode("Yahoo");
+		double a = SolrSearcher.getHits("\"Google\"");
+		double b = SolrSearcher.getHits("\"Yahoo\"");
+		double mValue = SolrSearcher.getHits("+\"google\" +\"yahoo\"");
+		double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
+		expecetedNumber = (1 - ngdDistance);
+		
 	}
 	@Test
 	public void testMultiThread(){
@@ -72,7 +72,9 @@ public class testParallexWork {
 				if(!task.isDone()){
 					errorCount++;
 				}
-				sum += task.get();
+				double ngdScore = task.get();
+				assertEquals("Should return the same number",this.expecetedNumber,ngdScore,0);
+				sum += ngdScore;
 				count++;
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
@@ -80,18 +82,9 @@ public class testParallexWork {
 				break;
 			}
 		}
-//		for(Future<Double> task:list){
-//			if(!task.isDone()){
-//				errorCount++;
-//			}
-//			try {
-//				task.get();
-//			} catch (InterruptedException | ExecutionException e) {
-//				e.printStackTrace();
-//			}
-//		}
 		System.out.println(sum);
-		System.out.println("ErrorCount:"+errorCount);
+		assertEquals("Shoud not have any error",0,errorCount);
+
 	}
 	
 	@Test
@@ -107,12 +100,15 @@ public class testParallexWork {
 		double sum = 0;
 		for(Future<Double> task:list){
 			try {
-				sum += task.get();
+				double ngdScore = task.get();
+				assertEquals("Should return the same number",this.expecetedNumber,ngdScore,0);
+				sum += ngdScore;
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
 			}
 		}
 		System.out.println(sum);
+		
 	}
 	@Test
 	public void testMultiThreadWithCachedPool(){
@@ -126,29 +122,18 @@ public class testParallexWork {
 				list.add(f);
 		}
 		int errorCount = 0;
-//		int count = 0;
-//		while (count < list.size()) {
-//			try {
-//				Future<Double> task = cs.take();
-//				if(!task.isDone()){
-//					errorCount++;
-//				}
-//				task.get();
-//				count++;
-//			} catch (InterruptedException | ExecutionException e) {
-//				e.printStackTrace();
-//				fail("System are not up, please check!");
-//				break;
-//			}
-//		}
 		double sum = 0;
 		for(Future<Double> task:list){
 			try {
-				sum += task.get();
+				double ngdScore = task.get();
+				assertEquals("Should return the same number",this.expecetedNumber,ngdScore,0);
+				sum += ngdScore;
 			} catch (InterruptedException | ExecutionException e) {
+				errorCount++;
 				e.printStackTrace();
 			}
 		}
+		assertEquals("Shoud not have any error",0,errorCount);
 		System.out.println(sum);
 	}
 	
@@ -159,9 +144,8 @@ public class testParallexWork {
 			double b = SolrSearcher.getHits("\"Yahoo\"");
 			double mValue = SolrSearcher.getHits("+\"google\" +\"yahoo\"");
 			double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
-			double termScore = (1 - ngdDistance);
-//			assertTrue(termScore)
-//			System.out.println(termScore);
+			double ngdScore = (1 - ngdDistance);
+			assertEquals("Should return the same number",this.expecetedNumber,ngdScore,0);
 		}
 	}
 
