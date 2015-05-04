@@ -52,7 +52,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		if(topic.isLongTermInterest()){
 			decayRate = Math.pow(Math.E, -timeFactor*0.2);
 		}else{
-			double strength = Math.log10(topic.numberOfDocument);
+			double strength = Math.log10(topic.numberOfDocument)+1;
 			if(strength == 0){//when document only have 1, it will be 0
 				strength = 1;//bug problme ,may need to think a better function
 			}
