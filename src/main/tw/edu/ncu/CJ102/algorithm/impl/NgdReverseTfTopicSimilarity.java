@@ -16,6 +16,7 @@ import tw.edu.ncu.CJ102.CoreProcess.*;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
+import tw.edu.ncu.im.Util.IndexSearcher;
 
 public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm{
 
@@ -59,10 +60,10 @@ class NgdReverseTfComputingTask implements Callable<Double> {
 
 	@Override
 	public Double call() throws Exception {
-		double a = SolrSearcher.getHits("\"" + termA + "\"");
-		double b = SolrSearcher.getHits("\"" + termB + "\"");
-		double mValue = SolrSearcher.getHits("+\"" + termA + "\" +\""
-				+ termB + "\"");
+		IndexSearcher searcher = new IndexSearcher();
+		double a = searcher.searchTermSize(termA.toString());
+		double b = searcher.searchTermSize(termB.toString());
+		double mValue = searcher.searchMultipleTerm(new String[]{termA.toString(),termB.toString()});
 		double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
 		double termScore = (1 - ngdDistance)
 				* ((this.termA.termFreq + this.termB.termFreq) / 2);

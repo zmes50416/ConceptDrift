@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import org.junit.runners.Parameterized.Parameters;
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.im.Util.IndexSearcher;
 @RunWith(Parameterized.class)
 public class testParallexWork {
 	@Parameters
@@ -43,14 +45,34 @@ public class testParallexWork {
 	public double expecetedNumber;
 	@Before
 	public void setup() throws Exception{
+		IndexSearcher searcher = new IndexSearcher();
+		
 		termA = new TermNode("Google");
 		termB = new TermNode("Yahoo");
-		double a = SolrSearcher.getHits("\"Google\"");
-		double b = SolrSearcher.getHits("\"Yahoo\"");
-		double mValue = SolrSearcher.getHits("+\"google\" +\"yahoo\"");
+		double a = searcher.searchTermSize("Google");
+		double b = searcher.searchTermSize("Yahoo");
+		double mValue = searcher.searchMultipleTerm(new String[]{"Google","Yahoo"});
 		double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
 		expecetedNumber = (1 - ngdDistance);
 		
+	}
+	
+	@Test
+	public void testEmbeded(){
+		IndexSearcher searcher = new IndexSearcher();
+		for(int i= 0;i<=round;i++){
+		try {
+			String terms[] = {"Google","Yahoo"};
+			double a = searcher.searchTermSize("Google");
+			double b = searcher.searchTermSize("Yahoo");
+			double m = searcher.searchMultipleTerm(terms);
+			double ngdDistance = NGD_calculate.NGD_cal(a, b, m);
+			assertEquals(expecetedNumber,1-ngdDistance,0);
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 	}
 	@Test
 	public void testMultiThread(){
