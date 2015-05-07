@@ -27,6 +27,7 @@ public class NewThresholdExperiment {
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
+		System.out.println("3.相似度容差實驗");
 		char i;
 		try{
 				i = (char)System.in.read();
@@ -37,6 +38,7 @@ public class NewThresholdExperiment {
 				}else if(i == '2'){
 					expController.anotherExperiment();
 				}else if(i == '3'){
+					expController.timeExperiment();
 				}
 				System.out.println("Experimetn have been done!\n");
 				System.exit(0);
@@ -115,6 +117,22 @@ public class NewThresholdExperiment {
 		execute();
 	}
 	
+	public void timeExperiment(){
+		this.exp.experimentDays = 15;
+		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString()){
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(4);
+				this.setTestSize(4);	
+				
+			}
+			
+		};
+		exp.newsPopulater = populater;
+		populater.addTrainingTopics("acq");
+		populater.addTestingTopics("earn");
+		execute();
+	}
 	private void execute(){
 		try {
 			this.exp.initialize();
@@ -140,6 +158,8 @@ public class NewThresholdExperiment {
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(exp.getProjectPath().resolve("setting.txt").toFile(),true))){
 			writer.append("Total time:"+sumTime);
 			writer.newLine();
+			writer.append("Performance:"+exp.systemPerformance);
+			writer.append(exp.systemPerformance.get_all_result().toString());
 		}catch(IOException e){
 			e.printStackTrace();
 		}

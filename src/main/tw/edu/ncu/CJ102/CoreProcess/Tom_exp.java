@@ -66,6 +66,7 @@ public class Tom_exp {
 
 	//Start Experiment from here
 	public void start() {
+		long systemTime = System.currentTimeMillis();
 		double train_sum_time_read_doc = 0, test_sum_time_read_doc = 0; // 讀取文件的總時間
 		double train_sum_time_read_profile = 0, test_sum_time_read_profile = 0; // 讀取模型的總時間
 		double train_sum_time_topic_mapping = 0, test_sum_time_topic_mapping = 0; // 主題映射的總時間
@@ -223,7 +224,8 @@ public class Tom_exp {
 				e.printStackTrace();
 			}
 		}//end of Finally
-		
+		long totalTime = systemTime-System.currentTimeMillis();
+		System.out.println("Total Time:"+totalTime);
 	}
 	
 	
@@ -735,5 +737,27 @@ public class Tom_exp {
 			super(writePath, isAppending);
 		}
 		
+	}
+	public static void main(String[] args) {
+		Tom_exp exp = new Tom_exp("TestExp/OldExp");
+		exp.setmUserProfile(new UserProfile(true));
+		exp.setExperimentDays(10);
+		RouterNewsPopulator mPopulater = new RouterNewsPopulator("TestExp/OldExp"){
+
+			@Override
+			public void setGenarationRule() {
+				this.setTestSize(5);
+				this.setTrainSize(5);
+			}
+			
+		};
+		mPopulater.addTrainingTopics("acq");
+		for(String testTopic:RouterNewsPopulator.test){
+			mPopulater.addTestingTopics(testTopic);
+		}
+		
+		exp.setExperementSource(mPopulater);
+		
+		exp.start();
 	}
 }

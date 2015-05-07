@@ -208,16 +208,31 @@ public class Experiment {
 		if(this.traingLabel.contains(documentTopicLabel)){
 			realAnswer = true;
 		}
-		boolean systemAnswer = true;
+		boolean systemAnswer = false;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
-			if(topicPair.getKey()==topicPair.getValue()){//the same topic mean no likliy topic in user profile
-				systemAnswer = false;
+			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile
+				systemAnswer = true;
 				break;
 			}
 		}
 		Collection<TopicTermGraph> matchedTopics = topicMap.values();
 		if (realAnswer == true) {// two possible Type: TP,FN
-			for (TopicTermGraph topic : user.getUserTopics()) {
+			if(systemAnswer==true){
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
+			}else{
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
+			}
+		} else { // two possible type: FP,TN
+			if(systemAnswer==true){
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
+			}else{
+				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
+			}
+		}//end of RealAnswer if
+		
+		
+		for (TopicTermGraph topic : user.getUserTopics()) {
+			if (realAnswer == true) {// two possible Type: TP,FN
 				if (matchedTopics.contains(topic)) {// topic is matched -- TP
 					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
@@ -225,33 +240,17 @@ public class Experiment {
 					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
 				}
-			}
-			if(systemAnswer==true){
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
-			}else{
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
-			}
-
-		} else { // two possible type: FP,TN
-			for (TopicTermGraph topic : user.getUserTopics()) {
-				if (matchedTopics.contains(topic)) {// topic is matched but not
-													// relative -- FP
+			} else { // two possible type: FP,TN
+				if (matchedTopics.contains(topic)) {// topic is matched but not relative -- FP
 					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
 
-				} else { // topic is not matched, and it is not relative too --
-							// TN
+				} else { // topic is not matched, and it is not relative too -- TN
 					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
-
 				}
-			}
-			if(systemAnswer==true){
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
-			}else{
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
-			}
-		}//end of RealAnswer if
+			}// end of RealAnswer if
+		}
 		
 	}
 	

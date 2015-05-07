@@ -8,6 +8,7 @@ import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 
 public class PerformanceMonitor {
 	private double TP, TN, FP, FN;
+	
 	public PerformanceMonitor(){
 		TP = 0;
 		TN = 0;
@@ -48,15 +49,14 @@ public class PerformanceMonitor {
 	public void set_EfficacyMeasure(PerformanceType type) {
 		if (type == PerformanceType.TRUEPOSTIVE) {
 			TP++;
-		}
-		if (type == PerformanceType.TRUENEGATIVE) {
+		}else if (type == PerformanceType.TRUENEGATIVE) {
 			TN++;
-		}
-		if (type == PerformanceType.FALSEPOSTIVE) {
+		}else if (type == PerformanceType.FALSEPOSTIVE) {
 			FP++;
-		}
-		if (type == PerformanceType.FALSENEGATIVE) {
+		}else if (type == PerformanceType.FALSENEGATIVE) {
 			FN++;
+		}else{
+			throw new IllegalArgumentException("The type:"+type+" is not in any correct PerformanceType");
 		}
 	}
 
