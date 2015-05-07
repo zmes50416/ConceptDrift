@@ -5,12 +5,18 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.core.CoreContainer;
+import org.xml.sax.SAXException;
 
 /**
  * 
@@ -21,7 +27,7 @@ import org.apache.solr.common.SolrDocumentList;
  */
 
 public class SolrSearcher {
-	private static CommonsHttpSolrServer server=null; // Singleton Design pattern only access it by getServer() to ensure connection
+	private static HttpSolrServer server=null; // Singleton Design pattern only access it by getServer() to ensure connection
 	public static HashMap<String,Double> hitmap = null;// cache map; value = google distance
 	public static boolean temp = false;// Whether Cache is turn on or ont
 	private static Boolean initialize(){
@@ -58,23 +64,19 @@ public class SolrSearcher {
 			}
 		}
 		String url = SettingManager.getSetting(SettingManager.ServerURL);
-		try {
-			server = new CommonsHttpSolrServer(url); // last two parameter will determined by Computer Power. Higher mean more speedy Index
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		server.setSoTimeout(3000); // socket read timeout
-		server.setConnectionTimeout(3000);
-		server.setDefaultMaxConnectionsPerHost(100);
-		server.setMaxTotalConnections(100);
+		server = new HttpSolrServer(url); // last two parameter will determined by Computer Power. Higher mean more speedy Index
+		server.setSoTimeout(5000); // socket read timeout
+		server.setConnectionTimeout(5000);
+		server.setDefaultMaxConnectionsPerHost(1000);
+		server.setMaxTotalConnections(1000);
 		server.setFollowRedirects(false); // defaults to false
 		server.setAllowCompression(false);
 		server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
+		
 		return true;
 	}
 
-	public static CommonsHttpSolrServer getServer(){
+	public static SolrServer getServer(){
 		if(server==null){
 				initialize();
 		}
