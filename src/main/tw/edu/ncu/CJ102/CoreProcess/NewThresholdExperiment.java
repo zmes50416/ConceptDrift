@@ -14,6 +14,7 @@ import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
 
 public class NewThresholdExperiment {
 	Path projectDir;
+	String topicPath = "Tom_reuters_0.4/single";
 	Experiment exp ;
 	AbstractUserProfile user;
 	private double topicSimliarityThreshold;
@@ -66,7 +67,7 @@ public class NewThresholdExperiment {
 		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
 		this.exp.experimentDays = experimentDays;
 		user.setRemove_rate(removeRate);
-		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString()){
+		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString(),topicPath){
 			@Override
 			public void setGenarationRule() {
 				this.setTrainSize(5);
@@ -91,7 +92,7 @@ public class NewThresholdExperiment {
 		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
 		this.exp.setExperimentDays(experimentDays);
 		user.setRemove_rate(removeRate);
-		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString()){
+		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString(),topicPath){
 			@Override
 			public void setGenarationRule() {
 				this.setTrainSize(3);
@@ -119,7 +120,7 @@ public class NewThresholdExperiment {
 	
 	public void timeExperiment(){
 		this.exp.experimentDays = 15;
-		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString()){
+		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString(),topicPath){
 			@Override
 			public void setGenarationRule() {
 				this.setTrainSize(4);

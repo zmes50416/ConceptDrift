@@ -25,6 +25,8 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	Set<String> trainTopics = new HashSet<String>();
 	Set<String> testTopics = new HashSet<String>() ;
 	TrainingTools trainerTom = new TrainingTools();
+	public String topicPath;
+	public static final String DEFAULT_TOPIC_PATH = "Tom_reuters_0.4/single";
 	private int trainSize,testSize;
 	static final String test[] = { "acq", "earn", "crude", "coffee", "sugar",
 			"trade", "cocoa" };
@@ -32,8 +34,21 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	
 	int theDay;
 	public RouterNewsPopulator(String dir){
+		this(dir,DEFAULT_TOPIC_PATH);
+	}
+	/**
+	 * 
+	 * @param dir project itself
+	 * @param topicPath source of files,Should be relative to eclipse's project path
+	 */
+	public RouterNewsPopulator(String dir,String topicPath){
 		this.projectDir = Paths.get(dir);
-		File topicDir= new File("Tom_reuters_0.4/single");
+		this.topicPath = topicPath;
+		init();
+		this.theDay =1;
+	}
+	protected void init(){
+		File topicDir= new File(topicPath);
 		if(!topicDir.isDirectory()||topicDir.list().length==0){
 			throw new IllegalArgumentException("Can't Find the Topics Dir");//Nothing to add will break everythings
 		}
@@ -41,7 +56,6 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 		for(String topic:topicDir.list()){
 			this.topics.add(topic);
 		}
-		this.theDay =1;
 	}
 
 	public boolean addTrainingTopics(String topic){
@@ -82,12 +96,12 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 			
 			for (String topic : this.trainTopics) {
 				trainerTom.point_topic_doc_generateSet(
-						"Tom_reuters_0.4/single", traingPath.toString(), topic, trainSize, theDay);
+						topicPath, traingPath.toString(), topic, trainSize, theDay);
 			}
 
 			for (String topic : this.testTopics) {
 				trainerTom.point_topic_doc_generateSet(
-						"Tom_reuters_0.4/single", testingPath.toString(), topic, testSize, days
+						topicPath, testingPath.toString(), topic, testSize, days
 								+ theDay);
 			}
 
