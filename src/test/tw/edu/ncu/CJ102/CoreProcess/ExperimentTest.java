@@ -20,6 +20,7 @@ import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
+import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
 
 public class ExperimentTest{
 
@@ -82,7 +83,16 @@ public class ExperimentTest{
 		Files.delete(simpleTxt.toPath());
 		
 	}
-
+	@Test
+	public void testReadFromDTG(){
+		this.exp.betweenessThreshold = 0.5;
+		File testFile = new File("usedData/acq/acq_0000005.txt");
+		EmbeddedIndexSearcher.SolrHomePath= "D:/Documents/NGD/webpart/solr";
+		EmbeddedIndexSearcher.solrCoreName= "collection1";
+		List<TopicTermGraph> results = exp.readFromDTG(1, testFile);
+		System.out.println(results.size());
+		fail("Not yet finished");
+	}
 	@Test
 	public void testTrain(){
 		//TODO implement test

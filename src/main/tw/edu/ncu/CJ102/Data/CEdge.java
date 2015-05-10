@@ -12,7 +12,9 @@ public class CEdge<T> {//Putting generic T type in decarlaction may not be a goo
 	String id;
 	double coScore;
 	Pair<T> terms;
-
+	public CEdge(){
+		
+	}
 	public CEdge(Pair<T> _terms) {
 		this(_terms, 1.0);
 	}

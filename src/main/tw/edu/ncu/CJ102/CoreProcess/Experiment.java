@@ -19,10 +19,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.Transformer;
+
+import edu.uci.ics.jung.graph.Graph;
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
+import tw.edu.ncu.CJ102.Data.CEdge;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+import tw.edu.ncu.im.Preprocess.PreprocessComponent;
+import tw.edu.ncu.im.Preprocess.RouterNewsPreprocessor;
+import tw.edu.ncu.im.Preprocess.Decorator.*;
+import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
+import tw.edu.ncu.im.Util.WeightedBetweennessCluster;
 
 public class Experiment {
 	private Path projectPath,userProfilePath;
@@ -35,6 +46,7 @@ public class Experiment {
 	protected HashMap<TopicTermGraph,PerformanceMonitor> monitors= new HashMap<>();
 	protected PerformanceMonitor systemPerformance = new PerformanceMonitor();
 	public boolean debugMode;
+	double betweenessThreshold = 0.5;
 	public Experiment(String project) {		// 創造出實驗資料匣
 		try{
 			this.projectPath = Paths.get(project);
@@ -196,6 +208,73 @@ public class Experiment {
 			e.printStackTrace();
 			return null;
 		}
+		
+	}
+	public List<TopicTermGraph> readFromDTG(int theDay,File doc){
+		Transformer<CEdge<Double>, Double> edgeTransformer = new Transformer<CEdge<Double>,Double>(){
+
+			@Override
+			public Double transform(CEdge<Double> input) {
+				double weight = 1-input.getCoScore();
+				return weight;
+			}
+			
+		};
+		Transformer<TermNode, String> vertexTransformer = new Transformer<TermNode,String>(){
+
+			@Override
+			public String transform(TermNode input) {
+				return input.toString();
+			}
+			
+		};
+		
+		RouterNewsPreprocessor<TermNode,CEdge<Double>> c = new RouterNewsPreprocessor<TermNode,CEdge<Double>>(new Factory<TermNode>(){
+
+			@Override
+			public TermNode create() {
+				return new TermNode();
+			}
+			
+		},new Factory<CEdge<Double>>(){
+
+			@Override
+			public CEdge<Double> create() {
+				return new CEdge<Double>();
+			}
+			
+		});
+		c.execute(doc);
+
+		PartOfSpeechFilter<TermNode,CEdge<Double>> posComp = new PartOfSpeechFilter<TermNode,CEdge<Double>>(c, c.getVertexContent());
+		TermToLowerCaseDecorator<TermNode,CEdge<Double>> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge<Double>>(posComp, posComp.getVertexTerms());
+		FilteredTermLengthDecorator<TermNode,CEdge<Double>> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge<Double>>(lowerComp, posComp.getVertexTerms(), 3);
+		
+		StemmingDecorator<TermNode,CEdge<Double>> stemmedC = new StemmingDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexTerms());
+		
+		TermFreqDecorator<TermNode,CEdge<Double>> tfComp = new TermFreqDecorator<TermNode,CEdge<Double>>(stemmedC, posComp.getVertexTerms());
+		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(tfComp,posComp.getVertexTerms(),new EmbeddedIndexSearcher());
+
+		Graph<TermNode,CEdge<Double>> docGraph = ngdComp.execute(doc);
+		Map<TermNode,Double> tfMap = tfComp.getTermFreqMap();
+		Map<CEdge<Double>, Double> ngdMap = ngdComp.getEdgeDistance();
+
+		System.out.println("Size of vertex:"+docGraph.getVertexCount());
+		System.out.println("Size of Edges:"+docGraph.getEdgeCount());
+		
+		int numOfEdgeToRemove = (int) (docGraph.getEdgeCount()*betweenessThreshold);
+		WeightedBetweennessCluster<TermNode,CEdge<Double>> bc = new WeightedBetweennessCluster<>(numOfEdgeToRemove, edgeTransformer);
+		Set<Set<TermNode>> clusters = bc.transform(docGraph);
+		List<TopicTermGraph> topics = new ArrayList<TopicTermGraph>();
+		
+		for(Set<TermNode> cluster:clusters){
+			TopicTermGraph topic = new TopicTermGraph(theDay);
+			for(TermNode term:cluster){
+				topic.addVertex(term);
+			}
+			topics.add(topic);
+		}
+		return topics;
 		
 	}
 	/**

@@ -3,6 +3,9 @@ package tw.edu.ncu.CJ102.Data;
 public class TermNode{
 	public double termFreq;
 	String term;
+	public TermNode(){
+		
+	}
 	public TermNode(String _term){
 		this.term = _term;
 		this.termFreq = 1;
@@ -16,20 +19,20 @@ public class TermNode{
 		return term;
 		
 	}
-	@Override
-	public boolean equals(Object o){
-		TermNode anotherNode = (TermNode)o;
-		if(this.term.equals(anotherNode.term)){
-			return true;
-		}
-		return false;
-		
-	}
+//	@Override
+//	public boolean equals(Object o){
+//		TermNode anotherNode = (TermNode)o;
+//		if(this.term.equals(anotherNode.term)){
+//			return true;
+//		}
+//		return false;
+//		
+//	}
 	
-	@Override
-	public int hashCode(){
-		return this.term.hashCode();
-	}
+//	@Override
+//	public int hashCode(){
+//		return this.term.hashCode();
+//	}
 	
 	
 }
