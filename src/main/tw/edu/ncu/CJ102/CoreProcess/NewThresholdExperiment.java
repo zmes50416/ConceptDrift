@@ -1,6 +1,7 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -109,17 +110,14 @@ public class NewThresholdExperiment {
 			populater.addTestingTopics(topic);
 		}
 		
-		try {
-			this.exp.initialize();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 		execute();
 	}
 	
 	public void timeExperiment(){
-		this.exp.experimentDays = 15;
+		topicSimliarityThreshold = 0.4;
+		removeRate = 0.1;
+
+		this.exp.experimentDays = 10;
 		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString(),topicPath){
 			@Override
 			public void setGenarationRule() {
@@ -129,6 +127,11 @@ public class NewThresholdExperiment {
 			}
 			
 		};
+		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
+		user.setRemove_rate(removeRate);
+
+		File copyData = new File("DEMODATA");
+		populater = new ManualRouterNewsPopulater(this.projectDir.toString(), copyData.toPath());
 		exp.newsPopulater = populater;
 		populater.addTrainingTopics("acq");
 		populater.addTestingTopics("earn");

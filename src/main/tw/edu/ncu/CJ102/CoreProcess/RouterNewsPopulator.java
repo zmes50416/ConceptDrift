@@ -79,7 +79,6 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 			throw new RuntimeException("topic is empty, nothing will be generate!");
 		}
 		for (int i = 1; i <= days; i++) {
-			this.setGenarationRule();
 			// 創造出實驗訓練集,測試集第i天資料匣
 			Path traingPath = projectDir.resolve(Paths.get("training" ,"day_"
 					+ theDay)) ;
@@ -94,6 +93,8 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 				e.printStackTrace();
 			}
 			
+			this.setGenarationRule();
+
 			for (String topic : this.trainTopics) {
 				trainerTom.point_topic_doc_generateSet(
 						topicPath, traingPath.toString(), topic, trainSize, theDay);
