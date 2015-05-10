@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
 
+import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.graph.Graph;
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.CEdge;
@@ -46,7 +47,7 @@ public class Experiment {
 	protected HashMap<TopicTermGraph,PerformanceMonitor> monitors= new HashMap<>();
 	protected PerformanceMonitor systemPerformance = new PerformanceMonitor();
 	public boolean debugMode;
-	double betweenessThreshold = 0.5;
+	double betweenessThreshold = 0.35;
 	public Experiment(String project) {		// 創造出實驗資料匣
 		try{
 			this.projectPath = Paths.get(project);
@@ -215,16 +216,8 @@ public class Experiment {
 
 			@Override
 			public Double transform(CEdge<Double> input) {
-				double weight = 1-input.getCoScore();
+				double weight = input.getCoScore();
 				return weight;
-			}
-			
-		};
-		Transformer<TermNode, String> vertexTransformer = new Transformer<TermNode,String>(){
-
-			@Override
-			public String transform(TermNode input) {
-				return input.toString();
 			}
 			
 		};
@@ -251,19 +244,37 @@ public class Experiment {
 		FilteredTermLengthDecorator<TermNode,CEdge<Double>> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge<Double>>(lowerComp, posComp.getVertexTerms(), 3);
 		
 		StemmingDecorator<TermNode,CEdge<Double>> stemmedC = new StemmingDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexTerms());
-		
 		TermFreqDecorator<TermNode,CEdge<Double>> tfComp = new TermFreqDecorator<TermNode,CEdge<Double>>(stemmedC, posComp.getVertexTerms());
-		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(tfComp,posComp.getVertexTerms(),new EmbeddedIndexSearcher());
-
-		Graph<TermNode,CEdge<Double>> docGraph = ngdComp.execute(doc);
-		Map<TermNode,Double> tfMap = tfComp.getTermFreqMap();
-		Map<CEdge<Double>, Double> ngdMap = ngdComp.getEdgeDistance();
-
+		SearchResultFilter<TermNode,CEdge<Double>> filitedTermComp = new SearchResultFilter<TermNode,CEdge<Double>>(tfComp,  posComp.getVertexTerms(), 10, 1000, new EmbeddedIndexSearcher());
+		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(filitedTermComp,posComp.getVertexTerms(),new EmbeddedIndexSearcher());
+		NgdEdgeFilter<TermNode,CEdge<Double>> ngdflitedComp = new NgdEdgeFilter<TermNode,CEdge<Double>>(ngdComp, ngdComp.getEdgeDistance(), 0.5);
+		Graph<TermNode,CEdge<Double>> docGraph = ngdflitedComp.execute(doc);
+		
+		HashSet<TermNode> termsToRemove = new HashSet<>();
+		for(TermNode term:docGraph.getVertices()){
+			if(docGraph.getNeighborCount(term)==0){
+				termsToRemove.add(term);
+			}else{
+				term.termFreq = tfComp.getTermFreqMap().get(term);
+				term.setTerm(posComp.getVertexTerms().get(term));
+			}
+		}
+		for(CEdge<Double> edge:docGraph.getEdges()){
+			edge.setCoScore(ngdComp.getEdgeDistance().get(edge));
+		}
+		for(TermNode term:termsToRemove){
+			docGraph.removeVertex(term);
+			tfComp.getTermFreqMap().remove(term);
+			posComp.getVertexTerms().remove(term);
+		}
+		
 		System.out.println("Size of vertex:"+docGraph.getVertexCount());
 		System.out.println("Size of Edges:"+docGraph.getEdgeCount());
 		
 		int numOfEdgeToRemove = (int) (docGraph.getEdgeCount()*betweenessThreshold);
-		WeightedBetweennessCluster<TermNode,CEdge<Double>> bc = new WeightedBetweennessCluster<>(numOfEdgeToRemove, edgeTransformer);
+		EdgeBetweennessClusterer<TermNode,CEdge<Double>> bc = new EdgeBetweennessClusterer<>(numOfEdgeToRemove);
+//		EdgeBetweennessClusterer<TermNode,CEdge<Double>> bc = new WeightedBetweennessCluster<>(numOfEdgeToRemove,edgeTransformer);
+
 		Set<Set<TermNode>> clusters = bc.transform(docGraph);
 		List<TopicTermGraph> topics = new ArrayList<TopicTermGraph>();
 		

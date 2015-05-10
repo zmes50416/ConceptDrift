@@ -19,6 +19,31 @@ public class TermNode{
 		return term;
 		
 	}
+	/**
+	 * @return the term
+	 */
+	public String getTerm() {
+		return term;
+	}
+	/**
+	 * @param term the term to set
+	 */
+	public void setTerm(String term) {
+		this.term = term;
+	}
+	/**
+	 * @return the termFreq
+	 */
+	public double getTermFreq() {
+		return termFreq;
+	}
+	/**
+	 * @param termFreq the termFreq to set
+	 */
+	public void setTermFreq(double termFreq) {
+		this.termFreq = termFreq;
+	}
+	
 //	@Override
 //	public boolean equals(Object o){
 //		TermNode anotherNode = (TermNode)o;
