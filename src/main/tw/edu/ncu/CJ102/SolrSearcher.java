@@ -64,13 +64,14 @@ public class SolrSearcher {
 			}
 		}
 		String url = SettingManager.getSetting(SettingManager.ServerURL);
+
 		server = new HttpSolrServer(url); // last two parameter will determined by Computer Power. Higher mean more speedy Index
 		server.setSoTimeout(5000); // socket read timeout
 		server.setConnectionTimeout(5000);
 		server.setDefaultMaxConnectionsPerHost(1000);
 		server.setMaxTotalConnections(1000);
 		server.setFollowRedirects(false); // defaults to false
-		server.setAllowCompression(false);
+		server.setAllowCompression(true);
 		server.setMaxRetries(1); // defaults to 0. > 1 not recommended.
 		
 		return true;
