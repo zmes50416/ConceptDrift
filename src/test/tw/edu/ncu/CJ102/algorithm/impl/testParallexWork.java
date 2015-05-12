@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -23,9 +24,10 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import tw.edu.ncu.CJ102.NGD_calculate;
-import tw.edu.ncu.CJ102.SolrSearcher;
 import tw.edu.ncu.CJ102.Data.TermNode;
-import tw.edu.ncu.im.Util.IndexSearcher;
+import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
+import tw.edu.ncu.im.Util.IndexSearchable;
+
 @RunWith(Parameterized.class)
 public class testParallexWork {
 	@Parameters
@@ -40,12 +42,13 @@ public class testParallexWork {
 	@Parameter(value =1)
 	public int round;
 	
+	public IndexSearchable searcher;
 	public TermNode termA, termB;
 	
 	public double expecetedNumber;
 	@Before
 	public void setup() throws Exception{
-		IndexSearcher searcher = new IndexSearcher();
+		searcher = new EmbeddedIndexSearcher();
 		
 		termA = new TermNode("Google");
 		termB = new TermNode("Yahoo");
@@ -59,7 +62,6 @@ public class testParallexWork {
 	
 	@Test
 	public void testEmbeded(){
-		IndexSearcher searcher = new IndexSearcher();
 		for(int i= 0;i<=round;i++){
 		try {
 			String terms[] = {"Google","Yahoo"};
@@ -71,7 +73,7 @@ public class testParallexWork {
 		} catch (SolrServerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+			}
 		}
 	}
 	@Test
@@ -82,7 +84,7 @@ public class testParallexWork {
 		for(int i=0;i<=round;i++){
 				termA.termFreq = 1;
 				termB.termFreq = 1;
-				Future<Double> f = cs.submit(new NgdReverseTfComputingTask(termA,termB));
+				Future<Double> f = cs.submit(new NgdTask(termA,termB));
 				list.add(f);
 		}
 		int errorCount = 0;
@@ -116,7 +118,7 @@ public class testParallexWork {
 		for(int i=0;i<=round;i++){
 				termA.termFreq = 1;
 				termB.termFreq = 1;
-				Future<Double> f = executor.submit(new NgdReverseTfComputingTask(termA,termB));
+				Future<Double> f = executor.submit(new NgdTask(termA,termB));
 				list.add(f);
 		}
 		double sum = 0;
@@ -140,7 +142,7 @@ public class testParallexWork {
 		for(int i=0;i<=round;i++){
 				termA.termFreq = 1;
 				termB.termFreq = 1;
-				Future<Double> f = cs.submit(new NgdReverseTfComputingTask(termA,termB));
+				Future<Double> f = cs.submit(new NgdTask(termA,termB));
 				list.add(f);
 		}
 		int errorCount = 0;
@@ -161,14 +163,39 @@ public class testParallexWork {
 	
 	@Test
 	public void testOneThread(){
+		try{
 		for(int i=0;i<=round;i++){
-			double a = SolrSearcher.getHits("\"Google\"");
-			double b = SolrSearcher.getHits("\"Yahoo\"");
-			double mValue = SolrSearcher.getHits("+\"google\" +\"yahoo\"");
+			double a = searcher.searchTermSize("Google");
+			double b = searcher.searchTermSize("Yahoo");
+			double mValue = searcher.searchMultipleTerm(new String[]{"google","yahoo"});
 			double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
 			double ngdScore = (1 - ngdDistance);
 			assertEquals("Should return the same number",this.expecetedNumber,ngdScore,0);
 		}
+		}catch(SolrServerException e){
+			e.printStackTrace();
+		}
 	}
+	
+	private class NgdTask implements Callable<Double> {
+		TermNode termA, termB;
 
+		public NgdTask(TermNode term, TermNode anotherTerm) {
+			termA = term;
+			termB = anotherTerm;
+		}
+
+		@Override
+		public Double call() throws Exception {
+			double ngdScore = 0;
+			double a = searcher.searchTermSize(termA.toString());
+			double b = searcher.searchTermSize(termB.toString());
+			double mValue = searcher.searchMultipleTerm(new String[] {
+					"google", "yahoo" });
+			double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
+			ngdScore = (1 - ngdDistance);
+			return ngdScore;
+
+		}
+	}
 }

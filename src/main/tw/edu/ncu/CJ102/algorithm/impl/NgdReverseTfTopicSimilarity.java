@@ -16,14 +16,23 @@ import tw.edu.ncu.CJ102.CoreProcess.*;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
-import tw.edu.ncu.im.Util.IndexSearcher;
+import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
+import tw.edu.ncu.im.Util.IndexSearchable;
 
 public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm{
-
+	
+	IndexSearchable tool;
 	ExecutorService executor = Executors.newFixedThreadPool(15);
 	CompletionService<Double> tasker = new ExecutorCompletionService<Double>(executor);
 	ArrayList<Future<Double>> results = new ArrayList<>();
 
+	public NgdReverseTfTopicSimilarity(){
+		tool = new EmbeddedIndexSearcher(); 
+	}
+	public NgdReverseTfTopicSimilarity(IndexSearchable indexTool){
+		this.tool = indexTool;
+	}
+	
 	public double computeSimilarity(TopicTermGraph theTopic,
 			TopicTermGraph userTopic) {
 		double sumScore = 0;
@@ -49,25 +58,25 @@ public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm{
 		double similarity = sumScore / taskSize ;
 		return similarity;
 	}
-	
-}
-class NgdReverseTfComputingTask implements Callable<Double> {
-	TermNode termA, termB;
-	public NgdReverseTfComputingTask(TermNode term,TermNode anotherTerm) {
-		termA = term;
-		termB = anotherTerm;
-	}
+	private class NgdReverseTfComputingTask implements Callable<Double> {
+		TermNode termA, termB;
+		public NgdReverseTfComputingTask(TermNode term,TermNode anotherTerm) {
+			termA = term;
+			termB = anotherTerm;
+		}
 
-	@Override
-	public Double call() throws Exception {
-		IndexSearcher searcher = new IndexSearcher();
-		double a = searcher.searchTermSize(termA.toString());
-		double b = searcher.searchTermSize(termB.toString());
-		double mValue = searcher.searchMultipleTerm(new String[]{termA.toString(),termB.toString()});
-		double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
-		double termScore = (1 - ngdDistance)
-				* ((this.termA.termFreq + this.termB.termFreq) / 2);
-		return termScore;
-	}
+		@Override
+		public Double call() throws Exception {
+			
+			double a = tool.searchTermSize(termA.toString());
+			double b = tool.searchTermSize(termB.toString());
+			double mValue = tool.searchMultipleTerm(new String[]{termA.toString(),termB.toString()});
+			double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
+			double termScore = (1 - ngdDistance)
+					* ((this.termA.termFreq + this.termB.termFreq) / 2);
+			return termScore;
+		}
 
+	}
 }
+
