@@ -299,10 +299,11 @@ public class Experiment {
 		if(this.traingLabel.contains(documentTopicLabel)){
 			realAnswer = true;
 		}
-		boolean systemAnswer = false;
+		boolean systemAnswer = true;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile
-				systemAnswer = true;
+//			if(topicPair.getKey()==topicPair.getValue()){
+				systemAnswer = false;
 				break;
 			}
 		}
@@ -337,6 +338,14 @@ public class Experiment {
 					monitor.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
 				}
 			}// end of RealAnswer if
+		}
+		
+		for(Entry<TopicTermGraph, PerformanceMonitor> monitorPair:this.monitors.entrySet()){
+			PerformanceMonitor monitor = monitorPair.getValue();
+			TopicTermGraph topic = monitorPair.getKey();
+			if(topic.isLongTermInterest()&&monitor.phTest()){
+				System.out.println("Concept Drift occur in topic:"+monitorPair.getKey());
+			}
 		}
 		
 	}
