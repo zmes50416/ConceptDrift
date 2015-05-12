@@ -43,26 +43,21 @@ public class Experiment {
 	TopicMappingTool maper;
 	protected int experimentDays;
 	Boolean isInitialized = false;
-	protected HashSet<String> traingLabel= new HashSet<>();
-	protected HashMap<TopicTermGraph,PerformanceMonitor> monitors= new HashMap<>();
-	protected PerformanceMonitor systemPerformance = new PerformanceMonitor();
+	protected Set<String> traingLabel;
+	protected Map<TopicTermGraph,PerformanceMonitor> monitors;
+	protected PerformanceMonitor systemPerformance;
 	public boolean debugMode;
 	double betweenessThreshold = 0.35;
 	public Experiment(String project) {		// 創造出實驗資料匣
-		try{
-			this.projectPath = Paths.get(project);
-			this.userProfilePath = projectPath.resolve("user_profile");
-		
-			Files.createDirectories(projectPath);
-			Files.createDirectories(userProfilePath); // 創造出實驗使用者模型資料匣
-			
-			Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been create but not finish yet.
-		} catch(FileAlreadyExistsException e){
-			throw new RuntimeException("The Project have been lock in others process, please clean the project dir first");
-		}catch (IOException e) {
-			throw new RuntimeException("IO have been Interrupted");
+		this.projectPath = Paths.get(project);
+		this.userProfilePath = projectPath.resolve("user_profile");
+		this.monitors= new HashMap<>();
+		this.traingLabel= new HashSet<>();
+		this.systemPerformance = new PerformanceMonitor();
+		File lock = projectPath.resolve(".lock").toFile();
+		if(lock.isFile()){
+			throw new IllegalStateException("The Project have been lock in others process, please clean the project dir first");
 		}
-		
 	}
 	
 	public Path getProjectPath() {
@@ -101,7 +96,15 @@ public class Experiment {
 			throw new RuntimeException("Haven't set the experiment days yet");
 		}else if(this.user == null){
 			throw new RuntimeException("Haven't set the user yet");
+		}else if(this.newsPopulater == null){
+			throw new RuntimeException("Haven't set the news populater");
 		}
+		
+		Files.createDirectories(projectPath);
+		Files.createDirectories(userProfilePath); // 創造出實驗使用者模型資料匣
+		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TESTINGPATH));
+		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TRAININGPATH));
+		Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been create but not finish yet.
 		if(this.debugMode ==true){
 			try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.projectPath.resolve("setting.txt").toFile(),true))){
 				writer.write("主題相關門檻值:"+this.maper.relateness_threshold);
@@ -114,8 +117,6 @@ public class Experiment {
 				e.printStackTrace();
 			}
 		}
-		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TESTINGPATH));
-		Files.createDirectories(projectPath.resolve(ExperimentFilePopulater.TRAININGPATH));
 		this.newsPopulater.populateExperiment(experimentDays);
 	}
 	/**
@@ -322,21 +323,17 @@ public class Experiment {
 		
 		
 		for (TopicTermGraph topic : user.getUserTopics()) {
+			PerformanceMonitor monitor = this.monitors.get(topic);
 			if (realAnswer == true) {// two possible Type: TP,FN
 				if (matchedTopics.contains(topic)) {// topic is matched -- TP
-					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
 				} else {// topic is not matched -- FN
-					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
 				}
 			} else { // two possible type: FP,TN
 				if (matchedTopics.contains(topic)) {// topic is matched but not relative -- FP
-					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
-
 				} else { // topic is not matched, and it is not relative too -- TN
-					PerformanceMonitor monitor = this.monitors.get(topic);
 					monitor.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
 				}
 			}// end of RealAnswer if

@@ -141,7 +141,6 @@ public class Preprocessor {
 				System.out.println("topic:"+topicDir.getName());
 				for(File doc:topicDir.listFiles()){
 					Path write = testTopic.resolve(doc.getName());
-//					File writeFile= new File(write.toString());
 					process(doc,write.toFile());
 					
 				}
