@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 import tw.edu.ncu.CJ102.SettingManager;
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
@@ -24,27 +25,39 @@ public class NewThresholdExperiment {
 	private double topicSimliarityThreshold;
 	private int experimentDays;
 	private double removeRate;
+	
+	public int round;
+	public double parama;
+	private boolean debugMode;
 	public static void main(String[] args) {
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrLocalPath");
 		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCollection");
 		Path path = Paths.get(SettingManager.chooseProject());
-		TopicTermGraph.MAXCORESIZE = 15;
+		TopicTermGraph.MAXCORESIZE = 50;
 		NewThresholdExperiment expController = new NewThresholdExperiment(path); 
 		System.out.println("You Dir is:"+path);
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
 		System.out.println("3.相似度容差實驗");
-		char i;
+		String i;
 		try{
-				i = (char)System.in.read();
+			Scanner scanner = new Scanner(System.in);
+				i = scanner.next();
+				System.out.println("請填入遞迴回數:");
+				expController.round = scanner.nextInt();
 				
-				if(i == '1'){
+				if(i.equals("1")){
+					System.out.println("請填入主題相關應得門檻起始值:");
+					expController.parama = scanner.nextDouble();
+					if(expController.parama > 1){
+						throw new RuntimeException("輸入門檻值不得大於1");
+					}
 					expController.TopicRelatedScore();
 					
-				}else if(i == '2'){
+				}else if(i.equals("2")){
 					expController.anotherExperiment();
-				}else if(i == '3'){
+				}else if(i.equals("3")){
 					expController.timeExperiment();
 				}
 				System.out.println("Experimetn have been done!\n");
@@ -59,25 +72,25 @@ public class NewThresholdExperiment {
 	
 	public NewThresholdExperiment(Path _projectDir) {
 		this.projectDir = _projectDir;
-		exp = new Experiment(this.projectDir.toString());
-		exp.debugMode = true;
+		debugMode = true;
 	}
 	
 	public void TopicRelatedScore() throws IOException{
 		 //set up a test case as topicMapping thresholdExperiment
-		for(double i = 0.1;i<=1;i = i+0.1){
-			exp = new Experiment(this.projectDir.resolve("turn_"+i).toString());
-			exp.debugMode = true;
+		for(int i = 1;i<=round;i++){
+			Path tempDir = this.projectDir.resolve("turn_"+i);
+			exp = new Experiment(tempDir.toString());
+			exp.debugMode = debugMode;
 			user = new MemoryBasedUserProfile();
 			exp.setUser(user);
-			topicSimliarityThreshold = i;
+			topicSimliarityThreshold = parama + (i/10.0);
 			experimentDays = 10;
 			removeRate = 0.1;
 			exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(searcher), topicSimliarityThreshold);
 			this.exp.experimentDays = experimentDays;
 			user.setRemove_rate(removeRate);
 
-			RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.resolve("turn_"+i).toString(),topicPath){
+			RouterNewsPopulator populater = new RouterNewsPopulator(tempDir.toString(),topicPath){
 				@Override
 				public void setGenarationRule() {
 					this.setTrainSize(5);
@@ -98,9 +111,13 @@ public class NewThresholdExperiment {
 	}
 
 	public void anotherExperiment() throws IOException{
+		for(int i = 1;i<=round;i++){
+		Path tempDir = this.projectDir.resolve("turn_"+i);
+		this.exp = new Experiment(tempDir.toString());
+		exp.debugMode = debugMode;
 		topicSimliarityThreshold = 0.4;
 		experimentDays = 14;
-		removeRate = 0.1;
+		removeRate = parama + (i/10.0);
 
 		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
 		this.exp.setExperimentDays(experimentDays);
@@ -108,7 +125,7 @@ public class NewThresholdExperiment {
 		exp.setUser(user);
 
 
-		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString(),topicPath){
+		RouterNewsPopulator populater = new RouterNewsPopulator(tempDir.toString(),topicPath){
 			@Override
 			public void setGenarationRule() {
 				this.setTrainSize(3);
@@ -126,6 +143,7 @@ public class NewThresholdExperiment {
 		}
 
 		execute();
+		}
 	}
 	
 	public void timeExperiment() throws IOException{
