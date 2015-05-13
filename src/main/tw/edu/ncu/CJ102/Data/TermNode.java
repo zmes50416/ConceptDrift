@@ -43,7 +43,7 @@ public class TermNode{
 	public void setTermFreq(double termFreq) {
 		this.termFreq = termFreq;
 	}
-	
+//  term node will not be added in DTG because of JUNG only allow unique node in graph	
 //	@Override
 //	public boolean equals(Object o){
 //		TermNode anotherNode = (TermNode)o;
@@ -51,13 +51,6 @@ public class TermNode{
 //			return true;
 //		}
 //		return false;
-//		
 //	}
-	
-//	@Override
-//	public int hashCode(){
-//		return this.term.hashCode();
-//	}
-	
 	
 }

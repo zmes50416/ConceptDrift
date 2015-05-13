@@ -70,9 +70,10 @@ public class UserProfileManagerTest extends EasyMockSupport{
 	@Test
 	public void testRemoveTerm() {
 		String termName = "google";
-		topic1.addVertex(new TermNode(termName));
+		TermNode term = new TermNode(termName);
+		topic1.addVertex(term);
 
-		this.manager.removeTerm(topic1, new TermNode(termName));
+		this.manager.removeTerm(topic1, term);
 		assertTrue("Topic term "+termName+" should have been removed",!topic1.containsVertex(new TermNode(termName)));
 	}
 	@Test(expected=IllegalArgumentException.class)
@@ -111,7 +112,6 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		TopicCoOccuranceGraph tcoGraph = new TopicCoOccuranceGraph();
 
 		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();
-		user.addDocument(notNull(Map.class), 0);
 		expectLastCall();
 		replayAll();
 		

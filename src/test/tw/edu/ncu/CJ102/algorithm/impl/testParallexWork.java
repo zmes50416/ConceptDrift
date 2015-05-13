@@ -24,6 +24,7 @@ import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
 import tw.edu.ncu.CJ102.NGD_calculate;
+import tw.edu.ncu.CJ102.SettingManager;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
 import tw.edu.ncu.im.Util.IndexSearchable;
@@ -48,6 +49,8 @@ public class testParallexWork {
 	public double expecetedNumber;
 	@Before
 	public void setup() throws Exception{
+		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrLocalPath");
+		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCollection");
 		searcher = new EmbeddedIndexSearcher();
 		
 		termA = new TermNode("Google");

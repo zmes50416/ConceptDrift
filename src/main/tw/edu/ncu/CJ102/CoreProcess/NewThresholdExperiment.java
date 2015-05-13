@@ -14,6 +14,7 @@ import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
 import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
+import tw.edu.ncu.im.Util.HttpIndexSearcher;
 import tw.edu.ncu.im.Util.IndexSearchable;
 
 public class NewThresholdExperiment {
@@ -21,7 +22,7 @@ public class NewThresholdExperiment {
 	String topicPath = "Tom_reuters_0.4/single";
 	Experiment exp ;
 	AbstractUserProfile user;
-	EmbeddedIndexSearcher searcher = new EmbeddedIndexSearcher();
+	IndexSearchable searcher;
 	private double topicSimliarityThreshold;
 	private int experimentDays;
 	private double removeRate;
@@ -32,8 +33,9 @@ public class NewThresholdExperiment {
 	public static void main(String[] args) {
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrLocalPath");
 		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCollection");
+		HttpIndexSearcher.url = "http://localhost/searchweb/";
+		
 		Path path = Paths.get(SettingManager.chooseProject());
-		TopicTermGraph.MAXCORESIZE = 50;
 		NewThresholdExperiment expController = new NewThresholdExperiment(path); 
 		System.out.println("You Dir is:"+path);
 		System.out.println("Which ThresholdExp you wanna run?");
@@ -44,6 +46,14 @@ public class NewThresholdExperiment {
 		try{
 			Scanner scanner = new Scanner(System.in);
 				i = scanner.next();
+				System.out.println("使用HTTP(1)或是嵌入式SOLR(2)?");
+				if(scanner.nextInt()==1){
+					expController.searcher = new HttpIndexSearcher();
+				}else{
+					expController.searcher = new EmbeddedIndexSearcher();
+				}
+				System.out.println("請填入核心數目");
+				TopicTermGraph.MAXCORESIZE = scanner.nextInt();
 				System.out.println("請填入遞迴回數:");
 				expController.round = scanner.nextInt();
 				
@@ -77,7 +87,7 @@ public class NewThresholdExperiment {
 	
 	public void TopicRelatedScore() throws IOException{
 		 //set up a test case as topicMapping thresholdExperiment
-		for(int i = 1;i<=round;i++){
+		for(int i = 0;i<round;i++){
 			Path tempDir = this.projectDir.resolve("turn_"+i);
 			exp = new Experiment(tempDir.toString());
 			exp.debugMode = debugMode;
@@ -121,6 +131,7 @@ public class NewThresholdExperiment {
 
 		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
 		this.exp.setExperimentDays(experimentDays);
+		user = new MemoryBasedUserProfile();
 		user.setRemove_rate(removeRate);
 		exp.setUser(user);
 
