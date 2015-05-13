@@ -25,6 +25,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SettingManager;
+import tw.edu.ncu.CJ102.SolrSearcher;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
 import tw.edu.ncu.im.Util.IndexSearchable;
@@ -49,8 +50,8 @@ public class testParallexWork {
 	public double expecetedNumber;
 	@Before
 	public void setup() throws Exception{
-		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrLocalPath");
-		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCollection");
+		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
+		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
 		searcher = new EmbeddedIndexSearcher();
 		
 		termA = new TermNode("Google");
@@ -59,10 +60,26 @@ public class testParallexWork {
 		double b = searcher.searchTermSize("Yahoo");
 		double mValue = searcher.searchMultipleTerm(new String[]{"Google","Yahoo"});
 		double ngdDistance = NGD_calculate.NGD_cal(a, b, mValue);
+		System.out.println(a+":"+b+":"+mValue+":"+ngdDistance);
+
 		expecetedNumber = (1 - ngdDistance);
 		
 	}
-	
+	@Test
+	public void test() throws SolrServerException{
+		double a = SolrSearcher.getHits("Google");
+		double aa = searcher.searchTermSize("Google");
+		assertEquals(a,aa,0);
+		double b = SolrSearcher.getHits("Yahoo");
+		double m = SolrSearcher.getHits("+\"" + "Google" + "\" +\""+ "Yahoo" + "\"");
+		double mv = searcher.searchMultipleTerm(new String[]{"Yahoo","Google"});
+		assertEquals(m,mv,0);
+		double ngdDistance = NGD_calculate.NGD_cal(a, b, m);
+		System.out.println(a+":"+b+":"+m+":"+ngdDistance);
+
+		assertEquals(expecetedNumber,1-ngdDistance,0);
+
+	}
 	@Test
 	public void testEmbeded(){
 		for(int i= 0;i<=round;i++){
@@ -109,7 +126,6 @@ public class testParallexWork {
 				break;
 			}
 		}
-		System.out.println(sum);
 		assertEquals("Shoud not have any error",0,errorCount);
 
 	}
@@ -134,7 +150,6 @@ public class testParallexWork {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(sum);
 		
 	}
 	@Test

@@ -31,8 +31,8 @@ public class NewThresholdExperiment {
 	public double parama;
 	private boolean debugMode;
 	public static void main(String[] args) {
-		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrLocalPath");
-		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCollection");
+		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
+		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
 		HttpIndexSearcher.url = "http://localhost/searchweb/";
 		
 		Path path = Paths.get(SettingManager.chooseProject());

@@ -29,6 +29,9 @@ public class CEdge<T> {//Putting generic T type in decarlaction may not be a goo
 	public boolean equals(Object o) {
 		if (o instanceof CEdge) {
 			CEdge<T> anotherEdge = (CEdge<T>) o;
+			if(this.terms==null){
+				return false;
+			}
 			T anotherFirst = anotherEdge.terms.getFirst();
 			T anotherSecond = anotherEdge.terms.getSecond();
 			if (this.terms.getFirst().equals(anotherFirst)
