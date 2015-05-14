@@ -66,6 +66,11 @@ public class NewThresholdExperiment {
 					expController.TopicRelatedScore();
 					
 				}else if(i.equals("2")){
+					System.out.println("請填入移除門檻起始值:");
+					expController.parama = scanner.nextDouble();
+					if(expController.parama > 1){
+						throw new RuntimeException("輸入門檻值不得大於1");
+					}
 					expController.anotherExperiment();
 				}else if(i.equals("3")){
 					expController.timeExperiment();
@@ -121,7 +126,7 @@ public class NewThresholdExperiment {
 	}
 
 	public void anotherExperiment() throws IOException{
-		for(int i = 1;i<=round;i++){
+		for(int i = 0;i<round;i++){
 		Path tempDir = this.projectDir.resolve("turn_"+i);
 		this.exp = new Experiment(tempDir.toString());
 		exp.debugMode = debugMode;

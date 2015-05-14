@@ -9,7 +9,7 @@ import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 
 public class PerformanceMonitor {
 	public static double lamda = 0.15,sigma = -0.05;
-	private double TP, TN, FP, FN;
+	private int TP, TN, FP, FN;
 	private ArrayList<Double> HistoryFMeasure  = new ArrayList<>();
 	
 	public PerformanceMonitor(){
@@ -65,8 +65,8 @@ public class PerformanceMonitor {
 		this.phTest();
 	}
 
-	public Map<PerformanceType,Double> get_all_result() {
-		Map<PerformanceType,Double> results = new HashMap<>();
+	public Map<PerformanceType,Integer> get_all_result() {
+		Map<PerformanceType,Integer> results = new HashMap<>();
 		results.put(PerformanceType.TRUENEGATIVE, this.TN);
 		results.put(PerformanceType.TRUEPOSTIVE, this.TP);
 		results.put(PerformanceType.FALSENEGATIVE, this.FN);
@@ -75,11 +75,20 @@ public class PerformanceMonitor {
 	}
 
 	public double get_precision() {
-		return TP / (TP + FP);
+		try{
+		double precision = TP/(TP+FP);
+		return precision;
+		}catch(ArithmeticException e){
+			return 0.0;
+		}
 	}
 
 	public double get_recall() {
-		return TP / (TP + FN);
+		try{
+			return TP / (TP + FN);
+		}catch(ArithmeticException e){
+			return 0.0;
+		}
 	}
 
 	public double get_f_measure() {
@@ -96,18 +105,27 @@ public class PerformanceMonitor {
 	}
 
 	public double get_accuracy() {
-		double acc = (TP + TN) / (TP + TN + FP + FN);
-		if(acc>1){
-			return 1;
-		}else if(acc <0){
+		try{
+			double acc = (TP + TN) / (TP + TN + FP + FN);
+			if(acc>1){
+				return 1;
+			}else if(acc <0){
+				return 0;
+			}else{
+				return acc;
+			}
+		}catch(ArithmeticException e){
 			return 0;
-		}else{
-			return acc;
 		}
+		
 	}
 
 	public double get_error() {
+		try{
 		return (FP + FN) / (TP + TN + FP + FN);
+		}catch(ArithmeticException e){
+			return 0.0;
+		}
 	}
 	public String toString(){
 		return "F-measure:"+this.get_f_measure()+", Accuracy:"+this.get_accuracy()+",Recall:"+this.get_recall()+",Precision:"+this.get_precision();

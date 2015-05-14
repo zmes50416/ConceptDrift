@@ -170,6 +170,7 @@ public class Experiment {
 			this.performanceTest(topicMap, docTopic);
 		}
 		
+		this.checkLongTermMemory();
 		
 	}
 	/**
@@ -340,13 +341,6 @@ public class Experiment {
 			}// end of RealAnswer if
 		}
 		
-		for(Entry<TopicTermGraph, PerformanceMonitor> monitorPair:this.monitors.entrySet()){
-			PerformanceMonitor monitor = monitorPair.getValue();
-			TopicTermGraph topic = monitorPair.getKey();
-			if(topic.isLongTermInterest()&&monitor.phTest()){
-				System.out.println("Concept Drift occur in topic:"+monitorPair.getKey());
-			}
-		}
 		
 	}
 	
@@ -360,7 +354,15 @@ public class Experiment {
 			}
 		}
 	}
-	
+	protected void checkLongTermMemory(){
+		for(Entry<TopicTermGraph, PerformanceMonitor> monitorPair:this.monitors.entrySet()){
+			PerformanceMonitor monitor = monitorPair.getValue();
+			TopicTermGraph topic = monitorPair.getKey();
+			if(topic.isLongTermInterest()&&monitor.phTest()){
+				System.out.println("Concept Drift occur in topic:"+monitorPair.getKey());
+			}
+		}
+	}
 	protected void simplelog(int theDay){
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.userProfilePath.resolve("userLog.txt").toFile(),true))){
 			writer.append("==Day"+theDay+"==");
@@ -372,7 +374,7 @@ public class Experiment {
 			writer.newLine();
 			int i = 1;
 			for(TopicTermGraph topic:topics){
-				writer.append("topic:"+topic.hashCode()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+user.getDecayRate(topic, theDay)+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
+				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+user.getDecayRate(topic, theDay)+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
 				writer.newLine();
 				
 			}
