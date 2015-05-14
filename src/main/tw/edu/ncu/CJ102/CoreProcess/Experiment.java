@@ -58,6 +58,9 @@ public class Experiment {
 		if(lock.isFile()){
 			throw new IllegalStateException("The Project have been lock in others process, please clean the project dir first");
 		}
+		
+		System.getProperties().setProperty("project.dir", project);
+
 	}
 	
 	public Path getProjectPath() {
@@ -152,11 +155,12 @@ public class Experiment {
 			}
 			user.addDocument(topicMap,today);
 		}
+		
+		userManager.updateUserProfile(today, user);
+		this.removeOutdatedMonitor();
 		if(debugMode == true){
 			this.simplelog(today);
 		}
-		userManager.updateUserProfile(today, user);
-		this.removeOutdatedMonitor();
 	}
 	
 	protected void test(int theDay){
@@ -300,6 +304,7 @@ public class Experiment {
 		if(this.traingLabel.contains(documentTopicLabel)){
 			realAnswer = true;
 		}
+//		boolean systemAnswer = false;
 		boolean systemAnswer = true;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile

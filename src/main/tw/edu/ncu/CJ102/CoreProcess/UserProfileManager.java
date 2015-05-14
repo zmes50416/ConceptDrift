@@ -6,6 +6,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.CEdge;
 import tw.edu.ncu.CJ102.Data.TermNode;
@@ -22,6 +26,8 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class UserProfileManager {
 //use for manipulate user profile, decoupling user profile's high dependency
 	TopicMappingTool mapper;
+	Logger loger = LoggerFactory.getLogger(UserProfileManager.class);
+	
 	public UserProfileManager(TopicMappingTool _mapper) {
 		if(_mapper == null){
 			throw new NullPointerException("Cant work without a mapper algorithm");
@@ -36,8 +42,9 @@ public class UserProfileManager {
 		Collection<TopicTermGraph> userTopics = user.getUserTopics();
 		
 		if (userTopics.isEmpty()) {
-			System.out
-					.println("System have no topic to update. decay Process will end!");
+			if(loger.isInfoEnabled()){
+				loger.info("Day{} , System have no topic to update",theDay);
+			}
 			return;
 		}
 		
@@ -53,7 +60,7 @@ public class UserProfileManager {
 			}
 
 			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
-				System.out.println("System remove a topic:"+topic.toString()+" ,Because it's interest value only "+topicInterest);
+				loger.info("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
 				i.remove();
 			}
 			
@@ -71,7 +78,7 @@ public class UserProfileManager {
 				iterator.remove();
 			}
 		}
-
+		
 	}
 	
 	public boolean removeTerm(TopicTermGraph topic,TermNode term)throws IllegalArgumentException{
