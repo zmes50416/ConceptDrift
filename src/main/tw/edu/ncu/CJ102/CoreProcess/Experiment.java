@@ -240,14 +240,14 @@ public class Experiment {
 		});
 		c.execute(doc);
 
-		PartOfSpeechFilter<TermNode,CEdge<Double>> posComp = new PartOfSpeechFilter<TermNode,CEdge<Double>>(c, c.getVertexContent());
-		TermToLowerCaseDecorator<TermNode,CEdge<Double>> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge<Double>>(posComp, posComp.getVertexTerms());
-		FilteredTermLengthDecorator<TermNode,CEdge<Double>> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge<Double>>(lowerComp, posComp.getVertexTerms(), 3);
+		PartOfSpeechFilter<TermNode,CEdge<Double>> posComp = new PartOfSpeechFilter<TermNode,CEdge<Double>>(c, c.getStringOfVertex());
+		TermToLowerCaseDecorator<TermNode,CEdge<Double>> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge<Double>>(posComp, posComp.getVertexResultsTerms());
+		FilteredTermLengthDecorator<TermNode,CEdge<Double>> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge<Double>>(lowerComp, posComp.getVertexResultsTerms(), 3);
 		
-		StemmingDecorator<TermNode,CEdge<Double>> stemmedC = new StemmingDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexTerms());
-		TermFreqDecorator<TermNode,CEdge<Double>> tfComp = new TermFreqDecorator<TermNode,CEdge<Double>>(stemmedC, posComp.getVertexTerms());
-		SearchResultFilter<TermNode,CEdge<Double>> filitedTermComp = new SearchResultFilter<TermNode,CEdge<Double>>(tfComp,  posComp.getVertexTerms(), 10, 1000, new EmbeddedIndexSearcher());
-		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(filitedTermComp,posComp.getVertexTerms(),new EmbeddedIndexSearcher());
+		StemmingDecorator<TermNode,CEdge<Double>> stemmedC = new StemmingDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexResultsTerms());
+		TermFreqDecorator<TermNode,CEdge<Double>> tfComp = new TermFreqDecorator<TermNode,CEdge<Double>>(stemmedC, posComp.getVertexResultsTerms());
+		SearchResultFilter<TermNode,CEdge<Double>> filitedTermComp = new SearchResultFilter<TermNode,CEdge<Double>>(tfComp,  posComp.getVertexResultsTerms(), 10, 1000, new EmbeddedIndexSearcher());
+		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(filitedTermComp,posComp.getVertexResultsTerms(),new EmbeddedIndexSearcher());
 		NgdEdgeFilter<TermNode,CEdge<Double>> ngdflitedComp = new NgdEdgeFilter<TermNode,CEdge<Double>>(ngdComp, ngdComp.getEdgeDistance(), 0.5);
 		Graph<TermNode,CEdge<Double>> docGraph = ngdflitedComp.execute(doc);
 		
@@ -257,7 +257,7 @@ public class Experiment {
 				termsToRemove.add(term);
 			}else{
 				term.termFreq = tfComp.getTermFreqMap().get(term);
-				term.setTerm(posComp.getVertexTerms().get(term));
+				term.setTerm(posComp.getVertexResultsTerms().get(term));
 			}
 		}
 		for(CEdge<Double> edge:docGraph.getEdges()){
@@ -266,7 +266,7 @@ public class Experiment {
 		for(TermNode term:termsToRemove){
 			docGraph.removeVertex(term);
 			tfComp.getTermFreqMap().remove(term);
-			posComp.getVertexTerms().remove(term);
+			posComp.getVertexResultsTerms().remove(term);
 		}
 		
 		System.out.println("Size of vertex:"+docGraph.getVertexCount());
