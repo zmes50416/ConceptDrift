@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,6 +61,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 public class Preprocessor {
 	static double documentTermSize;
 	static double totalClusterSize;
+	static boolean shouldDraw;
 	public Preprocessor() {
 		// TODO Auto-generated constructor stub
 	}
@@ -70,19 +72,22 @@ public class Preprocessor {
 		File dataFile = new File("usedData");
 		long startTime = System.currentTimeMillis(); 
 		try {
-			Path test = new File("test_withoutStemmed_standford_2").toPath();
-			Files.createDirectories(test);
-			
+			Path outputDir = new File(SettingManager.chooseProject()).toPath();
+			Files.createDirectories(outputDir);
+			System.out.println("Enable the drawing function?(true/false)");
+			Scanner sc = new Scanner(System.in);
+			Preprocessor.shouldDraw = sc.nextBoolean();
+			sc.close();
 			for(File topicDir : dataFile.listFiles()){
-				ExecutorService executor = Executors.newFixedThreadPool(50);
+				ExecutorService executor = Executors.newCachedThreadPool();
 				documentTermSize =0;
 				totalClusterSize = 0;
-				Path testTopic = test.resolve(topicDir.getName());
-				Files.createDirectories(testTopic);
+				Path outputTopic = outputDir.resolve(topicDir.getName());
+				Files.createDirectories(outputTopic);
 				System.out.println("topic:"+topicDir.getName());
 				for(File doc:topicDir.listFiles()){
-					Path write = testTopic.resolve(doc.getName());
-					executor.execute(new PreprocessTopicTask(doc, write.toString(), 0.35));
+					Path write = outputTopic.resolve(doc.getName());
+					executor.execute(new PreprocessTopicTask(doc, write.toString(), 0.2));
 				}
 				executor.shutdown();
 				try {
@@ -90,10 +95,12 @@ public class Preprocessor {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				File topicData = Paths.get(topicDir.getAbsolutePath(),"staticData").toFile();
-				try(BufferedWriter settingWriter = new BufferedWriter(new FileWriter(topicData))){
-					settingWriter.write("Average Document Term size:"+(documentTermSize/topicDir.listFiles().length));
-					settingWriter.write("Average Document Cluster size:"+(totalClusterSize/topicDir.listFiles().length));
+				File topicStaticData = outputTopic.resolve("staticData.txt").toFile();
+				try(BufferedWriter settingWriter = new BufferedWriter(new FileWriter(topicStaticData))){
+					double avgDocTerm = (documentTermSize/topicDir.listFiles().length);
+					double avgCluster = (totalClusterSize/topicDir.listFiles().length);
+					settingWriter.write("Average Document Term size:" + avgDocTerm);
+					settingWriter.write("Average Document Cluster size:" + avgCluster);
 				}catch(IOException e){
 					e.printStackTrace();
 				}
@@ -114,11 +121,11 @@ class PreprocessTopicTask implements Runnable{
 	
 	private File doc;
 	private double betweenessThreshold;
-	private String writePlace;
+	private String saveName;
 	private static Color[] colors = {Color.GREEN,Color.RED,Color.BLUE,Color.YELLOW,Color.gray,Color.CYAN,Color.ORANGE,Color.PINK};
 	public PreprocessTopicTask(File doc,String savePlace,double betweenessThreshold){
 		this.doc = doc;
-		this.writePlace = savePlace;
+		this.saveName = savePlace;
 		this.betweenessThreshold = betweenessThreshold;
 	}
 
@@ -197,58 +204,60 @@ class PreprocessTopicTask implements Runnable{
 				clustersColor.put(cluster, colors[colors.length-1]);
 			}
 		}
-	    Layout<TermNode, CEdge<Double>> layout = new KKLayout<>(docGraph);
-	    layout.setSize(new Dimension(800,800));
-		VisualizationImageServer<TermNode, CEdge<Double>> vis =
-			    new VisualizationImageServer<TermNode, CEdge<Double>>(layout, layout.getSize());
-		vis.setBackground(Color.WHITE);
-		vis.getRenderContext().setVertexLabelTransformer(new Transformer<TermNode,String>(){
+	    if(Preprocessor.shouldDraw){
+			Layout<TermNode, CEdge<Double>> layout = new KKLayout<>(docGraph);
+		    layout.setSize(new Dimension(800,800));
+			VisualizationImageServer<TermNode, CEdge<Double>> vis =
+				    new VisualizationImageServer<TermNode, CEdge<Double>>(layout, layout.getSize());
+			vis.setBackground(Color.WHITE);
+			vis.getRenderContext().setVertexLabelTransformer(new Transformer<TermNode,String>(){
 
-			@Override
-			public String transform(TermNode input) {
-				return input.getTerm();
-			}
-			
-		});
-		vis.getRenderContext().setVertexFillPaintTransformer(new Transformer<TermNode,Paint>(){
-
-			@Override
-			public Paint transform(TermNode input) {
-				for(Entry<Set<TermNode>, Color> clusterPair:clustersColor.entrySet()){					
-					if(clusterPair.getKey().contains(input)){
-						return clusterPair.getValue();
-					}
+				@Override
+				public String transform(TermNode input) {
+					return input.getTerm();
 				}
-				return Color.WHITE;
+				
+			});
+			vis.getRenderContext().setVertexFillPaintTransformer(new Transformer<TermNode,Paint>(){
+
+				@Override
+				public Paint transform(TermNode input) {
+					for(Entry<Set<TermNode>, Color> clusterPair:clustersColor.entrySet()){					
+						if(clusterPair.getKey().contains(input)){
+							return clusterPair.getValue();
+						}
+					}
+					return Color.WHITE;
+				}
+				
+			});
+			vis.getRenderContext().setEdgeLabelTransformer(new Transformer<CEdge<Double>,String>(){
+
+				@Override
+				public String transform(CEdge<Double> input) {
+					String i = String.valueOf((float)input.getCoScore());
+					return i;
+				}
+				
+			});
+
+			try {
+				// Create the buffered image
+				BufferedImage image = (BufferedImage) vis.getImage(
+				    new Point2D.Double(layout.getSize().getWidth() / 2,
+				    layout.getSize().getHeight() / 2),
+				    new Dimension(layout.getSize()));
+
+				// Write image to a png file
+				File outputfile = new File(saveName+".png");
+			    ImageIO.write(image, "png", outputfile);
+			} catch (IOException | NullPointerException e) {
+				System.err.println("problem happened when drawing graph of "+saveName);
 			}
-			
-		});
-		vis.getRenderContext().setEdgeLabelTransformer(new Transformer<CEdge<Double>,String>(){
+	    }
 
-			@Override
-			public String transform(CEdge<Double> input) {
-				String i = String.valueOf((float)input.getCoScore());
-				return i;
-			}
-			
-		});
-//		
-		// Create the buffered image
-		BufferedImage image = (BufferedImage) vis.getImage(
-		    new Point2D.Double(layout.getSize().getWidth() / 2,
-		    layout.getSize().getHeight() / 2),
-		    new Dimension(layout.getSize()));
-
-		// Write image to a png file
-		File outputfile = new File(writePlace+".png");
-
-		try {
-		    ImageIO.write(image, "png", outputfile);
-		} catch (IOException e) {
-		    // Exception handling
-		}
 		
-		try(BufferedWriter bf = new BufferedWriter(new FileWriter(writePlace))){
+		try(BufferedWriter bf = new BufferedWriter(new FileWriter(saveName))){
 			bf.write(String.valueOf(avgNGD));
 			bf.newLine();
 			int group = 1;
