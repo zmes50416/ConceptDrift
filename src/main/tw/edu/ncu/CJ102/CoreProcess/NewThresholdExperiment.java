@@ -8,6 +8,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import tw.edu.ncu.CJ102.SettingManager;
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
@@ -27,10 +31,13 @@ public class NewThresholdExperiment {
 	private int experimentDays;
 	private double removeRate;
 	
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	public int round;
 	public double parama;
 	private boolean debugMode;
 	public static void main(String[] args) {
+		//Environment setup
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
 		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
 		HttpIndexSearcher.url = "http://localhost/searchweb/";
@@ -196,7 +203,7 @@ public class NewThresholdExperiment {
 			Long time = System.currentTimeMillis();
 			this.exp.run(dayN);
 			Long spendedTime = System.currentTimeMillis() - time;
-			System.out.println("Run a day:"+dayN+", Speend total time of "+spendedTime+"ms");
+			logger.info("Run a day {}, time: {}ms",dayN,spendedTime);
 			sumTime += spendedTime;
 			try(BufferedWriter writer = new BufferedWriter(new FileWriter(exp.getUserProfilePath().resolve("userLog.txt").toFile(),true))){
 				writer.append("Time spend:"+spendedTime);

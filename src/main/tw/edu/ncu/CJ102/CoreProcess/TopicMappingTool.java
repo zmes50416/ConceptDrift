@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.LoggerFactory;
+
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
@@ -77,6 +79,7 @@ public class TopicMappingTool {
 		if(!taskMap.isEmpty()){
 			throw new RuntimeException("Should have finised all task");
 		}
+		LoggerFactory.getLogger(this.getClass()).info("topic {} map to {}",_topic,mappedTopic);
 		return mappedTopic;
 	}
 

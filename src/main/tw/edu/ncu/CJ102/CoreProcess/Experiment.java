@@ -23,6 +23,9 @@ import java.util.Set;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.graph.Graph;
@@ -48,6 +51,7 @@ public class Experiment {
 	protected PerformanceMonitor systemPerformance;
 	public boolean debugMode;
 	double betweenessThreshold = 0.35;
+	private Logger logger = LoggerFactory.getLogger(Experiment.class);
 	public Experiment(String project) {		// 創造出實驗資料匣
 		this.projectPath = Paths.get(project);
 		this.userProfilePath = projectPath.resolve("user_profile");
@@ -60,7 +64,7 @@ public class Experiment {
 		}
 		
 		System.getProperties().setProperty("project.dir", project);
-
+		PropertyConfigurator.configure(System.getProperty("user.dir")+"\\src\\main\\resources\\log4j.properties");
 	}
 	
 	public Path getProjectPath() {
@@ -364,7 +368,9 @@ public class Experiment {
 			PerformanceMonitor monitor = monitorPair.getValue();
 			TopicTermGraph topic = monitorPair.getKey();
 			if(topic.isLongTermInterest()&&monitor.phTest()){
-				System.out.println("Concept Drift occur in topic:"+monitorPair.getKey());
+				TopicTermGraph driftedTopic = monitorPair.getKey();
+				logger.info("Concept Drift occur in topic {}",driftedTopic.toString());
+				driftedTopic.setLongTermInterest(false);
 			}
 		}
 	}
