@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.easymock.*;
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +55,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		topic1.addVertex(new TermNode("test2",5.0));
 		expect(user.getDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
 		expect(user.getUserTopics()).andReturn(mockUserTopics);
-		expect(user.getTopicRemoveThreshold()).andReturn(0.0);
+		expect(user.getTopicRemoveThreshold()).andReturn(7.0);
 		expect(user.getTopicCOGraph()).andReturn(new TopicCoOccuranceGraph());
 		replay(user);
 		
@@ -63,7 +64,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		for(TermNode term:topic1.getVertices()){//sum up
 			score += term.termFreq;
 		}
-		
+		assertTrue(mockUserTopics.isEmpty());
 		assertEquals("Decay are not function normally",5.0,score,0.1);
 	}
 
