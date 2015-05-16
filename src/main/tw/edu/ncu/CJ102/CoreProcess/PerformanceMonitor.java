@@ -76,8 +76,8 @@ public class PerformanceMonitor {
 
 	public double get_precision() {
 		try{
-		double precision = TP/(TP+FP);
-		return precision;
+			double precision = TP/(TP+FP);
+			return precision;
 		}catch(ArithmeticException e){
 			return 0.0;
 		}

@@ -78,7 +78,7 @@ public class NewThresholdExperiment {
 					if(expController.parama > 1){
 						throw new RuntimeException("輸入門檻值不得大於1");
 					}
-					expController.anotherExperiment();
+					expController.removeThresholdExperiment();
 				}else if(i.equals("3")){
 					expController.timeExperiment();
 				}
@@ -132,7 +132,7 @@ public class NewThresholdExperiment {
 		
 	}
 
-	public void anotherExperiment() throws IOException{
+	public void removeThresholdExperiment() throws IOException{
 		for(int i = 0;i<round;i++){
 		Path tempDir = this.projectDir.resolve("turn_"+i);
 		this.exp = new Experiment(tempDir.toString());
