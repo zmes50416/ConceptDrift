@@ -14,6 +14,10 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections15.buffer.CircularFifoBuffer;
 
+import tw.edu.ncu.CJ102.algorithm.CentralityAlgorithm;
+import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
+import tw.edu.ncu.CJ102.algorithm.impl.CN;
+import tw.edu.ncu.CJ102.algorithm.impl.LP;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -23,8 +27,9 @@ import edu.uci.ics.jung.graph.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
+public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge<Double>> implements Serializable{
 	public static int MAXCORESIZE = 10; //Default Core size
+	CentralityAlgorithm<TermNode,CEdge<Double>> algo = new LP<TermNode,CEdge<Double>>(this); //Default Core algorithm
 	private boolean isLongTermInterest;
 	double averageTermTf;
 	protected int birthDate;
@@ -115,16 +120,18 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	}
 
 	public Collection<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
+		HashMap<TermNode,Double> scoreSheet = new HashMap<>();
 		PriorityQueue<TermNode> core = new PriorityQueue<>(MAXCORESIZE, new nodeComparator());
 		for(TermNode term:this.getVertices()){
+			scoreSheet.put(term, algo.computeCentrality(term));
 			if(core.size()==MAXCORESIZE){
 				TermNode minTerm = core.poll();
-				if(this.getNeighborCount(minTerm)>=this.getNeighborCount(term)){
+				if(scoreSheet.get(minTerm)>=scoreSheet.get(term)){
 					core.offer(minTerm);
 					continue;
 				}
 			}
-				core.offer(term);
+			core.offer(term);
 		
 		}
 		return core;

@@ -1,5 +1,8 @@
 package tw.edu.ncu.CJ102.algorithm.impl;
 
+import org.apache.commons.collections15.Transformer;
+
+import tw.edu.ncu.CJ102.algorithm.CentralityAlgorithm;
 import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
 import edu.uci.ics.jung.graph.Graph;
 
@@ -10,7 +13,7 @@ import edu.uci.ics.jung.graph.Graph;
  * @param <V> Node
  * @param <E> Edge
  */
-public class CN<V,E> implements LinkPrediction<V, E> {
+public class CN<V,E> implements LinkPrediction<V, E>, CentralityAlgorithm<V,E> {
 	
 	Graph<V,E> graph;
 	/**
@@ -37,5 +40,33 @@ public class CN<V,E> implements LinkPrediction<V, E> {
 		
 		return index;
 	}
+
+	@Override
+	public double computeCentrality(V term) {
+		return this.computeCentrality(term, new Transformer<E,Double>(){
+
+			@Override
+			public Double transform(E input) {
+				return 1.0;
+			}
+			
+		});
+		
+	}
+	@Override
+	public double computeCentrality(V term,
+			Transformer<E, Double> edgeDistanceTransformer) {
+		double score = 0;
+		for(V neighborOfTerm: this.graph.getNeighbors(term)){
+			E e = this.graph.findEdge(term, neighborOfTerm);
+			double edgeWeight = edgeDistanceTransformer.transform(e);
+			score += edgeWeight;
+		}
+		return score;
+	}
+	
+	
+	
+	
 
 }

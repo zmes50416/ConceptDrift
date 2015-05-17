@@ -3,22 +3,27 @@ package tw.edu.ncu.CJ102.algorithm.impl;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.apache.commons.collections15.Transformer;
+
+import tw.edu.ncu.CJ102.Data.TermNode;
+import tw.edu.ncu.CJ102.algorithm.CentralityAlgorithm;
 import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.UndirectedGraph;
 /**
- * 
+ * Local Path method for linkPrediction and centrality computing
  * @author tingWen
  *
  * @param <V>
  * @param <E>
  */
-public class LP<V, E> implements LinkPrediction<V, E> {
+public class LP<V, E> implements LinkPrediction<V, E>, CentralityAlgorithm<V,E> {
 	// According to Paper, you don't need to find the optimized number. just give the EPSILON weight very small number.
 	static final double EPSILON = 0.01; 
 	
-	Graph<V,E> graph;
+	UndirectedGraph<V,E> graph;
 	
-	public LP(Graph<V,E> g){
+	public LP(UndirectedGraph<V,E> g){
 		this.graph = g;
 	}
 
@@ -72,6 +77,39 @@ public class LP<V, E> implements LinkPrediction<V, E> {
 		
 		return index;
 		
+	}
+
+	
+
+	@Override
+	public double computeCentrality(V term) {
+		return this.computeCentrality(term, new Transformer<E,Double>(){
+
+			@Override
+			public Double transform(E input) {
+				return 1.0;
+			}
+			
+		});
+	}
+
+	@Override
+	public double computeCentrality(V term,
+			Transformer<E, Double> edgeWeightTransformer) {
+		double score = 0;
+		for(V neighbor:graph.getNeighbors(term)){
+			double A3 = 0;
+			E e = this.graph.findEdge(term, neighbor);
+			double A2 = edgeWeightTransformer.transform(e); 
+			for(V neighborOfNeigbor:graph.getNeighbors(neighbor)){
+				E e2 = this.graph.findEdge(neighbor, neighborOfNeigbor);
+				A3 += edgeWeightTransformer.transform(e2);
+			}
+					
+			score +=  A2+(A3*0.01);
+
+		}
+		return score;
 	}
 
 }

@@ -2,11 +2,13 @@ package tw.edu.ncu.CJ102.Data;
 
 import static org.junit.Assert.*;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import tw.edu.ncu.CJ102.CoreProcess.Experiment;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import edu.uci.ics.jung.graph.util.Pair;
@@ -61,10 +63,21 @@ public class TopicTermGraphTest {
 	
 	@Test
 	public void testGetCoreTerm(){
-		for(int i=0;i<=9;i++){
-			//TODO implement TEST
-		};
-		fail("Not yet implement");
+		TopicTermGraph.MAXCORESIZE = 2;
+		TermNode testNode = new TermNode("test",1);
+		
+		TermNode testNode1 = new TermNode("Google");
+		TermNode testNode2 = new TermNode("Samsung");
+		TermNode testNode3 = new TermNode("Apple");
+		c.addEdge(new CEdge<Double>(), testNode,testNode1);
+		c.addEdge(new CEdge<Double>(), testNode1,testNode2);
+		c.addEdge(new CEdge<Double>(), testNode3,testNode2);
+		
+		Collection<TermNode> cores = this.c.getCoreTerm();
+		System.out.println(cores);
+		assertEquals(2,cores.size());
+		assertTrue(!cores.contains(testNode));
+		
 	}
 
 }
