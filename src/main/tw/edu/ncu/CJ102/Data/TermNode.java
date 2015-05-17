@@ -1,10 +1,12 @@
 package tw.edu.ncu.CJ102.Data;
 
+import java.util.UUID;
+
 public class TermNode{
 	public double termFreq;
 	String term;
 	public TermNode(){
-		
+		term = "nameHolder_"+UUID.randomUUID().toString();		
 	}
 	public TermNode(String _term){
 		this.term = _term;
@@ -44,13 +46,18 @@ public class TermNode{
 		this.termFreq = termFreq;
 	}
 //  term node will not be added in DTG because of JUNG only allow unique node in graph	
-//	@Override
-//	public boolean equals(Object o){
-//		TermNode anotherNode = (TermNode)o;
-//		if(this.term.equals(anotherNode.term)){
-//			return true;
-//		}
-//		return false;
-//	}
+	@Override
+	public boolean equals(Object o){
+		TermNode anotherNode = (TermNode)o;
+		if(this.term.equals(anotherNode.term)){
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public int hashCode(){
+		return this.term.hashCode();
+	}
 	
 }
