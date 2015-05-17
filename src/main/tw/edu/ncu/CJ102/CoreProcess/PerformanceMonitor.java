@@ -9,7 +9,7 @@ import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 
 public class PerformanceMonitor {
 	public static double lamda = 0.15,sigma = -0.05;
-	private int TP, TN, FP, FN;
+	private double TP, TN, FP, FN;
 	private ArrayList<Double> HistoryFMeasure  = new ArrayList<>();
 	
 	public PerformanceMonitor(){
@@ -62,11 +62,10 @@ public class PerformanceMonitor {
 			throw new IllegalArgumentException("The type:"+type+" is not in any correct PerformanceType");
 		}
 		this.HistoryFMeasure.add(this.get_f_measure());
-		this.phTest();
 	}
 
-	public Map<PerformanceType,Integer> get_all_result() {
-		Map<PerformanceType,Integer> results = new HashMap<>();
+	public Map<PerformanceType,Double> get_all_result() {
+		Map<PerformanceType,Double> results = new HashMap<>();
 		results.put(PerformanceType.TRUENEGATIVE, this.TN);
 		results.put(PerformanceType.TRUEPOSTIVE, this.TP);
 		results.put(PerformanceType.FALSENEGATIVE, this.FN);
@@ -75,56 +74,42 @@ public class PerformanceMonitor {
 	}
 
 	public double get_precision() {
-		try{
-			double precision = TP/(TP+FP);
-			return precision;
-		}catch(ArithmeticException e){
-			return 0.0;
-		}
+			if(TP+FP==0){
+				return 0;
+			}else{
+				return TP/(TP+FP);
+			}
 	}
 
 	public double get_recall() {
-		try{
+		if(TP+FN==0){
+			return 0;
+		}else{
 			return TP / (TP + FN);
-		}catch(ArithmeticException e){
-			return 0.0;
 		}
 	}
 
 	public double get_f_measure() {
 		double f = (2 * get_precision() * get_recall())
 				/ (get_precision() + get_recall());
-		if(f<0){
-			return 0;
-		}else if(f>1){
-			return 1;
-		}else{
-			return f;
-		}
-		
+		return f;
 	}
 
 	public double get_accuracy() {
-		try{
 			double acc = (TP + TN) / (TP + TN + FP + FN);
-			if(acc>1){
-				return 1;
-			}else if(acc <0){
+			if((TP + TN + FP + FN)==0){
 				return 0;
 			}else{
 				return acc;
 			}
-		}catch(ArithmeticException e){
-			return 0;
-		}
 		
 	}
 
 	public double get_error() {
-		try{
-		return (FP + FN) / (TP + TN + FP + FN);
-		}catch(ArithmeticException e){
-			return 0.0;
+		if((FP+FN)==0||(TP + TN + FP + FN)==0){
+			return 0;
+		}else{
+			return (FP + FN) / (TP + TN + FP + FN);
 		}
 	}
 	public String toString(){
