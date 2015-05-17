@@ -49,6 +49,7 @@ public class NewThresholdExperiment {
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
 		System.out.println("3.相似度容差實驗");
+		System.out.println("4.核心數目實驗");
 		String i;
 		try{
 			Scanner scanner = new Scanner(System.in);
@@ -81,6 +82,8 @@ public class NewThresholdExperiment {
 					expController.removeThresholdExperiment();
 				}else if(i.equals("3")){
 					expController.timeExperiment();
+				}else if(i.equals("4")){
+					expController.coreExperiment();
 				}
 				System.out.println("Experimetn have been done!\n");
 				System.exit(0);
@@ -195,30 +198,72 @@ public class NewThresholdExperiment {
 		populater.addTestingTopics("earn");
 		execute();
 	}
-	private void execute() throws IOException{
-		this.exp.initialize();
-
-		Long sumTime = (long) 0;
-		for(int dayN= 1;dayN<=this.exp.experimentDays;dayN++){
-			Long time = System.currentTimeMillis();
-			this.exp.run(dayN);
-			Long spendedTime = System.currentTimeMillis() - time;
-			logger.info("Run a day {}, time: {}ms",dayN,spendedTime);
-			sumTime += spendedTime;
-			try(BufferedWriter writer = new BufferedWriter(new FileWriter(exp.getUserProfilePath().resolve("userLog.txt").toFile(),true))){
-				writer.append("Time spend:"+spendedTime);
-				writer.newLine();
-			}catch(IOException e){
-				e.printStackTrace();
-			}
+	
+	public void coreExperiment(){
+		this.topicSimliarityThreshold = 0.4;
+		this.removeRate = 0.1;
+		for(int i=0;i<round;i++){
+			Path tempProject = this.projectDir.resolve("round_"+i);
+			TopicTermGraph.MAXCORESIZE = 5 + i*5;
+			exp = new Experiment(tempProject.toString());
+			exp.experimentDays = 14;
+			exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
+			user = new MemoryBasedUserProfile();
+			user.setRemove_rate(this.removeRate);
+			exp.setUser(user);
+			
+			RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(5);
+					this.setTestSize(5);	
+					
+				}
+				
+			};
+			populater.addTrainingTopics("acq");
+			populater.addTestingTopics("acq");
+			populater.addTestingTopics("earn");
+			exp.newsPopulater = populater;
+			execute();
+			
 		}
+	}
+	
+	public void conceptDriftExperiment(){
 		
-		try(BufferedWriter writer = new BufferedWriter(new FileWriter(exp.getProjectPath().resolve("setting.txt").toFile(),true))){
-			writer.append("Total time:"+sumTime);
+	}
+
+	private void execute(){
+		try {
+			this.exp.initialize();
+
+			Long sumTime = (long) 0;
+			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
+				Long time = System.currentTimeMillis();
+				this.exp.run(dayN);
+				Long spendedTime = System.currentTimeMillis() - time;
+				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
+				sumTime += spendedTime;
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(
+						exp.getUserProfilePath().resolve("userLog.txt")
+								.toFile(), true))) {
+					writer.append("Time spend:" + spendedTime);
+					writer.newLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
+					.getProjectPath().resolve("setting.txt").toFile(), true));
+			writer.append("Total time:" + sumTime);
 			writer.newLine();
-			writer.append("Performance:"+exp.systemPerformance);
+			writer.append("Performance:" + exp.systemPerformance);
 			writer.append(exp.systemPerformance.get_all_result().toString());
-		}catch(IOException e){
+			writer.close();
+
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		

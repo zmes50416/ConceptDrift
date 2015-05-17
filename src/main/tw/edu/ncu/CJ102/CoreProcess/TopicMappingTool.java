@@ -79,7 +79,7 @@ public class TopicMappingTool {
 		if(!taskMap.isEmpty()){
 			throw new RuntimeException("Should have finised all task");
 		}
-		LoggerFactory.getLogger(this.getClass()).info("topic {} map to {}",_topic,mappedTopic);
+		LoggerFactory.getLogger("processDetail").info("topic {} map to {}",_topic,mappedTopic);
 		return mappedTopic;
 	}
 

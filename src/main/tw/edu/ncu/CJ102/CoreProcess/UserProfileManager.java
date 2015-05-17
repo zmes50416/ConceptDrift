@@ -58,6 +58,7 @@ public class UserProfileManager {
 				term.termFreq = term.termFreq * decayFactor;
 				topicInterest += term.termFreq;
 			}
+			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,decayFactor);
 
 			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
 				loger.info("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
@@ -100,7 +101,7 @@ public class UserProfileManager {
 	}
 	
 	/**
-	 * 將每一個文件進行主題映射找出最相似的使用者主題
+	 * 將文件內的每一個主題進行主題映射找出最相似的使用者主題
 	 * @param user 使用者模型
 	 * @param doc_term 文件內容資訊
 	 * @return 文件主題(Key)與該使用者主題(Value)的配對
