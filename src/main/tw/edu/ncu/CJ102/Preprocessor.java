@@ -50,6 +50,7 @@ import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
@@ -79,7 +80,7 @@ public class Preprocessor {
 			Preprocessor.shouldDraw = sc.nextBoolean();
 			sc.close();
 			for(File topicDir : dataFile.listFiles()){
-				ExecutorService executor = Executors.newCachedThreadPool();
+				ExecutorService executor = Executors.newFixedThreadPool(50);
 				documentTermSize =0;
 				totalClusterSize = 0;
 				Path outputTopic = outputDir.resolve(topicDir.getName());
@@ -95,11 +96,14 @@ public class Preprocessor {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				File topicStaticData = outputTopic.resolve("staticData.txt").toFile();
-				try(BufferedWriter settingWriter = new BufferedWriter(new FileWriter(topicStaticData))){
+				File staticData = outputDir.resolve("staticData.txt").toFile();
+				try(BufferedWriter settingWriter = new BufferedWriter(new FileWriter(staticData,true))){
+					settingWriter.write("Topic:"+topicDir.getName());
+					settingWriter.newLine();
 					double avgDocTerm = (documentTermSize/topicDir.listFiles().length);
 					double avgCluster = (totalClusterSize/topicDir.listFiles().length);
 					settingWriter.write("Average Document Term size:" + avgDocTerm);
+					settingWriter.newLine();
 					settingWriter.write("Average Document Cluster size:" + avgCluster);
 				}catch(IOException e){
 					e.printStackTrace();
@@ -177,6 +181,11 @@ class PreprocessTopicTask implements Runnable{
 				term.setTerm(posComp.getVertexResultsTerms().get(term));
 			}
 		}
+		for(TermNode term:termsToRemove){
+			docGraph.removeVertex(term);
+			tfComp.getTermFreqMap().remove(term);
+			posComp.getVertexResultsTerms().remove(term);
+		}
 		double totalNGD = 0;
 		for(CEdge edge:docGraph.getEdges()){
 			double edgeDistance = ngdComp.getEdgeDistance().get(edge);
@@ -184,11 +193,7 @@ class PreprocessTopicTask implements Runnable{
 			totalNGD += edgeDistance;
 		}
 		double avgNGD = totalNGD/docGraph.getEdgeCount();
-		for(TermNode term:termsToRemove){
-			docGraph.removeVertex(term);
-			tfComp.getTermFreqMap().remove(term);
-			posComp.getVertexResultsTerms().remove(term);
-		}
+		
 		int numOfEdgeToRemove = (int) (docGraph.getEdgeCount()*betweenessThreshold);
 		EdgeBetweennessClusterer<TermNode,CEdge> bc = new EdgeBetweennessClusterer<TermNode,CEdge>(numOfEdgeToRemove);
 
