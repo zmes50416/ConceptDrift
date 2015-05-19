@@ -118,7 +118,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	public abstract void setGenarationRule();
 	
 	@Override
-	public String getTopics(File document){
+	public String identifyTopic(File document){
 		
 		if(document.isFile()){
 			String topicName = document.getName().split("_")[0];

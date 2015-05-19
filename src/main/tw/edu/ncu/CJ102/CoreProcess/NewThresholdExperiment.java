@@ -48,8 +48,10 @@ public class NewThresholdExperiment {
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
-		System.out.println("3.相似度容差實驗");
+		System.out.println("3.時間實驗");
 		System.out.println("4.核心數目實驗");
+		System.out.println("5.概念飄移實驗");
+		System.out.println("6.長期興趣門檻");
 		String i;
 		try{
 			Scanner scanner = new Scanner(System.in);
@@ -84,6 +86,8 @@ public class NewThresholdExperiment {
 					expController.timeExperiment();
 				}else if(i.equals("4")){
 					expController.coreExperiment();
+				}else if(i.equals("5")){
+					expController.conceptDriftExperiment();
 				}
 				System.out.println("Experimetn have been done!\n");
 				System.exit(0);
@@ -231,7 +235,33 @@ public class NewThresholdExperiment {
 	}
 	
 	public void conceptDriftExperiment(){
-		
+		exp = new Experiment(this.projectDir.toString());
+		exp.debugMode = debugMode;
+		exp.experimentDays = 14;
+		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.4);
+		user = new MemoryBasedUserProfile();
+		user.setRemove_rate(0.1);
+		exp.setUser(user);
+		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString()){
+
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(5);
+				this.setTestSize(5);
+				this.trainTopics.clear();
+				if(this.theDay<7){
+					this.addTrainingTopics("acq");
+				}else{
+					this.addTrainingTopics("earn");
+				}
+				
+			}
+			
+		};
+		populater.addTrainingTopics("acq");//only to avoid warning
+		populater.addTestingTopics("acq");
+		exp.newsPopulater = populater;
+		execute();
 	}
 
 	private void execute(){

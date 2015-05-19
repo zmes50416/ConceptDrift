@@ -1,5 +1,7 @@
 package tw.edu.ncu.CJ102.Data;
 
+import java.util.UUID;
+
 import edu.uci.ics.jung.graph.util.Pair;
 
 /***
@@ -13,13 +15,14 @@ public class CEdge<T> {//Putting generic T type in decarlaction may not be a goo
 	double coScore;
 	Pair<T> terms;
 	public CEdge(){
-		
+		id = UUID.randomUUID().toString();
 	}
 	public CEdge(Pair<T> _terms) {
 		this(_terms, 1.0);
 	}
 
 	public CEdge(Pair<T> _terms, double score) {
+		this();
 		this.terms = _terms;
 		this.coScore = score;
 	}
@@ -45,6 +48,11 @@ public class CEdge<T> {//Putting generic T type in decarlaction may not be a goo
 		} else {
 			return false;
 		}
+	}
+	
+	@Override
+	public int hashCode(){
+		return this.id.hashCode();
 	}
 
 	@Override

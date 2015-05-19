@@ -30,7 +30,7 @@ public class CiteUlikePopulater implements ExperimentFilePopulater {
 	}
 
 	@Override
-	public String getTopics(File document) {
+	public String identifyTopic(File document) {
 		// TODO Auto-generated method stub
 		return null;
 	}

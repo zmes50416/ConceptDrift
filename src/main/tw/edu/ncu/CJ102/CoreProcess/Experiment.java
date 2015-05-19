@@ -46,7 +46,7 @@ public class Experiment {
 	TopicMappingTool maper;
 	protected int experimentDays;
 	Boolean isInitialized = false;
-	protected Set<String> traingLabel;
+	protected Set<String> traingLabel;//系統正確主題指標
 	protected Map<TopicTermGraph,PerformanceMonitor> monitors;
 	protected PerformanceMonitor systemPerformance;
 	public boolean debugMode;
@@ -56,7 +56,6 @@ public class Experiment {
 		this.projectPath = Paths.get(project);
 		this.userProfilePath = projectPath.resolve("user_profile");
 		this.monitors= new HashMap<>();
-		this.traingLabel= new HashSet<>();
 		this.systemPerformance = new PerformanceMonitor();
 		File lock = projectPath.resolve(".lock").toFile();
 		if(lock.isFile()){
@@ -134,6 +133,10 @@ public class Experiment {
 		if(dayN<=this.experimentDays){
 			train(dayN);
 			test(dayN);
+			if(this.systemPerformance.phTest()){
+				logger.warn("Concept Drift Happened in day {}",dayN);
+			}
+
 		}
 		
 	}
@@ -145,10 +148,10 @@ public class Experiment {
 	protected void train(int today){
 		Path training = this.projectPath.resolve("training/day_"+today);
 		UserProfileManager userManager = new UserProfileManager(this.maper);
-		
+		traingLabel = new HashSet<String>();//training label只會有當天的目標
 		for(File doc:training.toFile().listFiles()){
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(today,doc);
-			String docTopic = this.newsPopulater.getTopics(doc);
+			String docTopic = this.newsPopulater.identifyTopic(doc);
 			this.traingLabel.add(docTopic);
 			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
 			
@@ -172,13 +175,16 @@ public class Experiment {
 		UserProfileManager userManager = new UserProfileManager(this.maper);
 		
 		for(File doc:testingPath.toFile().listFiles()){
-			String docTopic = this.newsPopulater.getTopics(doc);
+			String docTopic = this.newsPopulater.identifyTopic(doc);
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay, doc);
 			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
 			this.performanceTest(topicMap, docTopic);
 		}
 		
 		this.checkLongTermMemory();
+		if(this.systemPerformance.phTest()){
+			logger.warn("System Concept Drift Happened in Day {}",theDay);
+		}
 		
 	}
 	/**
@@ -308,12 +314,12 @@ public class Experiment {
 		if(this.traingLabel.contains(documentTopicLabel)){
 			realAnswer = true;
 		}
-//		boolean systemAnswer = false;
-		boolean systemAnswer = true;
+		boolean systemAnswer = false;
+//		boolean systemAnswer = true;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile
-//			if(topicPair.getKey()==topicPair.getValue()){
-				systemAnswer = false;
+			//if(topicPair.getKey()==topicPair.getValue()){
+				systemAnswer = true;
 				break;
 			}
 		}

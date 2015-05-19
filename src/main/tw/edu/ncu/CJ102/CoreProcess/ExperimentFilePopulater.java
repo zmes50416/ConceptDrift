@@ -16,9 +16,9 @@ public interface ExperimentFilePopulater {
 	 */
 	public boolean populateExperiment(int days);
 	/**
-	 * get the file for topics
+	 * get the topic label of the experiment file
 	 * @param document
 	 * @return the document's topic
 	 */
-	public String getTopics(File document);
+	public String identifyTopic(File document);
 }

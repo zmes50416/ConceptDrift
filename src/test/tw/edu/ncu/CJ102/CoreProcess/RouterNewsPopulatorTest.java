@@ -107,7 +107,7 @@ public class RouterNewsPopulatorTest {
 		File testDocument = this.tempProject.resolve("acq_0000005_concepts.txt").toFile(); 
 		BufferedWriter b = new BufferedWriter(new FileWriter(testDocument));
 		b.write("test case");
-		assertEquals("Should be the acq tag",p.getTopics(testDocument),"acq");
+		assertEquals("Should be the acq tag",p.identifyTopic(testDocument),"acq");
 		b.close();
 	}
 	
