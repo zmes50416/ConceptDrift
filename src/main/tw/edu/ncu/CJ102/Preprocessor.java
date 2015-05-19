@@ -55,7 +55,7 @@ import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /**
- * 因為時間因素無法重新設計一個streaming 前處理流程，此類別用於批次將全部做處理，救急用，請後人重新設計實驗
+ * �為����新設�一�streaming ���程�此�用�批次�部���急用，�後人�新設�實�
  * @author TingWen
  *
  */
