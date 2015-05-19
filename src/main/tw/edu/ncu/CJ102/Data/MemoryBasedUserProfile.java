@@ -4,6 +4,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.uci.ics.jung.graph.util.Pair;
 
 /**
@@ -17,8 +20,8 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int longTermThreshold = 200; // Just for test
-
+	private int longTermThreshold = 100; // Just for test
+	private Logger loger = LoggerFactory.getLogger(this.getClass());
 	public MemoryBasedUserProfile() {
 		this.setRemove_rate(0.1);
 	}
@@ -90,6 +93,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 				for(TermNode term:mappedTopic.getVertices()){
 					sumInterest += term.termFreq;
 					if(sumInterest>=this.longTermThreshold){
+						loger.info("Topic {} become long term Interest",mappedTopic);
 						mappedTopic.setLongTermInterest(true);
 						break;//reduce computing when long term is sured!
 					}
