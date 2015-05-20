@@ -66,17 +66,22 @@ public class UserProfileManager {
 		Iterator<TopicTermGraph> i = userTopics.iterator();// filiter remove element,do not use java default for each
 		while (i.hasNext()) {// 遺忘因子流程
 			TopicTermGraph topic = i.next();
-			double decayFactor = user.getDecayRate(topic, theDay);
+			topic.setDecayRate(user.getDecayRate(topic, theDay));
 			double topicInterest = 0;
 			
 			for (TermNode term : topic.getVertices()) {
-				term.termFreq = term.termFreq * decayFactor;
+				term.termFreq = term.termFreq * topic.getDecayRate();
+				if(term.termFreq<user.getTermRemoveThreshold()){
+					topic.removeVertex(term);
+					loger.debug("Term {} remove from topic because value too low",term);
+					continue;//don't add up the topic value 
+				}
 				topicInterest += term.termFreq;
 			}
 			for(CEdge edge:topic.getEdges()){
-				edge.setCoScore(edge.getCoScore()*decayFactor);
+				edge.setCoScore(edge.getCoScore()*topic.getDecayRate());
 			}
-			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,decayFactor);
+			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,topic.getDecayRate());
 
 			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
 				loger.info("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
@@ -96,24 +101,6 @@ public class UserProfileManager {
 				iterator.remove();
 			}
 		}*/
-		
-	}
-	
-	public boolean removeTerm(TopicTermGraph topic,TermNode term)throws IllegalArgumentException{
-		if(topic.removeVertex(term)){
-			return true;
-		}else{
-			throw new IllegalArgumentException("term are not include in the Topic");
-		}
-		
-	}
-	public boolean removeTopic(AbstractUserProfile user,TopicTermGraph topic){
-		Collection<TopicTermGraph> topics = user.getUserTopics();
-		if(topics.remove(topic)){
-			return true;
-		}else{
-			return false;
-		}
 		
 	}
 	

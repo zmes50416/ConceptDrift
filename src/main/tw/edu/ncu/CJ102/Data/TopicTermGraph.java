@@ -34,12 +34,14 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	double averageTermTf;
 	private int birthDate;
 	private int updateDate;
+	protected double decayRate;
 	int numberOfDocument;
 	public TopicTermGraph(int birthDay){
 		this.setLongTermInterest(false);
 		numberOfDocument = 1;
 		this.birthDate = birthDay;
 		this.updateDate = birthDay;
+		this.decayRate = 1;
 	}
 	
 	/**
@@ -61,6 +63,20 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	 */
 	public void setUpdateDate(int updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	/**
+	 * @return the decayRate
+	 */
+	public double getDecayRate() {
+		return decayRate;
+	}
+
+	/**
+	 * @param decayRate the decayRate to set
+	 */
+	public void setDecayRate(double decayRate) {
+		this.decayRate = decayRate;
 	}
 
 	public boolean isLongTermInterest() {

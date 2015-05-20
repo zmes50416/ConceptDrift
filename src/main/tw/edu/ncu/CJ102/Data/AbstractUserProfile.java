@@ -41,11 +41,11 @@ public abstract class AbstractUserProfile implements Serializable{
 
 	/**
 	 * 實作使用者模型的遺忘公式
-	 * @param topic 使用者的興趣主題
-	 * @param length 經過的時間長度
-	 * @return 該主題的遺忘因子
+	 * @param topic 使用者模型內的主題興趣
+	 * @param date 今天的日期
+	 * @return 該主題今日的遺忘因子值
 	 */
-	public abstract double getDecayRate(TopicTermGraph topic,int updateDate);
+	public abstract double getDecayRate(TopicTermGraph topic,int date);
 
 	/**
 	 * 將配對好的文件主題加入至使用者主題內,並且記錄使用者主題共同出現的次數

@@ -398,9 +398,11 @@ public class Experiment {
 			writer.newLine();
 			writer.append("Topic remove threshold:"+user.getTopicRemoveThreshold());
 			writer.newLine();
+			writer.append("Term remove threshold:"+user.getTermRemoveThreshold());
+			writer.newLine();
 			int i = 1;
 			for(TopicTermGraph topic:topics){
-				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+user.getDecayRate(topic, theDay)+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
+				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
 				writer.newLine();
 				
 			}
