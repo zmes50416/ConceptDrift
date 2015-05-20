@@ -31,18 +31,18 @@ public class ConceptDrift_Forecasting {
 	double topic_close_threshold = 0.6; //NGD+LOG=0.802, NGD=0.088, 簡單重疊比例方法=0.6
 	int forecastingTimes;
 	
-	UndirectedSparseGraph<TopicNode,CEdge> topicCRGraph = new UndirectedSparseGraph<>(); //topic co-occurence Relation Graph 共現矩陣圖形  First is Topic ID, Second is Cooccuren 
+	UndirectedSparseGraph<TopicNode,TopicEdge> topicCRGraph = new UndirectedSparseGraph<>(); //topic co-occurence Relation Graph 共現矩陣圖形  First is Topic ID, Second is Cooccuren 
 	int topicSize;
 	HashMap<String,Double> TR = new HashMap<String,Double>(); //讀取出來的主題關係
 	HashMap<String,Double> TR_NGD = new HashMap<String,Double>(); //NGD計算後的主題關係
 	
 	HashMap<String,Double> sum_topic_freq = new HashMap<String,Double>(); //各主題的出現
 	HashMap<String, TopicNode> topics = new HashMap<>(); //topic(V)列表
-	HashMap<String, CEdge> edges = new HashMap<>();
-	TreeMap<CEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<CEdge>(){
+	HashMap<String, TopicEdge> edges = new HashMap<>();
+	TreeMap<TopicEdge, Pair<TopicNode>> PredictionRank = new TreeMap<>(new Comparator<TopicEdge>(){
 		@Override
-		public int compare(CEdge o1, CEdge o2) {
-			return o1.getCoScore()>=o2.getCoScore()?1:-1;
+		public int compare(TopicEdge o1, TopicEdge o2) {
+			return o1.coScore>=o2.coScore?1:-1;
 		}
 		
 	});
@@ -162,7 +162,7 @@ public class ConceptDrift_Forecasting {
 					TopicNode firstTopic = topics.get(topic);
 					TopicNode secondTopic = topics.get(anotherTopic);
 					Pair<TopicNode> pair = new Pair<>(firstTopic,secondTopic); 
-					CEdge<TopicNode> c =  new CEdge<>(pair,NGD);
+					TopicEdge c =  new TopicEdge(pair,NGD);
 					this.edges.put(String.valueOf(count++), c);
 					this.topicCRGraph.addEdge(c, pair);
 				}
@@ -199,7 +199,7 @@ public class ConceptDrift_Forecasting {
 					this.forecastingTimes++;
 					String newID = String.valueOf(this.edges.size()+this.PredictionRank.size()+1);
 					Pair<TopicNode> nodeConnected = new Pair<TopicNode>(node, anotherNode);
-					CEdge<TopicNode> newEdge = new CEdge<TopicNode>(nodeConnected,index);
+					TopicEdge newEdge = new TopicEdge(nodeConnected,index);
 					this.PredictionRank.put(newEdge, nodeConnected );
 					//TODO Haven't deterime NGD Distance yet	
 					//this.topicCRGraph.addEdge(new CEdge("sd",1.0), node, anotherNode);
@@ -227,22 +227,22 @@ public class ConceptDrift_Forecasting {
 			for (TopicNode neighborOfN : this.topicCRGraph.getNeighbors(n)) {
 				for (TopicNode n2 : this.topicCRGraph.getNeighbors(neighborOfN)) {
 					if ((this.topicCRGraph.findEdge(n2, n)) == null) {
-						CEdge<TopicNode> edge = this.topicCRGraph.findEdge(n, neighborOfN);
-						CEdge<TopicNode> anotherEdge = this.topicCRGraph.findEdge(
+						TopicEdge edge = this.topicCRGraph.findEdge(n, neighborOfN);
+						TopicEdge anotherEdge = this.topicCRGraph.findEdge(
 								neighborOfN, n2);
-						if (edge.getCoScore() + anotherEdge.getCoScore() <= this.topic_close_threshold) {
-							CEdge<TopicNode> newEdge;
+						if (edge.coScore + anotherEdge.coScore <= this.topic_close_threshold) {
+							TopicEdge newEdge;
 							double maxOfFreq = Math.max(sum_topic_freq.get(n.getId()),
 										sum_topic_freq.get(n2.getId()));
 							double minOfFreq = Math.min(sum_topic_freq.get(n.getId()),sum_topic_freq.get(n2.getId()));
 							
-							double should = maxOfFreq - ((edge.getCoScore() + anotherEdge.getCoScore()) * (sum_topics_relation - minOfFreq));
+							double should = maxOfFreq - ((edge.coScore + anotherEdge.coScore) * (sum_topics_relation - minOfFreq));
 							// SIM反推
 							// double should =
 							// (TR_NGD.get(edge1)+TR_NGD.get(edge2))*(sum_topic_freq.get(new_edge.split("-")[0])+sum_topic_freq.get(new_edge.split("-")[1]))/2;
 							String newID = String.valueOf(this.edges.size()+1);
 							Pair<TopicNode> pair = new Pair<>(n,n2);
-							newEdge = new CEdge<TopicNode>(pair,should);
+							newEdge = new TopicEdge(pair,should);
 							edges.put(newID, newEdge);
 							TR.put(newEdge.getId(), should);
 							// 預測紀錄
@@ -431,7 +431,20 @@ public class ConceptDrift_Forecasting {
 		return this.forecastingTimes;
 	}
 	
-	public Graph<TopicNode, CEdge> getTopicCooccurGrahp(){
+	public Graph<TopicNode, TopicEdge> getTopicCooccurGrahp(){
 		return this.topicCRGraph;
+	}
+	
+	private class TopicEdge{
+		public TopicEdge(Pair<TopicNode> pair, double nGD) {
+			terms = pair;
+			coScore = nGD;
+		}
+		public String getId() {
+			return id;
+		}
+		Pair<TopicNode> terms;
+		String id;
+		double coScore;
 	}
 }
