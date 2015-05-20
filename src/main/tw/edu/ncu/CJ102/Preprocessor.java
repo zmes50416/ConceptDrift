@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.Transformer;
@@ -71,9 +72,12 @@ public class Preprocessor {
 	public static void main(String[] args) {
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
 		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
-		File dataFile = new File("usedData");
+		//Choose input File
+		JOptionPane.showMessageDialog(null, "Choose the input data set dir");
+		File dataFile = new File(SettingManager.chooseProject());
 		long startTime = System.currentTimeMillis(); 
 		try {
+			JOptionPane.showMessageDialog(null, "Choose the output dir");
 			Path outputDir = new File(SettingManager.chooseProject()).toPath();
 			Files.createDirectories(outputDir);
 			System.out.println("Enable the drawing function?(true/false)");
@@ -161,8 +165,8 @@ class PreprocessTopicTask implements Runnable{
 			}
 			
 		});
-		PartOfSpeechFilter<TermNode,CEdge> posComp = new PartOfSpeechFilter<TermNode,CEdge>(c,c.getStringOfVertex());
-//		StandfordPartOfSpeechFiliter<TermNode,CEdge> posComp = new StandfordPartOfSpeechFiliter<TermNode,CEdge>(c,c.getVertexContent());
+//		PartOfSpeechFilter<TermNode,CEdge> posComp = new PartOfSpeechFilter<TermNode,CEdge>(c,c.getStringOfVertex());
+		StandfordPartOfSpeechFiliter<TermNode,CEdge> posComp = new StandfordPartOfSpeechFiliter<TermNode,CEdge>(c,c.getVertexContent());
 		TermToLowerCaseDecorator<TermNode,CEdge> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge>(posComp, posComp.getVertexResultsTerms());
 		FilteredTermLengthDecorator<TermNode,CEdge> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge>(lowerComp, posComp.getVertexResultsTerms(), 3);
 		
