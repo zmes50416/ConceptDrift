@@ -206,7 +206,7 @@ public class Experiment {
 			for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
 				String term = line.split(",")[0]; // 字詞
 				int group = Integer.valueOf(line.split(",")[2])-1; // 字詞所屬群別
-				double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
+				double TFScore = Double.valueOf(line.split(",")[1]); // 字詞分數
 
 				TopicTermGraph c = null;
 				try{
@@ -225,11 +225,9 @@ public class Experiment {
 					c.addVertex(addTerm);
 					for(TermNode otherVertex:c.getVertices()){
 						if(otherVertex!= addTerm){
-							c.addEdge(new CEdge<Double>(), addTerm, otherVertex);
+							c.addEdge(new CEdge(), addTerm, otherVertex);
 						}
 					}
-					c.setUpdateDate(theDay);
-				
 			}
 			return Arrays.asList(documentTopics);
 		}catch(IOException e){
@@ -239,43 +237,43 @@ public class Experiment {
 		
 	}
 	public List<TopicTermGraph> readFromDTG(int theDay,File doc){
-		Transformer<CEdge<Double>, Double> edgeTransformer = new Transformer<CEdge<Double>,Double>(){
+		Transformer<CEdge, Double> edgeTransformer = new Transformer<CEdge,Double>(){
 
 			@Override
-			public Double transform(CEdge<Double> input) {
+			public Double transform(CEdge input) {
 				double weight = input.getCoScore();
 				return weight;
 			}
 			
 		};
 		
-		RouterNewsPreprocessor<TermNode,CEdge<Double>> c = new RouterNewsPreprocessor<TermNode,CEdge<Double>>(new Factory<TermNode>(){
+		RouterNewsPreprocessor<TermNode,CEdge> c = new RouterNewsPreprocessor<TermNode,CEdge>(new Factory<TermNode>(){
 
 			@Override
 			public TermNode create() {
 				return new TermNode();
 			}
 			
-		},new Factory<CEdge<Double>>(){
+		},new Factory<CEdge>(){
 
 			@Override
-			public CEdge<Double> create() {
-				return new CEdge<Double>();
+			public CEdge create() {
+				return new CEdge();
 			}
 			
 		});
 		c.execute(doc);
 
-		PartOfSpeechFilter<TermNode,CEdge<Double>> posComp = new PartOfSpeechFilter<TermNode,CEdge<Double>>(c, c.getStringOfVertex());
-		TermToLowerCaseDecorator<TermNode,CEdge<Double>> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge<Double>>(posComp, posComp.getVertexResultsTerms());
-		FilteredTermLengthDecorator<TermNode,CEdge<Double>> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge<Double>>(lowerComp, posComp.getVertexResultsTerms(), 3);
+		PartOfSpeechFilter<TermNode,CEdge> posComp = new PartOfSpeechFilter<TermNode,CEdge>(c, c.getStringOfVertex());
+		TermToLowerCaseDecorator<TermNode,CEdge> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge>(posComp, posComp.getVertexResultsTerms());
+		FilteredTermLengthDecorator<TermNode,CEdge> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge>(lowerComp, posComp.getVertexResultsTerms(), 3);
 		
-		StemmingDecorator<TermNode,CEdge<Double>> stemmedC = new StemmingDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexResultsTerms());
-		TermFreqDecorator<TermNode,CEdge<Double>> tfComp = new TermFreqDecorator<TermNode,CEdge<Double>>(stemmedC, posComp.getVertexResultsTerms());
-		SearchResultFilter<TermNode,CEdge<Double>> filitedTermComp = new SearchResultFilter<TermNode,CEdge<Double>>(tfComp,  posComp.getVertexResultsTerms(), 10, 1000, new EmbeddedIndexSearcher());
-		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(filitedTermComp,posComp.getVertexResultsTerms(),new EmbeddedIndexSearcher());
-		NgdEdgeFilter<TermNode,CEdge<Double>> ngdflitedComp = new NgdEdgeFilter<TermNode,CEdge<Double>>(ngdComp, ngdComp.getEdgeDistance(), 0.5);
-		Graph<TermNode,CEdge<Double>> docGraph = ngdflitedComp.execute(doc);
+		StemmingDecorator<TermNode,CEdge> stemmedC = new StemmingDecorator<TermNode,CEdge>(termLengthComp, posComp.getVertexResultsTerms());
+		TermFreqDecorator<TermNode,CEdge> tfComp = new TermFreqDecorator<TermNode,CEdge>(stemmedC, posComp.getVertexResultsTerms());
+		SearchResultFilter<TermNode,CEdge> filitedTermComp = new SearchResultFilter<TermNode,CEdge>(tfComp,  posComp.getVertexResultsTerms(), 10, 1000, new EmbeddedIndexSearcher());
+		NGDistanceDecorator<TermNode,CEdge> ngdComp = new NGDistanceDecorator<TermNode,CEdge>(filitedTermComp,posComp.getVertexResultsTerms(),new EmbeddedIndexSearcher());
+		NgdEdgeFilter<TermNode,CEdge> ngdflitedComp = new NgdEdgeFilter<TermNode,CEdge>(ngdComp, ngdComp.getEdgeDistance(), 0.5);
+		Graph<TermNode,CEdge> docGraph = ngdflitedComp.execute(doc);
 		
 		HashSet<TermNode> termsToRemove = new HashSet<>();
 		for(TermNode term:docGraph.getVertices()){
@@ -286,7 +284,7 @@ public class Experiment {
 				term.setTerm(posComp.getVertexResultsTerms().get(term));
 			}
 		}
-		for(CEdge<Double> edge:docGraph.getEdges()){
+		for(CEdge edge:docGraph.getEdges()){
 			edge.setCoScore(ngdComp.getEdgeDistance().get(edge));
 		}
 		for(TermNode term:termsToRemove){
@@ -299,8 +297,8 @@ public class Experiment {
 		System.out.println("Size of Edges:"+docGraph.getEdgeCount());
 		
 		int numOfEdgeToRemove = (int) (docGraph.getEdgeCount()*betweenessThreshold);
-		EdgeBetweennessClusterer<TermNode,CEdge<Double>> bc = new EdgeBetweennessClusterer<>(numOfEdgeToRemove);
-//		EdgeBetweennessClusterer<TermNode,CEdge<Double>> bc = new WeightedBetweennessCluster<>(numOfEdgeToRemove,edgeTransformer);
+		EdgeBetweennessClusterer<TermNode,CEdge> bc = new EdgeBetweennessClusterer<>(numOfEdgeToRemove);
+//		EdgeBetweennessClusterer<TermNode,CEdge> bc = new WeightedBetweennessCluster<>(numOfEdgeToRemove,edgeTransformer);
 
 		Set<Set<TermNode>> clusters = bc.transform(docGraph);
 		List<TopicTermGraph> topics = new ArrayList<TopicTermGraph>();

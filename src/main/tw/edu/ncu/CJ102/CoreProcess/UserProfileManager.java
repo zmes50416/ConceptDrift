@@ -73,7 +73,7 @@ public class UserProfileManager {
 				term.termFreq = term.termFreq * decayFactor;
 				topicInterest += term.termFreq;
 			}
-			for(CEdge<Double>edge:topic.getEdges()){
+			for(CEdge edge:topic.getEdges()){
 				edge.setCoScore(edge.getCoScore()*decayFactor);
 			}
 			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,decayFactor);
@@ -85,7 +85,7 @@ public class UserProfileManager {
 			
 		}
 		//TODO implement Term forgetting process
-		TopicCoOccuranceGraph topicCoGraph = user.getTopicCOGraph();
+		/*TopicCoOccuranceGraph topicCoGraph = user.getTopicCOGraph();
 		for (Iterator<CEdge> iterator = topicCoGraph.getEdges().iterator(); iterator
 				.hasNext();) {
 			CEdge<TopicNode> edge = iterator.next();
@@ -95,7 +95,7 @@ public class UserProfileManager {
 				System.out.println("TopicCoOccurance CEdge removed:"+edge.toString());
 				iterator.remove();
 			}
-		}
+		}*/
 		
 	}
 	
@@ -137,9 +137,9 @@ public class UserProfileManager {
 			Collection<TopicTermGraph> userTopics = user.getUserTopics();
 			for (TopicTermGraph topic : userTopics) {
 				final Collection<TermNode> coreTerms = topic.getCoreTerm();
-				Layout<TermNode, CEdge<Double>> layout = new ISOMLayout<>(topic);
+				Layout<TermNode, CEdge> layout = new ISOMLayout<>(topic);
 				layout.setSize(new Dimension(1600, 1600));
-				VisualizationImageServer<TermNode, CEdge<Double>> vis = new VisualizationImageServer<TermNode, CEdge<Double>>(
+				VisualizationImageServer<TermNode, CEdge> vis = new VisualizationImageServer<TermNode, CEdge>(
 						layout, layout.getSize());
 				vis.setBackground(Color.WHITE);
 				vis.getRenderContext().setVertexLabelTransformer(

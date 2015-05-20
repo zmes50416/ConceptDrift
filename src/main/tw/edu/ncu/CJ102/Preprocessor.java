@@ -131,42 +131,42 @@ class PreprocessTopicTask implements Runnable{
 
 	@Override
 	public void run() {
-		Transformer<CEdge<Double>, Double> edgeTransformer = new Transformer<CEdge<Double>,Double>(){
+		Transformer<CEdge, Double> edgeTransformer = new Transformer<CEdge,Double>(){
 
 			@Override
-			public Double transform(CEdge<Double> input) {
+			public Double transform(CEdge input) {
 				double weight = input.getCoScore();
 				return weight;
 			}
 			
 		};
 		
-		RouterNewsPreprocessor<TermNode,CEdge<Double>> c = new RouterNewsPreprocessor<TermNode,CEdge<Double>>(new Factory<TermNode>(){
+		RouterNewsPreprocessor<TermNode,CEdge> c = new RouterNewsPreprocessor<TermNode,CEdge>(new Factory<TermNode>(){
 
 			@Override
 			public TermNode create() {
 				return new TermNode();
 			}
 			
-		},new Factory<CEdge<Double>>(){
+		},new Factory<CEdge>(){
 
 			@Override
-			public CEdge<Double> create() {
-				return new CEdge<Double>();
+			public CEdge create() {
+				return new CEdge();
 			}
 			
 		});
-		PartOfSpeechFilter<TermNode,CEdge<Double>> posComp = new PartOfSpeechFilter<TermNode,CEdge<Double>>(c,c.getStringOfVertex());
-//		StandfordPartOfSpeechFiliter<TermNode,CEdge<Double>> posComp = new StandfordPartOfSpeechFiliter<TermNode,CEdge<Double>>(c,c.getVertexContent());
-		TermToLowerCaseDecorator<TermNode,CEdge<Double>> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge<Double>>(posComp, posComp.getVertexResultsTerms());
-		FilteredTermLengthDecorator<TermNode,CEdge<Double>> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge<Double>>(lowerComp, posComp.getVertexResultsTerms(), 3);
+		PartOfSpeechFilter<TermNode,CEdge> posComp = new PartOfSpeechFilter<TermNode,CEdge>(c,c.getStringOfVertex());
+//		StandfordPartOfSpeechFiliter<TermNode,CEdge> posComp = new StandfordPartOfSpeechFiliter<TermNode,CEdge>(c,c.getVertexContent());
+		TermToLowerCaseDecorator<TermNode,CEdge> lowerComp = new TermToLowerCaseDecorator<TermNode,CEdge>(posComp, posComp.getVertexResultsTerms());
+		FilteredTermLengthDecorator<TermNode,CEdge> termLengthComp = new FilteredTermLengthDecorator<TermNode,CEdge>(lowerComp, posComp.getVertexResultsTerms(), 3);
 		
-//		StemmingDecorator<TermNode,CEdge<Double>> stemmedComp = new StemmingDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexResultsTerms());
-		TermFreqDecorator<TermNode,CEdge<Double>> tfComp = new TermFreqDecorator<TermNode,CEdge<Double>>(termLengthComp, posComp.getVertexResultsTerms());
-		SearchResultFilter<TermNode,CEdge<Double>> filitedTermComp = new SearchResultFilter<TermNode,CEdge<Double>>(tfComp,  posComp.getVertexResultsTerms(), 10, 1000, new EmbeddedIndexSearcher());
-		NGDistanceDecorator<TermNode,CEdge<Double>> ngdComp = new NGDistanceDecorator<TermNode,CEdge<Double>>(filitedTermComp,posComp.getVertexResultsTerms(),filitedTermComp.getTermsSearchResult(),new EmbeddedIndexSearcher());
-		NgdEdgeFilter<TermNode,CEdge<Double>> ngdflitedComp = new NgdEdgeFilter<TermNode,CEdge<Double>>(ngdComp, ngdComp.getEdgeDistance(), 0.5);
-		Graph<TermNode,CEdge<Double>> docGraph = ngdflitedComp.execute(doc);
+//		StemmingDecorator<TermNode,CEdge> stemmedComp = new StemmingDecorator<TermNode,CEdge>(termLengthComp, posComp.getVertexResultsTerms());
+		TermFreqDecorator<TermNode,CEdge> tfComp = new TermFreqDecorator<TermNode,CEdge>(termLengthComp, posComp.getVertexResultsTerms());
+		SearchResultFilter<TermNode,CEdge> filitedTermComp = new SearchResultFilter<TermNode,CEdge>(tfComp,  posComp.getVertexResultsTerms(), 10, 1000, new EmbeddedIndexSearcher());
+		NGDistanceDecorator<TermNode,CEdge> ngdComp = new NGDistanceDecorator<TermNode,CEdge>(filitedTermComp,posComp.getVertexResultsTerms(),filitedTermComp.getTermsSearchResult(),new EmbeddedIndexSearcher());
+		NgdEdgeFilter<TermNode,CEdge> ngdflitedComp = new NgdEdgeFilter<TermNode,CEdge>(ngdComp, ngdComp.getEdgeDistance(), 0.5);
+		Graph<TermNode,CEdge> docGraph = ngdflitedComp.execute(doc);
 		
 		HashSet<TermNode> termsToRemove = new HashSet<>();
 		for(TermNode term:docGraph.getVertices()){
@@ -178,7 +178,7 @@ class PreprocessTopicTask implements Runnable{
 			}
 		}
 		double totalNGD = 0;
-		for(CEdge<Double> edge:docGraph.getEdges()){
+		for(CEdge edge:docGraph.getEdges()){
 			double edgeDistance = ngdComp.getEdgeDistance().get(edge);
 			edge.setCoScore(edgeDistance);
 			totalNGD += edgeDistance;
@@ -190,7 +190,7 @@ class PreprocessTopicTask implements Runnable{
 			posComp.getVertexResultsTerms().remove(term);
 		}
 		int numOfEdgeToRemove = (int) (docGraph.getEdgeCount()*betweenessThreshold);
-		EdgeBetweennessClusterer<TermNode,CEdge<Double>> bc = new EdgeBetweennessClusterer<TermNode,CEdge<Double>>(numOfEdgeToRemove);
+		EdgeBetweennessClusterer<TermNode,CEdge> bc = new EdgeBetweennessClusterer<TermNode,CEdge>(numOfEdgeToRemove);
 
 		Set<Set<TermNode>> clusters = bc.transform(docGraph);
 		final HashMap<Set<TermNode>,Color> clustersColor = new HashMap<>();
@@ -205,10 +205,10 @@ class PreprocessTopicTask implements Runnable{
 			}
 		}
 	    if(Preprocessor.shouldDraw){
-			Layout<TermNode, CEdge<Double>> layout = new KKLayout<>(docGraph);
+			Layout<TermNode, CEdge> layout = new KKLayout<>(docGraph);
 		    layout.setSize(new Dimension(800,800));
-			VisualizationImageServer<TermNode, CEdge<Double>> vis =
-				    new VisualizationImageServer<TermNode, CEdge<Double>>(layout, layout.getSize());
+			VisualizationImageServer<TermNode, CEdge> vis =
+				    new VisualizationImageServer<TermNode, CEdge>(layout, layout.getSize());
 			vis.setBackground(Color.WHITE);
 			vis.getRenderContext().setVertexLabelTransformer(new Transformer<TermNode,String>(){
 
@@ -231,10 +231,10 @@ class PreprocessTopicTask implements Runnable{
 				}
 				
 			});
-			vis.getRenderContext().setEdgeLabelTransformer(new Transformer<CEdge<Double>,String>(){
+			vis.getRenderContext().setEdgeLabelTransformer(new Transformer<CEdge,String>(){
 
 				@Override
-				public String transform(CEdge<Double> input) {
+				public String transform(CEdge input) {
 					String i = String.valueOf((float)input.getCoScore());
 					return i;
 				}

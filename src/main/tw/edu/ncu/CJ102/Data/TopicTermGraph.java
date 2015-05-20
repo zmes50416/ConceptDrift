@@ -27,9 +27,9 @@ import edu.uci.ics.jung.graph.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge<Double>> implements Serializable{
+public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	public static int MAXCORESIZE = 10; //Default Core size
-	CentralityAlgorithm<TermNode,CEdge<Double>> algo = new LP<TermNode,CEdge<Double>>(this); //Default Core algorithm
+	CentralityAlgorithm<TermNode,CEdge> algo = new LP<TermNode,CEdge>(this); //Default Core algorithm
 	private boolean isLongTermInterest;
 	double averageTermTf;
 	protected int birthDate;
@@ -84,11 +84,11 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge<Double>
 	}
 	//Know condition:add a edge that v1 and v2 is not already add will cause v1&v2 add into Edge but if node already exist it will not add the value! 
 	@Override
-	public boolean addEdge(CEdge<Double> e,TermNode v1,TermNode v2){
+	public boolean addEdge(CEdge e,TermNode v1,TermNode v2){
 		if(super.addEdge(e, v1, v2)){
 			return true;
 		}else{
-			CEdge<Double> rightEdge = this.findEdge(v1, v2);
+			CEdge rightEdge = this.findEdge(v1, v2);
 			if(rightEdge!=null){//edge exist
 				e.coScore += 1;
 				return false;

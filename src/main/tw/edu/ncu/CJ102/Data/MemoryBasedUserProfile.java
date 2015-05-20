@@ -106,7 +106,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}
 		//average topic term freq instead of whole document 
 		documentTf = documentTf / topicMap.size();
-		
+		/*
 		for(TopicTermGraph userTopic:topicMap.values()){//For topic coOccurance graph
 			for(TopicTermGraph anotherUserTopic:documentTopics){
 				if(userTopic!=anotherUserTopic){
@@ -116,7 +116,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			documentTopics.remove(userTopic);
 			
 		}//end of CoOccurance Topics
-		
+		*/
 		this.updateTopicRemoveThreshold(documentTf);
 	}
 

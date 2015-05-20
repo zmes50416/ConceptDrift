@@ -33,7 +33,7 @@ public class TopicTermGraphTest {
 		TermNode testNode2 = new TermNode("Samsung");
 		c2.addVertex(new TermNode("test"));
 		c2.addVertex(testNode1);
-		CEdge<TermNode> edge = new CEdge<>(new Pair<TermNode>(testNode1,testNode2));
+		CEdge edge = new CEdge(new Pair<TermNode>(testNode1,testNode2));
 		c2.addEdge(edge, testNode1,testNode2);
 		c.merge(c2);
 		assertEquals("Should have 1 edge after merge",1,c.getEdgeCount());
@@ -55,7 +55,7 @@ public class TopicTermGraphTest {
 		TermNode testNode1 = new TermNode("Google");
 		TermNode testNode2 = new TermNode("Samsung");
 		Pair<TermNode> pair = new Pair<TermNode>(testNode1,testNode2);
-		CEdge<TermNode> e=new CEdge<>(pair);
+		CEdge e=new CEdge(pair);
 		assertTrue("First time add should be true",this.c.addEdge(e, testNode1, testNode2));
 		this.c.addEdge(e, testNode1, testNode2);
 		assertEquals("Second time the value should be 2",2,e.getCoScore(),0.5);
@@ -69,9 +69,9 @@ public class TopicTermGraphTest {
 		TermNode testNode1 = new TermNode("Google");
 		TermNode testNode2 = new TermNode("Samsung");
 		TermNode testNode3 = new TermNode("Apple");
-		c.addEdge(new CEdge<Double>(), testNode,testNode1);
-		c.addEdge(new CEdge<Double>(), testNode1,testNode2);
-		c.addEdge(new CEdge<Double>(), testNode3,testNode2);
+		c.addEdge(new CEdge(), testNode,testNode1);
+		c.addEdge(new CEdge(), testNode1,testNode2);
+		c.addEdge(new CEdge(), testNode3,testNode2);
 		
 		Collection<TermNode> cores = this.c.getCoreTerm();
 		System.out.println(cores);
