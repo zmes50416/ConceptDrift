@@ -33,6 +33,7 @@ import org.apache.commons.collections15.Transformer;
 import tw.edu.ncu.CJ102.Data.CEdge;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+import tw.edu.ncu.im.Preprocess.BBCNewsPreprocessor;
 import tw.edu.ncu.im.Preprocess.RouterNewsPreprocessor;
 import tw.edu.ncu.im.Preprocess.Decorator.FilteredTermLengthDecorator;
 import tw.edu.ncu.im.Preprocess.Decorator.NGDistanceDecorator;
@@ -55,7 +56,7 @@ import edu.uci.ics.jung.visualization.VisualizationImageServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /**
- * �為����新設�一�streaming ���程�此�用�批次�部���急用，�後人�新設�實�
+ * 因為時間因素無法重新設計一個streaming 前處理流程，此類別用於批次將全部做處理，救急用，請後人重新設計實驗
  * @author TingWen
  *
  */
@@ -145,7 +146,7 @@ class PreprocessTopicTask implements Runnable{
 			
 		};
 		
-		RouterNewsPreprocessor<TermNode,CEdge> c = new RouterNewsPreprocessor<TermNode,CEdge>(new Factory<TermNode>(){
+		BBCNewsPreprocessor<TermNode,CEdge> c = new BBCNewsPreprocessor<TermNode,CEdge>(new Factory<TermNode>(){
 
 			@Override
 			public TermNode create() {
