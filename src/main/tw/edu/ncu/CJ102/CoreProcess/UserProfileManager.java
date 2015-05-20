@@ -68,17 +68,20 @@ public class UserProfileManager {
 			TopicTermGraph topic = i.next();
 			topic.setDecayRate(user.getDecayRate(topic, theDay));
 			double topicInterest = 0;
-			
-			for (TermNode term : topic.getVertices()) {
+			HashSet<TermNode> termsToRemove = new HashSet<TermNode>();
+			for (TermNode term : topic.getVertices()) { //update every term in topic
 				term.termFreq = term.termFreq * topic.getDecayRate();
-				if(term.termFreq<user.getTermRemoveThreshold()){
-					topic.removeVertex(term);
-					loger.debug("Term {} remove from topic because value too low",term);
+				if(term.termFreq<user.getTermRemoveThreshold()){//avoid modify exception
+					termsToRemove.add(term);
 					continue;//don't add up the topic value 
 				}
 				topicInterest += term.termFreq;
 			}
-			for(CEdge edge:topic.getEdges()){
+			for(TermNode term:termsToRemove){
+				topic.removeVertex(term);
+				loger.debug("Term {} remove from topic because value too low",term);
+			}
+			for(CEdge edge:topic.getEdges()){//decay Edge weight
 				edge.setCoScore(edge.getCoScore()*topic.getDecayRate());
 			}
 			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,topic.getDecayRate());
@@ -89,7 +92,6 @@ public class UserProfileManager {
 			}
 			
 		}
-		//TODO implement Term forgetting process
 		/*TopicCoOccuranceGraph topicCoGraph = user.getTopicCOGraph();
 		for (Iterator<CEdge> iterator = topicCoGraph.getEdges().iterator(); iterator
 				.hasNext();) {

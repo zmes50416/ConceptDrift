@@ -69,33 +69,6 @@ public class UserProfileManagerTest extends EasyMockSupport{
 	}
 
 	@Test
-	public void testRemoveTerm() {
-		String termName = "google";
-		TermNode term = new TermNode(termName);
-		topic1.addVertex(term);
-
-		this.manager.removeTerm(topic1, term);
-		assertTrue("Topic term "+termName+" should have been removed",!topic1.containsVertex(new TermNode(termName)));
-	}
-	@Test(expected=IllegalArgumentException.class)
-	public void testRemoveTermDoNotExsitInTheTopic(){
-		TermNode term = new TermNode("Google");
-		
-		this.manager.removeTerm(topic1,term);
-	}
-
-	@Test
-	public void testRemoveTopic() {
-		
-		expect(user.getUserTopics()).andReturn(mockUserTopics);
-		replay(user);
-		
-		manager.removeTopic(user, topic1);
-		assertTrue(mockUserTopics.isEmpty());
-		
-	}
-	
-	@Test
 	public void testInsertTopic() {
 		topic1 = new TopicTermGraph(0);
 		TopicTermGraph topic2 = new TopicTermGraph(0);

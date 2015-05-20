@@ -15,7 +15,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	 */
 	String id;
 
-	private double removeRate; //興趣去除比例
+	protected double removeRate; //興趣去除比例
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
 	protected Collection<TopicTermGraph> userTopics = new ArrayList<>();

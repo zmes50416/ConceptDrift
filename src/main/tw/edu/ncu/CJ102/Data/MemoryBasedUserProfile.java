@@ -124,7 +124,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	}
 
 	protected void updateTermRemoveThreshold(double newTermTf) {
-		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
+		this.termRemoveThreshold = (this.removeRate * newTermTf + this.termRemoveThreshold)/2;
 	}
 
 
