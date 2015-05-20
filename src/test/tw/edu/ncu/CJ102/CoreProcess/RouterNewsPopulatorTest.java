@@ -60,7 +60,7 @@ public class RouterNewsPopulatorTest {
 	public void testpopulateExperiment(){ 
 		int day=1;
 		p.populateExperiment(day);
-		RouterNewsPopulator p2 = new RouterNewsPopulator(tempProject.toString()+"_dual/","Tom_reuters_noTolerance/single"){
+		RouterNewsPopulator p2 = new RouterNewsPopulator(tempProject.toString()+"_dual/"){
 
 			@Override
 			public void setGenarationRule() {
@@ -82,7 +82,7 @@ public class RouterNewsPopulatorTest {
 
 		assertEquals("",test.list().length,day);
 		for(File dayDir:test.listFiles()){
-			assertEquals("",dayDir.list().length,day);
+			assertEquals("Should have create experiment's day dir",dayDir.list().length,day);
 			File p2dayDir = p2.projectDir.resolve(ExperimentFilePopulater.TRAININGPATH).resolve(dayDir.getName()).toFile();
 			List<String> fileList = Arrays.asList(p2dayDir.list());
 			for(File file:dayDir.listFiles()){

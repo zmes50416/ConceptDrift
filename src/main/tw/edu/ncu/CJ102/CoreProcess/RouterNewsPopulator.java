@@ -13,6 +13,8 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
+import tw.edu.ncu.CJ102.SettingManager;
+
 /**
  * For Router News DataSet.
  * should Override the simulateNextDay for different Experiment requirment.
@@ -26,7 +28,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 	Set<String> testTopics = new HashSet<String>() ;
 	TrainingTools trainerTom = new TrainingTools();
 	public String topicPath;
-	public static final String DEFAULT_TOPIC_PATH = "Tom_reuters_0.4/single";
+	public static final String DEFAULT_TOPIC_PATH = SettingManager.getSetting("TopicPath");
 	private int trainSize,testSize;
 	static final String test[] = { "acq", "earn", "crude", "coffee", "sugar",
 			"trade", "cocoa" };

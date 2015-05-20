@@ -255,7 +255,7 @@ public class NewThresholdExperiment {
 				this.setTrainSize(5);
 				this.setTestSize(5);
 				this.trainTopics.clear();
-				if(this.theDay<7){
+				if(this.theDay<=7){
 					this.addTrainingTopics("acq");
 				}else{
 					this.addTrainingTopics("earn");
