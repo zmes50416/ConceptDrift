@@ -43,7 +43,7 @@ public class Experiment {
 	private Path projectPath,userProfilePath;
 	private AbstractUserProfile user;
 	ExperimentFilePopulater newsPopulater;
-	TopicMappingTool maper;
+	protected UserProfileManager userManager;
 	protected int experimentDays;
 	Boolean isInitialized = false;
 	protected Set<String> traingLabel;//系統正確主題指標
@@ -52,11 +52,13 @@ public class Experiment {
 	public boolean debugMode;
 	double betweenessThreshold = 0.35;
 	private Logger logger = LoggerFactory.getLogger(Experiment.class);
-	public Experiment(String project) {		// 創造出實驗資料匣
+	public Experiment(String project,TopicMappingTool maper,AbstractUserProfile user) {		// 創造出實驗資料匣
 		this.projectPath = Paths.get(project);
 		this.userProfilePath = projectPath.resolve("user_profile");
 		this.monitors= new HashMap<>();
 		this.systemPerformance = new PerformanceMonitor();
+		this.userManager= new UserProfileManager(maper);
+		this.user = user;
 		File lock = projectPath.resolve(".lock").toFile();
 		if(lock.isFile()){
 			throw new IllegalStateException("The Project have been lock in others process, please clean the project dir first");
@@ -113,11 +115,11 @@ public class Experiment {
 		Files.createFile(projectPath.resolve(".lock"));//give the flag that this project have been create but not finish yet.
 		if(this.debugMode ==true){
 			try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.projectPath.resolve("setting.txt").toFile(),true))){
-				writer.write("主題相關門檻值:"+this.maper.relateness_threshold);
+				writer.write("主題相關門檻值:"+userManager.mapper.relateness_threshold);
 				writer.newLine();
 				writer.write("實驗天數:"+this.experimentDays);
 				writer.newLine();
-				writer.write("去除比例:"+this.user.getRemove_rate());
+				writer.write("去除比例:"+this.user.getRemoveRate());
 				writer.newLine();
 			}catch(IOException e){
 				e.printStackTrace();
@@ -131,12 +133,22 @@ public class Experiment {
 	 */
 	public void run(int dayN) {
 		if(dayN<=this.experimentDays){
+			userManager.updateUserProfile(dayN, user);
+			this.removeOutdatedMonitor();
 			train(dayN);
 			test(dayN);
 			if(this.systemPerformance.phTest()){
 				logger.warn("Concept Drift Happened in day {}",dayN);
 			}
 
+			if(debugMode == true){
+				this.simplelog(dayN);
+				try {
+					Files.createDirectories(drawDir);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		
 	}
@@ -147,7 +159,7 @@ public class Experiment {
 	 */
 	protected void train(int today){
 		Path training = this.projectPath.resolve("training/day_"+today);
-		UserProfileManager userManager = new UserProfileManager(this.maper);
+		
 		traingLabel = new HashSet<String>();//training label只會有當天的目標
 		for(File doc:training.toFile().listFiles()){
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(today,doc);
@@ -163,28 +175,19 @@ public class Experiment {
 			user.addDocument(topicMap,today);
 		}
 		
-		userManager.updateUserProfile(today, user);
-		this.removeOutdatedMonitor();
-		if(debugMode == true){
-			this.simplelog(today);
-		}
 	}
 	
-	protected void test(int theDay){
-		Path testingPath = this.projectPath.resolve("testing/day_" + theDay);
-		UserProfileManager userManager = new UserProfileManager(this.maper);
+	protected void test(int today){
+		Path testingPath = this.projectPath.resolve("testing/day_" + today);
 		
 		for(File doc:testingPath.toFile().listFiles()){
 			String docTopic = this.newsPopulater.identifyTopic(doc);
-			List<TopicTermGraph> documentTopics = this.readFromSimpleText(theDay, doc);
+			List<TopicTermGraph> documentTopics = this.readFromSimpleText(today, doc);
 			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
 			this.performanceTest(topicMap, docTopic);
 		}
 		
 		this.checkLongTermMemory();
-		if(this.systemPerformance.phTest()){
-			logger.warn("System Concept Drift Happened in Day {}",theDay);
-		}
 		
 	}
 	/**
@@ -216,7 +219,13 @@ public class Experiment {
 					c = new TopicTermGraph(theDay);
 					documentTopics[group] = c;
 				}
-					c.addVertex(new TermNode(term,TFScore));
+					TermNode addTerm = new TermNode(term,TFScore);
+					c.addVertex(addTerm);
+					for(TermNode otherVertex:c.getVertices()){
+						if(otherVertex!= addTerm){
+							c.addEdge(new CEdge<Double>(), addTerm, otherVertex);
+						}
+					}
 					c.setUpdateDate(theDay);
 				
 			}

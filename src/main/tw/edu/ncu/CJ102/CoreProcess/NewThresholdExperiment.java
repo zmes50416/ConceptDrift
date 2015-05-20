@@ -105,19 +105,21 @@ public class NewThresholdExperiment {
 	}
 	
 	public void TopicRelatedScore() throws IOException{
-		 //set up a test case as topicMapping thresholdExperiment
+		experimentDays = 10;
+		removeRate = 0.1;
 		for(int i = 0;i<round;i++){
-			Path tempDir = this.projectDir.resolve("turn_"+i);
-			exp = new Experiment(tempDir.toString());
-			exp.debugMode = debugMode;
-			user = new MemoryBasedUserProfile();
-			exp.setUser(user);
 			topicSimliarityThreshold = parama + (i/10.0);
-			experimentDays = 10;
-			removeRate = 0.1;
-			exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(searcher), topicSimliarityThreshold);
+
+			TopicMappingTool maper = new TopicMappingTool(
+					new NgdReverseTfTopicSimilarity(),
+					this.topicSimliarityThreshold);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(removeRate);
+
+			Path tempDir = this.projectDir.resolve("turn_"+i);
+			exp = new Experiment(tempDir.toString(),maper,user);
+			exp.debugMode = debugMode;
 			this.exp.experimentDays = experimentDays;
-			user.setRemove_rate(removeRate);
 
 			RouterNewsPopulator populater = new RouterNewsPopulator(tempDir.toString(),topicPath){
 				@Override
@@ -140,46 +142,49 @@ public class NewThresholdExperiment {
 	}
 
 	public void removeThresholdExperiment() throws IOException{
-		for(int i = 0;i<round;i++){
-		Path tempDir = this.projectDir.resolve("turn_"+i);
-		this.exp = new Experiment(tempDir.toString());
-		exp.debugMode = debugMode;
 		topicSimliarityThreshold = 0.4;
 		experimentDays = 14;
-		removeRate = parama + (i/10.0);
+		for (int i = 0; i < round; i++) {
+			Path tempDir = this.projectDir.resolve("turn_" + i);
+			TopicMappingTool maper = new TopicMappingTool(
+					new NgdReverseTfTopicSimilarity(),
+					this.topicSimliarityThreshold);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(removeRate);
 
-		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
-		this.exp.setExperimentDays(experimentDays);
-		user = new MemoryBasedUserProfile();
-		user.setRemove_rate(removeRate);
-		exp.setUser(user);
+			this.exp = new Experiment(tempDir.toString(), maper, user);
+			this.exp.setExperimentDays(experimentDays);
+			exp.debugMode = debugMode;
 
+			removeRate = parama + (i / 10.0);
 
-		RouterNewsPopulator populater = new RouterNewsPopulator(tempDir.toString(),topicPath){
-			@Override
-			public void setGenarationRule() {
-				this.setTrainSize(3);
-				this.setTestSize(3);	
-				
+			RouterNewsPopulator populater = new RouterNewsPopulator(
+					tempDir.toString(), topicPath) {
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(3);
+					this.setTestSize(3);
+
+				}
+
+			};
+			exp.newsPopulater = populater;
+			populater.addTrainingTopics("acq");
+			populater.addTrainingTopics("sugar");
+			populater.addTrainingTopics("earn");
+			for (String topic : RouterNewsPopulator.test) {
+				populater.addTestingTopics(topic);
 			}
-			
-		};
-		exp.newsPopulater = populater;
-		populater.addTrainingTopics("acq");
-		populater.addTrainingTopics("sugar");
-		populater.addTrainingTopics("earn");
-		for(String topic:RouterNewsPopulator.test){
-			populater.addTestingTopics(topic);
-		}
 
-		execute();
+			execute();
 		}
 	}
 	
 	public void timeExperiment() throws IOException{
+		//TODO unfinished Experiment
 		topicSimliarityThreshold = 0.4;
 		removeRate = 0.1;
-		user.setRemove_rate(removeRate);
+		user.setRemoveRate(removeRate);
 		exp.setUser(user);
 
 		this.exp.experimentDays = 10;
@@ -193,7 +198,6 @@ public class NewThresholdExperiment {
 			}
 			
 		};
-		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), topicSimliarityThreshold);
 
 		File copyData = new File("DEMODATA");
 		populater = new ManualRouterNewsPopulater(this.projectDir.toString(), copyData.toPath());
@@ -208,13 +212,13 @@ public class NewThresholdExperiment {
 		this.removeRate = 0.1;
 		for(int i=0;i<round;i++){
 			Path tempProject = this.projectDir.resolve("round_"+i);
-			TopicTermGraph.MAXCORESIZE = 5 + i*5;
-			exp = new Experiment(tempProject.toString());
-			exp.experimentDays = 14;
-			exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
 			user = new MemoryBasedUserProfile();
-			user.setRemove_rate(this.removeRate);
-			exp.setUser(user);
+			user.setRemoveRate(this.removeRate);
+			TopicTermGraph.MAXCORESIZE = 5 + i*5;
+			
+			exp = new Experiment(tempProject.toString(),maper,user);
+			exp.experimentDays = 14;
 			
 			RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
 				@Override
@@ -235,13 +239,15 @@ public class NewThresholdExperiment {
 	}
 	
 	public void conceptDriftExperiment(){
-		exp = new Experiment(this.projectDir.toString());
+
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.4);
+		user = new MemoryBasedUserProfile();
+		user.setRemoveRate(0.1);
+				
+		exp = new Experiment(this.projectDir.toString(),maper,user);
 		exp.debugMode = debugMode;
 		exp.experimentDays = 14;
-		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.4);
-		user = new MemoryBasedUserProfile();
-		user.setRemove_rate(0.1);
-		exp.setUser(user);
+		
 		RouterNewsPopulator populater = new RouterNewsPopulator(this.projectDir.toString()){
 
 			@Override

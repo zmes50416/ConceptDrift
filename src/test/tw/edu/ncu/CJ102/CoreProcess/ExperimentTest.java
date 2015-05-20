@@ -38,10 +38,11 @@ public class ExperimentTest{
 	@Before
 	public void setUp() throws Exception {
 		expPath = Files.createTempDirectory("ExperimentClass");
-		exp = new Experiment(expPath.toString());
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), 0.1);
 		user = new MemoryBasedUserProfile();
+
+		exp = new Experiment(expPath.toString(),maper,user);
 		exp.setUser(user);
-		exp.maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), 0.1);
 		exp.setExperimentDays(14);
 		
 	}
