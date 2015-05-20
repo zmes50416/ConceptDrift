@@ -32,12 +32,14 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	CentralityAlgorithm<TermNode,CEdge> algo = new LP<TermNode,CEdge>(this); //Default Core algorithm
 	private boolean isLongTermInterest;
 	double averageTermTf;
-	protected int birthDate;
-	protected int updateDate;
+	private int birthDate;
+	private int updateDate;
 	int numberOfDocument;
 	public TopicTermGraph(int birthDay){
 		this.setLongTermInterest(false);
 		numberOfDocument = 1;
+		this.birthDate = birthDay;
+		this.updateDate = birthDay;
 	}
 	
 	/**
