@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,11 +32,9 @@ import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.CEdge;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
-import tw.edu.ncu.im.Preprocess.PreprocessComponent;
 import tw.edu.ncu.im.Preprocess.RouterNewsPreprocessor;
 import tw.edu.ncu.im.Preprocess.Decorator.*;
-import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
-import tw.edu.ncu.im.Util.WeightedBetweennessCluster;
+import tw.edu.ncu.im.Util.*;
 
 public class Experiment {
 	private Path projectPath,userProfilePath;
@@ -324,12 +321,15 @@ public class Experiment {
 			realAnswer = true;
 		}
 		boolean systemAnswer = false;
+		int hitCount =0;//at least half of topic should be in cover
 //		boolean systemAnswer = true;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile
 			//if(topicPair.getKey()==topicPair.getValue()){
-				systemAnswer = true;
-				break;
+				if(++hitCount>=(topicMap.size()/2)){
+					systemAnswer = true;
+					break;
+				}
 			}
 		}
 		Collection<TopicTermGraph> matchedTopics = topicMap.values();
@@ -400,11 +400,9 @@ public class Experiment {
 			writer.newLine();
 			writer.append("Term remove threshold:"+user.getTermRemoveThreshold());
 			writer.newLine();
-			int i = 1;
 			for(TopicTermGraph topic:topics){
-				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
+				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic.getDecayRate()+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
 				writer.newLine();
-				
 			}
 			writer.append("System Performance:"+this.systemPerformance);
 			writer.newLine();

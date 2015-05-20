@@ -266,6 +266,7 @@ public class NewThresholdExperiment {
 		};
 		populater.addTrainingTopics("acq");//only to avoid warning
 		populater.addTestingTopics("acq");
+		populater.addTestingTopics("trade");
 		exp.newsPopulater = populater;
 		execute();
 	}
