@@ -44,13 +44,11 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 
 	@Override
 	public double getDecayRate(TopicTermGraph topic,int today) {
-		if(topic.getUpdateDate()==today){
-			return 1;
-		}
+
 		double decayRate;
-		double timeFactor = Math.log10(today-topic.getUpdateDate());
+		int timeFactor = today-topic.getUpdateDate();
 		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(Math.E, -timeFactor*0.2);
+			decayRate = Math.pow(Math.E, -timeFactor*0.02);
 		}else{
 			double strength = Math.log10(topic.numberOfDocument)+2;
 			decayRate = Math.pow(Math.E, -(timeFactor*this.getSizeOfShortTerm()/this.getUserTopics().size())/strength);
