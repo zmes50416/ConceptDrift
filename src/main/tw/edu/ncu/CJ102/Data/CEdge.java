@@ -16,6 +16,7 @@ public class CEdge<T> {//Putting generic T type in decarlaction may not be a goo
 	Pair<T> terms;
 	public CEdge(){
 		id = UUID.randomUUID().toString();
+		this.coScore = 1.0;
 	}
 	public CEdge(Pair<T> _terms) {
 		this(_terms, 1.0);

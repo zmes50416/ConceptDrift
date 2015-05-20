@@ -20,13 +20,13 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int longTermThreshold = 100; // Just for test
+	private int longTermThreshold = 50; // Just for test
 	private Logger loger = LoggerFactory.getLogger(this.getClass());
 	public MemoryBasedUserProfile() {
-		this.setRemove_rate(0.1);
+		this.setRemoveRate(0.1);
 	}
 	public MemoryBasedUserProfile(double _removeRate){
-		this.setRemove_rate(_removeRate);
+		this.setRemoveRate(_removeRate);
 	}
 	
 	/**
@@ -80,6 +80,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 				mappedTopic.numberOfDocument++;
 				mappedTopic.setUpdateDate(today);
 			}else{
+				loger.info("new Topic {} into the User Profile",topic);
 				if(!this.userTopics.add(topic)){
 					throw new RuntimeException("Cant add topic");
 				}
@@ -103,6 +104,8 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			}
 			
 		}
+		//average topic term freq instead of whole document 
+		documentTf = documentTf / topicMap.size();
 		
 		for(TopicTermGraph userTopic:topicMap.values()){//For topic coOccurance graph
 			for(TopicTermGraph anotherUserTopic:documentTopics){
@@ -118,12 +121,12 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	}
 
 	protected void updateTopicRemoveThreshold(double newDocumentTf) {
-		this.topicRemoveThreshold = newDocumentTf + (this.topicRemoveThreshold/2);
+		this.topicRemoveThreshold = (newDocumentTf + this.topicRemoveThreshold)/2;
 
 	}
 
 	protected void updateTermRemoveThreshold(double newTermTf) {
-		this.termRemoveThreshold = newTermTf + (this.termRemoveThreshold/2);
+		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
 	}
 
 

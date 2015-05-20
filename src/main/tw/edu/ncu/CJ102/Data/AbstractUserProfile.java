@@ -15,7 +15,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	 */
 	String id;
 
-	private double remove_rate; //興趣去除比例
+	private double removeRate; //興趣去除比例
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
 	protected Collection<TopicTermGraph> userTopics = new ArrayList<>();
@@ -65,12 +65,12 @@ public abstract class AbstractUserProfile implements Serializable{
 	}
 	public abstract double getCoOccranceThreshold();
 
-	public double getRemove_rate() {
-		return remove_rate;
+	public double getRemoveRate() {
+		return removeRate;
 	}
 
-	public void setRemove_rate(double remove_rate) {
-		this.remove_rate = remove_rate;
+	public void setRemoveRate(double remove_rate) {
+		this.removeRate = remove_rate;
 	}
 
 }

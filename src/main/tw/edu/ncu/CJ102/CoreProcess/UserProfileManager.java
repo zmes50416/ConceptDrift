@@ -58,6 +58,9 @@ public class UserProfileManager {
 				term.termFreq = term.termFreq * decayFactor;
 				topicInterest += term.termFreq;
 			}
+			for(CEdge<Double>edge:topic.getEdges()){
+				edge.setCoScore(edge.getCoScore()*decayFactor);
+			}
 			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,decayFactor);
 
 			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了

@@ -84,12 +84,11 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge<Double>
 	}
 	//Know condition:add a edge that v1 and v2 is not already add will cause v1&v2 add into Edge but if node already exist it will not add the value! 
 	@Override
-	public boolean addEdge(CEdge e,TermNode v1,TermNode v2){
+	public boolean addEdge(CEdge<Double> e,TermNode v1,TermNode v2){
 		if(super.addEdge(e, v1, v2)){
 			return true;
 		}else{
-			Pair<TermNode> pair = this.getEndpoints(e);
-			CEdge rightEdge = this.findEdge(pair.getFirst(), pair.getSecond());
+			CEdge<Double> rightEdge = this.findEdge(v1, v2);
 			if(rightEdge!=null){//edge exist
 				e.coScore += 1;
 				return false;
