@@ -1,11 +1,22 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Paint;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
+import org.apache.commons.collections15.Transformer;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +27,11 @@ import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicCoOccuranceGraph;
 import tw.edu.ncu.CJ102.Data.TopicNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.util.Pair;
+import edu.uci.ics.jung.visualization.VisualizationImageServer;
 
 /**
  * use for interact with user profile,ex:update decay factor or add document into
@@ -69,8 +84,7 @@ public class UserProfileManager {
 			}
 			
 		}
-		
-		//TODO implement TopicCoOccurance Forgetting
+		//TODO implement Term forgetting process
 		TopicCoOccuranceGraph topicCoGraph = user.getTopicCOGraph();
 		for (Iterator<CEdge> iterator = topicCoGraph.getEdges().iterator(); iterator
 				.hasNext();) {
@@ -119,5 +133,49 @@ public class UserProfileManager {
 		
 	}
 	
+	public void draw(AbstractUserProfile user,Path outputDir) throws IOException{
+			Collection<TopicTermGraph> userTopics = user.getUserTopics();
+			for (TopicTermGraph topic : userTopics) {
+				final Collection<TermNode> coreTerms = topic.getCoreTerm();
+				Layout<TermNode, CEdge<Double>> layout = new ISOMLayout<>(topic);
+				layout.setSize(new Dimension(1600, 1600));
+				VisualizationImageServer<TermNode, CEdge<Double>> vis = new VisualizationImageServer<TermNode, CEdge<Double>>(
+						layout, layout.getSize());
+				vis.setBackground(Color.WHITE);
+				vis.getRenderContext().setVertexLabelTransformer(
+						new VertexContentTransformer());
+				vis.getRenderContext().setVertexFillPaintTransformer(
+						new Transformer<TermNode, Paint>() {
+
+							@Override
+							public Paint transform(TermNode input) {
+								if (coreTerms.contains(input)) {
+									return Color.RED;
+								} else {
+									return Color.BLUE;
+								}
+							}
+
+						});
+
+				BufferedImage image = (BufferedImage) vis.getImage(
+						new Point2D.Double(layout.getSize().getWidth() / 2,
+								layout.getSize().getHeight() / 2),
+						new Dimension(layout.getSize()));
+
+				// Write image to a png file
+				File outputfile = outputDir.resolve(topic.toString() + ".png").toFile();
+				ImageIO.write(image, "png", outputfile);
+
+			}
+	}
+	
+	private class VertexContentTransformer implements Transformer<TermNode, String>{
+
+		@Override
+		public String transform(TermNode input) {
+			return input.getTerm();
+		}
+	}
 
 }

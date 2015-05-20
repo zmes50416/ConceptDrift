@@ -72,7 +72,6 @@ public class TopicMappingTool {
 					mappedTopic = userTopic;
 				}
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}//end of all task for loop 

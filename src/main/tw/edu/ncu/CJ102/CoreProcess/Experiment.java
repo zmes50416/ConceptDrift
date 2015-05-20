@@ -144,7 +144,9 @@ public class Experiment {
 			if(debugMode == true){
 				this.simplelog(dayN);
 				try {
+					Path drawDir = this.userProfilePath.resolve("Day_"+dayN);
 					Files.createDirectories(drawDir);
+					userManager.draw(user,drawDir);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
