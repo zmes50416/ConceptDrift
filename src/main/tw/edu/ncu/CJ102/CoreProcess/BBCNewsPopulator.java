@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -17,16 +18,19 @@ public class BBCNewsPopulator implements ExperimentFilePopulater {
 	
 	protected Set<String> trainTopics;
 	protected Set<String> testTopics;
-	public final String[] TOPICS = {
-			"sport", "bussiness", "entertainment" , "politics" , "tech"
+	public static final String[] TOPICS = {
+			"sport", "business", "entertainment" , "politics" , "tech"
 	};
-	public final String DEFAULT_TOPIC_PATH = SettingManager.getSetting("bbcDataSet");
+	public final static String DEFAULT_TOPIC_PATH = SettingManager.getSetting("bbcDataSet");
 	private TrainingTools trainerTom = new TrainingTools();
 	protected Path topicPath;
 	protected int trainSize = 0;
 	protected int testSize = 0;
 
-
+	public BBCNewsPopulator(Path projectDir){
+		this(projectDir, Paths.get(DEFAULT_TOPIC_PATH));
+	}
+	
 	public BBCNewsPopulator(Path projectDir,Path topicPath) {
 		this.trainFileDir = projectDir.resolve(this.TRAININGPATH);
 		this.testFileDir = projectDir.resolve(this.TESTINGPATH);

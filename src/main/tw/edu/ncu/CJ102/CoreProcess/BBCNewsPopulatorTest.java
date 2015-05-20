@@ -25,8 +25,7 @@ public class BBCNewsPopulatorTest {
 	@Before
 	public void setUp() throws Exception {
 		project = Files.createTempDirectory("BBCNews_");
-		Path topicPlace = new File("bbc").toPath();
-		testSubject = new BBCNewsPopulator(project,topicPlace);
+		testSubject = new BBCNewsPopulator(project);
 	}
 
 	@After

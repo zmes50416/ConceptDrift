@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import org.apache.solr.util.FileUtils;
 
 public final class TrainingTools {
 
@@ -142,27 +146,25 @@ public final class TrainingTools {
 	}
 	//參數為資料來源資料匣, 目標資料匣, 目標主題, 主題文件數量, 亂數種子
 	public void point_topic_doc_generateSet(String source_dir, String resultDir, String topic, int size, int random_num){
-		File cdir = new File(source_dir+"/"+topic);
-		ArrayList<File> list = new ArrayList<File>();
-		//System.out.println(cdir);
-		for(File f : cdir.listFiles()){
-			//System.out.println(f.getName());
-			list.add(f);
-		}
-		if(random_num==0){
-			Collections.shuffle(list); //隨機排序
-		}else{
-			Collections.shuffle(list,new Random(random_num)); //隨機排序
-		}
-		for(int i=0; i<size; i++){
-			//System.out.println("開始複製第 "+(i+1)+" 篇 = "+list.get(i).getName());
-			try(FileOutputStream dest = new FileOutputStream(new File(resultDir + "/" + list.get(i).getName()));) {
-				
-				Files.copy(list.get(i).toPath(), dest);
-			} catch (IOException e) {
-				e.printStackTrace();
+		try {
+			File topicDir = Paths.get(source_dir, topic).toFile();
+			List<File> list = Arrays.asList(topicDir.listFiles());
+
+			if (random_num == 0) {
+				Collections.shuffle(list); // 隨機排序
+			} else {
+				Collections.shuffle(list, new Random(random_num)); // 隨機排序
 			}
-			//copyfile(list.get(i), new File(resultDir + "/" + list.get(i).getName()));
+			for (int i = 0; i < size; i++) {
+				// System.out.println("開始複製第 "+(i+1)+" 篇 = "+list.get(i).getName());
+				FileUtils.copyFile(list.get(i), new File(resultDir + "/"
+						+ list.get(i).getName()));
+
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
