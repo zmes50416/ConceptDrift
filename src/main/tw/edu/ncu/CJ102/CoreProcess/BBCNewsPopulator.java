@@ -26,7 +26,7 @@ public class BBCNewsPopulator implements ExperimentFilePopulater {
 	protected Path topicPath;
 	protected int trainSize = 0;
 	protected int testSize = 0;
-
+	int theDay;
 	public BBCNewsPopulator(Path projectDir){
 		this(projectDir, Paths.get(DEFAULT_TOPIC_PATH));
 	}
@@ -85,7 +85,7 @@ public class BBCNewsPopulator implements ExperimentFilePopulater {
 	public boolean populateExperiment(int days) {
 		try {
 
-			for (int theDay = 1; theDay <= days; theDay++) {
+			for (theDay = 1; theDay <= days; theDay++) {
 				Path todayTrainDir = this.trainFileDir.resolve("Day_" + theDay);
 				Files.createDirectories(todayTrainDir);
 				Path todayTestDir = this.testFileDir.resolve("Day_" + theDay);
