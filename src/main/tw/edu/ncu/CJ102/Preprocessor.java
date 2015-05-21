@@ -191,6 +191,10 @@ class PreprocessTopicTask implements Runnable{
 			tfComp.getTermFreqMap().remove(term);
 			posComp.getVertexResultsTerms().remove(term);
 		}
+		if(docGraph.getVertexCount()==0){
+			System.err.println(doc.getName()+"have no key term left, abort generate");
+			return;
+		}
 		double totalNGD = 0;
 		for(CEdge edge:docGraph.getEdges()){
 			double edgeDistance = ngdComp.getEdgeDistance().get(edge);
