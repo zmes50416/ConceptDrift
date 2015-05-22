@@ -33,8 +33,8 @@ public class MemoryBasedUserProfileTest{
 		user.userTopics.add(aTopic);
 		user.userTopics.add(anotherTopic);
 		aTopic.numberOfDocument = 1;
-		System.out.println(user.getDecayRate(aTopic, 1));
-		System.out.println(user.getDecayRate(anotherTopic, 1));
+		System.out.println(user.updateDecayRate(aTopic, 1));
+		System.out.println(user.updateDecayRate(anotherTopic, 1));
 		fail("Not yet implemented");
 	}
 	

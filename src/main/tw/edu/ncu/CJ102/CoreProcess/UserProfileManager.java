@@ -66,7 +66,7 @@ public class UserProfileManager {
 		Iterator<TopicTermGraph> i = userTopics.iterator();// filiter remove element,do not use java default for each
 		while (i.hasNext()) {// 遺忘因子流程
 			TopicTermGraph topic = i.next();
-			topic.setDecayRate(user.getDecayRate(topic, theDay));
+			topic.setDecayRate(user.updateDecayRate(topic, theDay));
 			double topicInterest = 0;
 			HashSet<TermNode> termsToRemove = new HashSet<TermNode>();
 			for (TermNode term : topic.getVertices()) { //update every term in topic

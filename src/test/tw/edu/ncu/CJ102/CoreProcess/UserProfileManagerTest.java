@@ -53,7 +53,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 	public void testUpdateUserProfile() {
 		topic1.addVertex(new TermNode("test1",5.0));
 		topic1.addVertex(new TermNode("test2",5.0));
-		expect(user.getDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
+		expect(user.updateDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
 		expect(user.getUserTopics()).andReturn(mockUserTopics);
 		expect(user.getTopicRemoveThreshold()).andReturn(7.0);
 		expect(user.getTopicCOGraph()).andReturn(new TopicCoOccuranceGraph());

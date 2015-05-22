@@ -43,12 +43,12 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	}
 
 	@Override
-	public double getDecayRate(TopicTermGraph topic,int today) {
+	public double updateDecayRate(TopicTermGraph topic,int today) {
 
 		double decayRate;
 		int timeFactor = today-topic.getUpdateDate();
 		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(Math.E, -timeFactor*0.02);
+			decayRate = Math.pow(Math.E, -timeFactor*0.2);
 		}else{
 			double strength = Math.log10(topic.numberOfDocument)+2;
 			decayRate = Math.pow(Math.E, -(timeFactor*this.getSizeOfShortTerm()/this.getUserTopics().size())/strength);
@@ -69,13 +69,17 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}
 		
 		HashSet<TopicTermGraph> documentTopics = new HashSet<>();//use for CoOccurance topic in document
+		HashSet<TopicTermGraph> recordTopics = new HashSet<>();
 		double documentTf = 0;
+		
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			TopicTermGraph topic = topicPair.getKey();
 			TopicTermGraph mappedTopic = topicPair.getValue();
 			if(this.userTopics.contains(mappedTopic)){
 				mappedTopic.merge(topic);
-				mappedTopic.numberOfDocument++;
+				if(recordTopics.add(mappedTopic)){ //Prevent Add too much when multiple topic mapping into one user topic
+					mappedTopic.numberOfDocument++;
+				}
 				mappedTopic.setUpdateDate(today);
 			}else{
 				loger.info("new Topic {} into the User Profile",topic);
@@ -83,7 +87,6 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 					throw new RuntimeException("Cant add topic");
 				}
 			}
-			documentTopics.add(mappedTopic);
 			double sumInterest = 0;
 			if(!mappedTopic.isLongTermInterest()){
 				for(TermNode term:mappedTopic.getVertices()){
