@@ -115,7 +115,32 @@ public class BBCExperimentsCase {
 		execute();		
 	}
 	private void coreExperiment() {
-		// TODO Auto-generated method stub
+		for(int i=0;i<round;i++){
+			Path tempProject = this.rootPath.resolve("round_"+i);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.4);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(0.1);
+			TopicTermGraph.MAXCORESIZE = TopicTermGraph.MAXCORESIZE + i*5;
+			
+			exp = new Experiment(tempProject.toString(),maper,user);
+			exp.experimentDays = 14;
+			
+			BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(5);
+					this.setTestSize(5);	
+					
+				}
+				
+			};
+			populater.addTrainingTopics("entertainment");
+			populater.addTestingTopics("entertainment");
+			populater.addTestingTopics("politics");
+			exp.newsPopulater = populater;
+			execute();
+			
+		}
 		
 	}
 	private void timeExperiment() {
@@ -123,8 +148,40 @@ public class BBCExperimentsCase {
 		
 	}
 	private void removeThresholdExperiment() {
-		// TODO Auto-generated method stub
-		
+		int experimentDays = 14;
+		for (int i = 0; i < round; i++) {
+			Path tempDir = this.rootPath.resolve("turn_" + i);
+			double removeRate = parama + (i/10.0);
+			TopicMappingTool maper = new TopicMappingTool(
+					new NgdReverseTfTopicSimilarity(),0.4);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(removeRate);
+
+			this.exp = new Experiment(tempDir.toString(), maper, user);
+			this.exp.setExperimentDays(experimentDays);
+			exp.debugMode = true;
+
+			removeRate = parama + (i / 10.0);
+
+			BBCNewsPopulator populater = new BBCNewsPopulator(tempDir) {
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(3);
+					this.setTestSize(3);
+
+				}
+
+			};
+			exp.newsPopulater = populater;
+			populater.addTrainingTopics("business");
+			populater.addTrainingTopics("entertainment");
+			populater.addTrainingTopics("politics");
+			for (String topic : BBCNewsPopulator.TOPICS) {
+				populater.addTestingTopics(topic);
+			}
+
+			execute();
+		}		
 	}
 	private void TopicRelatedScore() {
 		for(int i = 0;i<round;i++){
