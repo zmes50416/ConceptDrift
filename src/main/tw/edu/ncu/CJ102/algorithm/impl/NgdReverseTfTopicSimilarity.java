@@ -2,6 +2,8 @@ package tw.edu.ncu.CJ102.algorithm.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -9,6 +11,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+
 
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
@@ -24,7 +28,7 @@ public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm{
 	IndexSearchable tool;
 	ExecutorService executor = Executors.newFixedThreadPool(15);
 	CompletionService<Double> tasker = new ExecutorCompletionService<Double>(executor);
-	ArrayList<Future<Double>> results = new ArrayList<>();
+	List<Future<Double>> results = new LinkedList<>();
 
 	public NgdReverseTfTopicSimilarity(){
 		tool = new EmbeddedIndexSearcher(); 
