@@ -40,7 +40,7 @@ public class NgdReverseTfTopicSimilarity implements TopicMappingAlgorithm{
 	public double computeSimilarity(TopicTermGraph theTopic,
 			TopicTermGraph userTopic) {
 		double sumScore = 0;
-		Collection<TermNode> topicTerms = theTopic.getVertices();
+		Collection<TermNode> topicTerms = theTopic.getCoreTerm();
 		Collection<TermNode> userTopicTerms = userTopic.getCoreTerm();
 		int taskSize = (topicTerms.size()*userTopicTerms.size());
 		for (TermNode term : topicTerms) {
