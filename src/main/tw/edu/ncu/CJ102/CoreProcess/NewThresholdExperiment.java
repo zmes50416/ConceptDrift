@@ -297,6 +297,7 @@ public class NewThresholdExperiment {
 
 			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
 					.getProjectPath().resolve("setting.txt").toFile(), true));
+			writer.append("Core Size:"+TopicTermGraph.MAXCORESIZE);
 			writer.append("Total time: " + sumTime +" millsecond");
 			writer.newLine();
 			writer.append("Performance:" + totalMonitor.getResult());

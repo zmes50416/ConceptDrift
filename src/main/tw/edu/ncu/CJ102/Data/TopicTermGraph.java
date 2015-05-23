@@ -29,7 +29,9 @@ import edu.uci.ics.jung.graph.util.Pair;
 @SuppressWarnings("serial")
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	public static int MAXCORESIZE = 10; //Default Core size
-	CentralityAlgorithm<TermNode,CEdge> algo = new LP<TermNode,CEdge>(this); //Default Core algorithm
+	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new LP<TermNode,CEdge>(this); //Default Core algorithm
+	
+
 	private boolean isLongTermInterest;
 	double averageTermTf;
 	private int birthDate;
@@ -135,12 +137,25 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 			throw new RuntimeException("term can not find vertex nor can it add to graph");
 		}
 	}
+	/**
+	 * @return the centralityAlgorithm
+	 */
+	public CentralityAlgorithm<TermNode, CEdge> getCentralityAlgorithm() {
+		return centralityAlgorithm;
+	}
+
+	/**
+	 * @param centralityAlgorithm the centralityAlgorithm to set
+	 */
+	public void setCentralityAlgorithm(CentralityAlgorithm<TermNode, CEdge> algo) {
+		this.centralityAlgorithm = algo;
+	}
 
 	public Collection<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
 		HashMap<TermNode,Double> scoreSheet = new HashMap<>();
 		PriorityQueue<TermNode> core = new PriorityQueue<>(MAXCORESIZE, new nodeComparator());
 		for(TermNode term:this.getVertices()){
-			scoreSheet.put(term, algo.computeCentrality(term));
+			scoreSheet.put(term, centralityAlgorithm.computeCentrality(term));
 			if(core.size()==MAXCORESIZE){
 				TermNode minTerm = core.poll();
 				if(scoreSheet.get(minTerm)>=scoreSheet.get(term)){
