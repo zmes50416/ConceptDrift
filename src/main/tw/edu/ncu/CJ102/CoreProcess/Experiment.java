@@ -45,7 +45,7 @@ public class Experiment {
 	Boolean isInitialized = false;
 	protected Set<String> traingLabel;//系統正確主題指標
 	protected Map<TopicTermGraph,PerformanceMonitor> monitors;
-	protected PerformanceMonitor systemPerformance;
+	protected PerformanceMonitor systemDailyPerformance;
 	public boolean debugMode;
 	double betweenessThreshold = 0.35;
 	private Logger logger = LoggerFactory.getLogger(Experiment.class);
@@ -53,7 +53,7 @@ public class Experiment {
 		this.projectPath = Paths.get(project);
 		this.userProfilePath = projectPath.resolve("user_profile");
 		this.monitors= new HashMap<>();
-		this.systemPerformance = new PerformanceMonitor();
+		this.systemDailyPerformance = new PerformanceMonitor();
 		this.userManager= new UserProfileManager(maper);
 		this.user = user;
 		File lock = projectPath.resolve(".lock").toFile();
@@ -130,13 +130,16 @@ public class Experiment {
 	 */
 	public void run(int dayN) {
 		if(dayN<=this.experimentDays){
+			this.systemDailyPerformance.saveRecord();
+			if(this.systemDailyPerformance.phTest()){
+				logger.warn("Concept Drift Happened in day {}",dayN-1);
+			}
 			userManager.updateUserProfile(dayN, user);
+			this.checkLongTermMemory();
 			this.removeOutdatedMonitor();
 			train(dayN);
 			test(dayN);
-			if(this.systemPerformance.phTest()){
-				logger.warn("Concept Drift Happened in day {}",dayN);
-			}
+			
 
 			if(debugMode == true){
 				this.simplelog(dayN);
@@ -185,8 +188,6 @@ public class Experiment {
 			Map<TopicTermGraph, TopicTermGraph> topicMap = userManager.mapTopics(documentTopics, user);
 			this.performanceTest(topicMap, docTopic);
 		}
-		
-		this.checkLongTermMemory();
 		
 	}
 	/**
@@ -326,7 +327,8 @@ public class Experiment {
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile
 			//if(topicPair.getKey()==topicPair.getValue()){
-				if(++hitCount>=(topicMap.size()/2)){
+				hitCount ++;
+				if(hitCount>=(topicMap.size()/2)){
 					systemAnswer = true;
 					break;
 				}
@@ -335,15 +337,15 @@ public class Experiment {
 		Collection<TopicTermGraph> matchedTopics = topicMap.values();
 		if (realAnswer == true) {// two possible Type: TP,FN
 			if(systemAnswer==true){
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
+				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
 			}else{
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
+				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
 			}
 		} else { // two possible type: FP,TN
 			if(systemAnswer==true){
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
+				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
 			}else{
-				this.systemPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
+				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
 			}
 		}//end of RealAnswer if
 		
@@ -381,6 +383,7 @@ public class Experiment {
 	protected void checkLongTermMemory(){
 		for(Entry<TopicTermGraph, PerformanceMonitor> monitorPair:this.monitors.entrySet()){
 			PerformanceMonitor monitor = monitorPair.getValue();
+			monitor.saveRecord();
 			TopicTermGraph topic = monitorPair.getKey();
 			if(topic.isLongTermInterest()&&monitor.phTest()){
 				TopicTermGraph driftedTopic = monitorPair.getKey();
@@ -404,7 +407,7 @@ public class Experiment {
 				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic.getDecayRate()+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
 				writer.newLine();
 			}
-			writer.append("System Performance:"+this.systemPerformance);
+			writer.append("System Performance:"+this.systemDailyPerformance.getResult());
 			writer.newLine();
 		}catch(IOException e){
 			e.printStackTrace();

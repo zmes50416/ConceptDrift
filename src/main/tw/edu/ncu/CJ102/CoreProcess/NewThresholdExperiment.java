@@ -142,7 +142,7 @@ public class NewThresholdExperiment {
 	}
 
 	public void removeThresholdExperiment() throws IOException{
-		topicSimliarityThreshold = 0.4;
+		topicSimliarityThreshold = 0.8;
 		experimentDays = 14;
 		for (int i = 0; i < round; i++) {
 			Path tempDir = this.projectDir.resolve("turn_" + i);
@@ -150,13 +150,13 @@ public class NewThresholdExperiment {
 					new NgdReverseTfTopicSimilarity(),
 					this.topicSimliarityThreshold);
 			user = new MemoryBasedUserProfile();
+			removeRate = parama + (i / 10.0);
 			user.setRemoveRate(removeRate);
 
 			this.exp = new Experiment(tempDir.toString(), maper, user);
 			this.exp.setExperimentDays(experimentDays);
 			exp.debugMode = debugMode;
 
-			removeRate = parama + (i / 10.0);
 
 			RouterNewsPopulator populater = new RouterNewsPopulator(
 					tempDir.toString(), topicPath) {
@@ -208,7 +208,7 @@ public class NewThresholdExperiment {
 	}
 	
 	public void coreExperiment(){
-		this.topicSimliarityThreshold = 0.4;
+		this.topicSimliarityThreshold = 0.8;
 		this.removeRate = 0.1;
 		for(int i=0;i<round;i++){
 			Path tempProject = this.projectDir.resolve("round_"+i);
@@ -219,6 +219,7 @@ public class NewThresholdExperiment {
 			
 			exp = new Experiment(tempProject.toString(),maper,user);
 			exp.experimentDays = 14;
+			exp.debugMode = this.debugMode;
 			
 			RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
 				@Override
@@ -274,11 +275,13 @@ public class NewThresholdExperiment {
 	private void execute(){
 		try {
 			this.exp.initialize();
-
+			PerformanceMonitor totalMonitor = new PerformanceMonitor();//record total performance
+			
 			Long sumTime = (long) 0;
 			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
 				Long time = System.currentTimeMillis();
 				this.exp.run(dayN);
+				totalMonitor.addUp(this.exp.systemDailyPerformance);
 				Long spendedTime = System.currentTimeMillis() - time;
 				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
 				sumTime += spendedTime;
@@ -294,10 +297,9 @@ public class NewThresholdExperiment {
 
 			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
 					.getProjectPath().resolve("setting.txt").toFile(), true));
-			writer.append("Total time:" + sumTime);
+			writer.append("Total time: " + sumTime +" millsecond");
 			writer.newLine();
-			writer.append("Performance:" + exp.systemPerformance);
-			writer.append(exp.systemPerformance.get_all_result().toString());
+			writer.append("Performance:" + totalMonitor.getResult());
 			writer.close();
 
 		} catch (IOException e) {

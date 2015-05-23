@@ -2,6 +2,7 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -48,7 +49,10 @@ public class PerformanceMonitor {
 	}
 
 
-	
+	/**
+	 * record the performance in the monitor, different Type will add up into different data
+	 * @param type
+	 */
 	public void set_EfficacyMeasure(PerformanceType type) {
 		if (type == PerformanceType.TRUEPOSTIVE) {
 			TP++;
@@ -61,19 +65,33 @@ public class PerformanceMonitor {
 		}else{
 			throw new IllegalArgumentException("The type:"+type+" is not in any correct PerformanceType");
 		}
-		this.HistoryFMeasure.add(this.get_f_measure());
 	}
-
-	public Map<PerformanceType,Double> get_all_result() {
-		Map<PerformanceType,Double> results = new HashMap<>();
+	/**
+	 * record performance until now, and clear all the performance static 
+	 * @return
+	 */
+	public Map<PerformanceType,Double> getResult() {
+		Map<PerformanceType,Double> results = new LinkedHashMap<>();
 		results.put(PerformanceType.TRUENEGATIVE, this.TN);
 		results.put(PerformanceType.TRUEPOSTIVE, this.TP);
 		results.put(PerformanceType.FALSENEGATIVE, this.FN);
 		results.put(PerformanceType.FALSEPOSTIVE, this.FP);
+		results.put(PerformanceType.FMEASURE, this.computeFmeasure());
+		results.put(PerformanceType.ACCURACY, this.computeAccuracy());
+		results.put(PerformanceType.PRECISION, this.computePrecision());
+		results.put(PerformanceType.RECALL, this.computeRecall());
+		results.put(PerformanceType.ERROR, this.computeError());
 		return results;
 	}
+	public void saveRecord(){
+		this.HistoryFMeasure.add(this.computeFmeasure());
+		this.FN = 0;
+		this.FP = 0;
+		this.TP = 0;
+		this.TN = 0;
+	}
 
-	public double get_precision() {
+	public double computePrecision() {
 			if(TP+FP==0){
 				return 0;
 			}else{
@@ -81,7 +99,7 @@ public class PerformanceMonitor {
 			}
 	}
 
-	public double get_recall() {
+	public double computeRecall() {
 		if(TP+FN==0){
 			return 0;
 		}else{
@@ -89,13 +107,13 @@ public class PerformanceMonitor {
 		}
 	}
 
-	public double get_f_measure() {
-		double f = (2 * get_precision() * get_recall())
-				/ (get_precision() + get_recall());
+	public double computeFmeasure() {
+		double f = (2 * computePrecision() * computeRecall())
+				/ (computePrecision() + computeRecall());
 		return f;
 	}
 
-	public double get_accuracy() {
+	public double computeAccuracy() {
 			double acc = (TP + TN) / (TP + TN + FP + FN);
 			if((TP + TN + FP + FN)==0){
 				return 0;
@@ -105,7 +123,7 @@ public class PerformanceMonitor {
 		
 	}
 
-	public double get_error() {
+	public double computeError() {
 		if((FP+FN)==0||(TP + TN + FP + FN)==0){
 			return 0;
 		}else{
@@ -113,7 +131,14 @@ public class PerformanceMonitor {
 		}
 	}
 	public String toString(){
-		return "F-measure:"+this.get_f_measure()+", Accuracy:"+this.get_accuracy()+",Recall:"+this.get_recall()+",Precision:"+this.get_precision();
+		return "F-measure:"+this.computeFmeasure()+", Accuracy:"+this.computeAccuracy()+",Recall:"+this.computeRecall()+",Precision:"+this.computePrecision();
+	}
+	
+	public void addUp(PerformanceMonitor anotherMonitor){
+		this.TN += anotherMonitor.getTN();
+		this.TP += anotherMonitor.getTP();
+		this.FN += anotherMonitor.getFN();
+		this.FP += anotherMonitor.getFP();
 	}
 	public boolean phTest(){
 		boolean phFlag = false;
@@ -136,6 +161,6 @@ public class PerformanceMonitor {
 	}
 }
 enum PerformanceType{
-	TRUENEGATIVE,TRUEPOSTIVE,FALSENEGATIVE,FALSEPOSTIVE;
+	TRUENEGATIVE,TRUEPOSTIVE,FALSENEGATIVE,FALSEPOSTIVE,FMEASURE,ACCURACY,ERROR,PRECISION,RECALL;
 	
 }

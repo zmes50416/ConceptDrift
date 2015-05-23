@@ -24,27 +24,27 @@ public class PerformanceMonitorTest {
 
 	@Test
 	public void testGet_precision() {
-		assertEquals(monitor.get_precision(),0.5,0);
+		assertEquals(monitor.computePrecision(),0.5,0);
 	}
 
 	@Test
 	public void testGet_recall() {
-		assertEquals(monitor.get_recall(),0.5,0);
+		assertEquals(monitor.computeRecall(),0.5,0);
 	}
 
 	@Test
 	public void testGet_f_measure() {
-		assertEquals("Fmeasure should be ",0.5,monitor.get_f_measure(),0);
+		assertEquals("Fmeasure should be ",0.5,monitor.computeFmeasure(),0);
 	}
 
 	@Test
 	public void testGet_accuracy() {
-		assertEquals("",monitor.get_accuracy(),0.5,0);
+		assertEquals("",monitor.computeAccuracy(),0.5,0);
 	}
 
 	@Test
 	public void testGet_error() {
-		assertEquals("",0.5,monitor.get_error(),0);
+		assertEquals("",0.5,monitor.computeError(),0);
 	}
 
 	@Test

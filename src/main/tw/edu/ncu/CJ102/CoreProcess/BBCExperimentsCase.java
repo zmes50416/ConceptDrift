@@ -216,40 +216,39 @@ public class BBCExperimentsCase {
 		}		
 	}
 	private void execute() {
-			try {
-				this.exp.initialize();
-
-				Long sumTime = (long) 0;
-				for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
-					Long time = System.currentTimeMillis();
-					this.exp.run(dayN);
-					Long spendedTime = System.currentTimeMillis() - time;
-					logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
-					sumTime += spendedTime;
-					try (BufferedWriter writer = new BufferedWriter(new FileWriter(
-							exp.getUserProfilePath().resolve("userLog.txt")
-									.toFile(), true))) {
-						writer.append("Time spend:" + spendedTime);
-						writer.newLine();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+		try {
+			this.exp.initialize();
+			PerformanceMonitor totalMonitor = new PerformanceMonitor();//record total performance
+			
+			Long sumTime = (long) 0;
+			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
+				Long time = System.currentTimeMillis();
+				this.exp.run(dayN);
+				totalMonitor.addUp(this.exp.systemDailyPerformance);
+				Long spendedTime = System.currentTimeMillis() - time;
+				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
+				sumTime += spendedTime;
+				try (BufferedWriter writer = new BufferedWriter(new FileWriter(
+						exp.getUserProfilePath().resolve("userLog.txt")
+								.toFile(), true))) {
+					writer.append("Time spend:" + spendedTime);
+					writer.newLine();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-
-				BufferedWriter writer = new BufferedWriter(new FileWriter(exp
-						.getProjectPath().resolve("setting.txt").toFile(), true));
-				writer.append("Total time:" + sumTime);
-				writer.newLine();
-				writer.append("Performance:" + exp.systemPerformance);
-				writer.append(exp.systemPerformance.get_all_result().toString());
-				writer.close();
-
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-			
-			
-			//this.exp.simplelog(experimentDays);
+
+			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
+					.getProjectPath().resolve("setting.txt").toFile(), true));
+			writer.append("Total time: " + sumTime +" millsecond");
+			writer.newLine();
+			writer.append("Performance:" + totalMonitor.getResult());
+			writer.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 
 	}
 		
