@@ -58,10 +58,10 @@ public abstract class AbstractUserProfile implements Serializable{
 	 * @return	主題移除門檻
 	 */
 	public double getTopicRemoveThreshold(){
-		return topicRemoveThreshold*this.removeRate;
+		return topicRemoveThreshold;
 	}
 	public double getTermRemoveThreshold(){
-		return this.termRemoveThreshold*this.removeRate;
+		return this.termRemoveThreshold;
 	}
 	public abstract double getCoOccranceThreshold();
 
