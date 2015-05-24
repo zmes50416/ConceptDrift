@@ -108,8 +108,11 @@ public class PerformanceMonitor {
 	}
 
 	public double computeFmeasure() {
-		double f = (2 * computePrecision() * computeRecall())
+		Double f = (2 * computePrecision() * computeRecall())
 				/ (computePrecision() + computeRecall());
+		if(f.equals(Double.NaN)){
+			return 0;
+		}
 		return f;
 	}
 

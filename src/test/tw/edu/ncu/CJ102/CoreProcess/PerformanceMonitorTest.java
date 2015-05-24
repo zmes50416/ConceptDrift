@@ -35,6 +35,8 @@ public class PerformanceMonitorTest {
 	@Test
 	public void testGet_f_measure() {
 		assertEquals("Fmeasure should be ",0.5,monitor.computeFmeasure(),0);
+		this.monitor.saveRecord();
+		assertEquals("Should be zero", 0,monitor.computeFmeasure(),0);
 	}
 
 	@Test
@@ -49,6 +51,7 @@ public class PerformanceMonitorTest {
 
 	@Test
 	public void testPhTest() {
+		
 		assertTrue("PH test should be flaged?",monitor.phTest());
 	}
 
