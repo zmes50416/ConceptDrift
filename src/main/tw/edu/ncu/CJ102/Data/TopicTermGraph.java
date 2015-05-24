@@ -45,7 +45,14 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 		this.updateDate = birthDay;
 		this.decayRate = 1;
 	}
-	
+	public double getValue(){
+		double value = 0;
+		for(TermNode term:this.getVertices()){
+			value += term.termFreq;
+		}
+		
+		return value;
+	}
 	/**
 	 * @return the birthDate
 	 */

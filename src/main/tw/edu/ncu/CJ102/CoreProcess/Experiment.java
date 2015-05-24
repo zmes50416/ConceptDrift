@@ -387,7 +387,7 @@ public class Experiment {
 			TopicTermGraph topic = monitorPair.getKey();
 			if(topic.isLongTermInterest()&&monitor.phTest()){
 				TopicTermGraph driftedTopic = monitorPair.getKey();
-				logger.info("Concept Drift occur in topic {}",driftedTopic.toString());
+				logger.warn("Concept Drift occur in topic {}",driftedTopic.toString());
 				driftedTopic.setLongTermInterest(false);
 			}
 		}
@@ -404,7 +404,7 @@ public class Experiment {
 			writer.append("Term remove threshold:"+user.getTermRemoveThreshold());
 			writer.newLine();
 			for(TopicTermGraph topic:topics){
-				writer.append("topic:"+topic.toString()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic.getDecayRate()+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
+				writer.append("topic:"+topic.toString()+"value:"+(int)topic.getValue()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic.getDecayRate()+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());
 				writer.newLine();
 			}
 			writer.append("System Performance:"+this.systemDailyPerformance.getResult());
