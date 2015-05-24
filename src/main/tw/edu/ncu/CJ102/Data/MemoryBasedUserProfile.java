@@ -71,7 +71,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		HashSet<TopicTermGraph> documentTopics = new HashSet<>();//use for CoOccurance topic in document
 		HashSet<TopicTermGraph> recordTopics = new HashSet<>();
 		double documentTf = 0;
-		
+		int termCount =0;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			TopicTermGraph topic = topicPair.getKey();
 			TopicTermGraph mappedTopic = topicPair.getValue();
@@ -102,11 +102,13 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			for(TermNode term:topic.getVertices()){//Record tf of new Term & document
 				this.updateTermRemoveThreshold(term.termFreq);
 				documentTf += term.termFreq;
+				termCount++;
 			}
 			
 		}
 		//average topic term freq instead of whole document 
-		documentTf = documentTf / topicMap.size();
+		double avgDocumentTf = documentTf / topicMap.size();
+		double avgTermTf = documentTf / termCount;
 		/*
 		for(TopicTermGraph userTopic:topicMap.values()){//For topic coOccurance graph
 			for(TopicTermGraph anotherUserTopic:documentTopics){
@@ -118,16 +120,23 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			
 		}//end of CoOccurance Topics
 		*/
-		this.updateTopicRemoveThreshold(documentTf);
+		this.updateTopicRemoveThreshold(avgDocumentTf);
+		this.updateTermRemoveThreshold(avgTermTf);
 	}
 
 	protected void updateTopicRemoveThreshold(double newDocumentTf) {
+		if(topicRemoveThreshold==0){
+			this.topicRemoveThreshold = newDocumentTf;
+		}
 		this.topicRemoveThreshold = (newDocumentTf + this.topicRemoveThreshold)/2;
 
 	}
 
 	protected void updateTermRemoveThreshold(double newTermTf) {
-		this.termRemoveThreshold = (this.removeRate * newTermTf + this.termRemoveThreshold)/2;
+		if(this.termRemoveThreshold == 0){
+			this.termRemoveThreshold = newTermTf;
+		}
+		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
 	}
 
 
