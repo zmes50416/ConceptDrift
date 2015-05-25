@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -48,7 +49,7 @@ public class NewThresholdExperiment {
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
-		System.out.println("3.時間實驗");
+		System.out.println("3.效能實驗");
 		System.out.println("4.核心數目實驗");
 		System.out.println("5.概念飄移實驗");
 		System.out.println("6.長期興趣門檻");
@@ -83,9 +84,10 @@ public class NewThresholdExperiment {
 					}
 					expController.removeThresholdExperiment();
 				}else if(i.equals("3")){
-					expController.timeExperiment();
+					expController.performanceExperiment();
 				}else if(i.equals("4")){
 					expController.coreExperiment();
+					expController.corelessExperiment();
 				}else if(i.equals("5")){
 					expController.conceptDriftExperiment();
 				}
@@ -208,42 +210,71 @@ public class NewThresholdExperiment {
 	}
 	
 	public void coreExperiment(){
-		this.topicSimliarityThreshold = 0.8;
-		this.removeRate = 0.1;
+		this.topicSimliarityThreshold = 0.6;
+		this.removeRate = 0.5;
 		for(int i=0;i<round;i++){
-			Path tempProject = this.projectDir.resolve("round_"+i);
-			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
-			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(this.removeRate);
-			TopicTermGraph.MAXCORESIZE = 5 + i*5;
-			
-			exp = new Experiment(tempProject.toString(),maper,user);
-			exp.experimentDays = 14;
-			exp.debugMode = this.debugMode;
-			
-			RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
-				@Override
-				public void setGenarationRule() {
-					this.setTrainSize(5);
-					this.setTestSize(5);	
-					
-				}
+			for(int j= 0;j<=2;j++){//examine 3 different method
+				TopicTermGraph.METHODTYPE = j;
+				Path tempProject = this.projectDir.resolve("Methode_"+j).resolve("round_"+i);
+				TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
+				user = new MemoryBasedUserProfile();
+				user.setRemoveRate(this.removeRate);
+				TopicTermGraph.MAXCORESIZE = 5 + i*5;
 				
-			};
-			populater.addTrainingTopics("acq");
-			populater.addTestingTopics("acq");
-			populater.addTestingTopics("earn");
-			exp.newsPopulater = populater;
-			execute();
-			
+				exp = new Experiment(tempProject.toString(),maper,user);
+				exp.experimentDays = 14;
+				exp.debugMode = this.debugMode;
+				
+				RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
+					@Override
+					public void setGenarationRule() {
+						this.setTrainSize(10);
+						this.setTestSize(5);	
+						
+					}
+					
+				};
+				populater.addTrainingTopics("earn");
+				populater.addTestingTopics("acq");
+				populater.addTestingTopics("earn");
+				exp.newsPopulater = populater;
+				execute();
+			}
 		}
+	}
+	
+	public void  corelessExperiment(){
+		Path tempProject = this.projectDir.resolve("round_coreless");
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
+		user = new MemoryBasedUserProfile();
+		user.setRemoveRate(this.removeRate);
+		TopicTermGraph.MAXCORESIZE = 1000;
+		
+		exp = new Experiment(tempProject.toString(),maper,user);
+		exp.experimentDays = 14;
+		exp.debugMode = this.debugMode;
+		
+		RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(10);
+				this.setTestSize(5);	
+				
+			}
+			
+		};
+		populater.addTrainingTopics("acq");
+		populater.addTestingTopics("acq");
+		populater.addTestingTopics("earn");
+		exp.newsPopulater = populater;
+		execute();
 	}
 	
 	public void conceptDriftExperiment(){
 
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.4);
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
 		user = new MemoryBasedUserProfile();
-		user.setRemoveRate(0.1);
+		user.setRemoveRate(1);
 				
 		exp = new Experiment(this.projectDir.toString(),maper,user);
 		exp.debugMode = debugMode;
@@ -253,7 +284,7 @@ public class NewThresholdExperiment {
 
 			@Override
 			public void setGenarationRule() {
-				this.setTrainSize(5);
+				this.setTrainSize(10);
 				this.setTestSize(5);
 				this.trainTopics.clear();
 				if(this.theDay<=7){
@@ -268,8 +299,41 @@ public class NewThresholdExperiment {
 		populater.addTrainingTopics("acq");//only to avoid warning
 		populater.addTestingTopics("acq");
 		populater.addTestingTopics("trade");
+		populater.addTestingTopics("earn");
 		exp.newsPopulater = populater;
 		execute();
+	}
+	
+	public void performanceExperiment(){
+		String[][] trainTopic={{"acq","earn"},{"crude","coffee"},{"sugar","trade"},{"acq","cocoa"},{"crude","trade"}};
+		
+		for(int i = 0;i<round;i++){
+			Path tempProject = this.projectDir.resolve("round_"+i);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.8);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(0.5);
+			
+			exp = new Experiment(tempProject.toString(),maper,user);
+			exp.debugMode = debugMode;
+			exp.experimentDays = 10;
+			
+			RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(5);
+					this.setTestSize(5);	
+					
+				}
+				
+			};
+			populater.addTrainingTopics(trainTopic[i][0]);
+			populater.addTrainingTopics(trainTopic[i][1]);
+			for(String topic:RouterNewsPopulator.test){
+				populater.addTestingTopics(topic);
+			}
+			exp.newsPopulater = populater;
+			execute();
+		}
 	}
 
 	private void execute(){
@@ -289,6 +353,12 @@ public class NewThresholdExperiment {
 						exp.getUserProfilePath().resolve("userLog.txt")
 								.toFile(), true))) {
 					writer.append("Time spend:" + spendedTime);
+					writer.newLine();
+					writer.append("Performance to date:F-measure"
+							+ totalMonitor.computeFmeasure() + "Recall:"
+							+ totalMonitor.computeRecall() + ",Percision:"
+							+ totalMonitor.computePrecision() + ",Accuracy:"
+							+ totalMonitor.computeAccuracy());
 					writer.newLine();
 				} catch (IOException e) {
 					e.printStackTrace();

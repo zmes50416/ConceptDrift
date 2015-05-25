@@ -32,7 +32,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	public static int MAXCORESIZE = 10; //Default Core size
 	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new BetweennessCentralityWrapper<TermNode,CEdge>(this); //Default Core algorithm
-	
+	public static int METHODTYPE = 0;
 
 	private boolean isLongTermInterest;
 	double averageTermTf;
@@ -159,9 +159,19 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	public void setCentralityAlgorithm(CentralityAlgorithm<TermNode, CEdge> algo) {
 		this.centralityAlgorithm = algo;
 	}
+	/**
+	 * return the graph core term by Centrality algorithm
+	 * @return
+	 */
+	public Collection<TermNode> getCoreTerm(){ 
+		if(METHODTYPE==0){
+			centralityAlgorithm = new CN<>(this);
+		}else if(METHODTYPE ==1){
+			centralityAlgorithm = new LP<>(this);
+		}else if(METHODTYPE ==2){
+			centralityAlgorithm = new BetweennessCentralityWrapper<TermNode,CEdge>(this);
 
-	public Collection<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
-		centralityAlgorithm = new BetweennessCentralityWrapper<TermNode,CEdge>(this);
+		}
 		HashMap<TermNode,Double> scoreSheet = new HashMap<>();
 		PriorityQueue<TermNode> core = new PriorityQueue<>(MAXCORESIZE, new nodeComparator());
 		for(TermNode term:this.getVertices()){
