@@ -109,17 +109,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		//average topic term freq instead of whole document 
 		double avgDocumentTf = documentTf / topicMap.size();
 		double avgTermTf = documentTf / termCount;
-		/*
-		for(TopicTermGraph userTopic:topicMap.values()){//For topic coOccurance graph
-			for(TopicTermGraph anotherUserTopic:documentTopics){
-				if(userTopic!=anotherUserTopic){
-					this.topicCOGraph.addEdge(new CEdge<TopicTermGraph>(new Pair<TopicTermGraph>(userTopic, anotherUserTopic)), userTopic, anotherUserTopic);
-				}
-			}
-			documentTopics.remove(userTopic);
-			
-		}//end of CoOccurance Topics
-		*/
+
 		this.updateTopicRemoveThreshold(avgDocumentTf);
 		this.updateTermRemoveThreshold(avgTermTf);
 	}

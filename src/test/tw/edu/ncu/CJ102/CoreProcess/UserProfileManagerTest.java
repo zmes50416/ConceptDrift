@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.TermNode;
-import tw.edu.ncu.CJ102.Data.TopicCoOccuranceGraph;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.TopicMappingAlgorithm;
 
@@ -56,7 +55,6 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		expect(user.updateDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
 		expect(user.getUserTopics()).andReturn(mockUserTopics);
 		expect(user.getTopicRemoveThreshold()).andReturn(7.0);
-		expect(user.getTopicCOGraph()).andReturn(new TopicCoOccuranceGraph());
 		replay(user);
 		
 		this.manager.updateUserProfile(2, user);
@@ -83,8 +81,6 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		documentTopics.add(x);
 		documentTopics.add(y);
 		
-		TopicCoOccuranceGraph tcoGraph = new TopicCoOccuranceGraph();
-
 		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();
 		expectLastCall();
 		replayAll();

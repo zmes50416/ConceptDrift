@@ -19,10 +19,6 @@ public abstract class AbstractUserProfile implements Serializable{
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
 	protected Collection<TopicTermGraph> userTopics = new ArrayList<>();
-	/**
-	 * 主題共現圖形
-	 */
-	protected TopicCoOccuranceGraph topicCOGraph = new TopicCoOccuranceGraph();
 	
 
 	/**
@@ -30,13 +26,6 @@ public abstract class AbstractUserProfile implements Serializable{
 	 */
 	public Collection<TopicTermGraph> getUserTopics() {
 		return userTopics;
-	}
-	
-	/**
-	 * @return the topicCOGraph
-	 */
-	public TopicCoOccuranceGraph getTopicCOGraph() {
-		return topicCOGraph;
 	}
 
 	/**

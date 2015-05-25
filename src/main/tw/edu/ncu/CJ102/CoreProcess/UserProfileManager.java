@@ -21,12 +21,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
-import tw.edu.ncu.CJ102.Data.CEdge;
-import tw.edu.ncu.CJ102.Data.TermNode;
-import tw.edu.ncu.CJ102.Data.TopicCoOccuranceGraph;
-import tw.edu.ncu.CJ102.Data.TopicNode;
-import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+import tw.edu.ncu.CJ102.Data.*;
 import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
 import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -90,19 +85,7 @@ public class UserProfileManager {
 				loger.info("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
 				i.remove();
 			}
-			
 		}
-		/*TopicCoOccuranceGraph topicCoGraph = user.getTopicCOGraph();
-		for (Iterator<CEdge> iterator = topicCoGraph.getEdges().iterator(); iterator
-				.hasNext();) {
-			CEdge<TopicNode> edge = iterator.next();
-			edge.setCoScore(edge.getCoScore()*0.9);
-			
-			if(edge.getCoScore() < user.getCoOccranceThreshold()){
-				System.out.println("TopicCoOccurance CEdge removed:"+edge.toString());
-				iterator.remove();
-			}
-		}*/
 		
 	}
 	

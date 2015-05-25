@@ -67,7 +67,6 @@ public class MemoryBasedUserProfileTest{
 		this.user.addDocument(topicMap,1);
 		
 		assertEquals("user should have 3 user topic now",3,topics.size());
-		assertNotNull("Co Occurance Topic should have topic1 and 2",this.user.getTopicCOGraph().findEdge(userTopic1, userTopic2)); 
 		//TODO test whether a topic will be longTerm or not
 	}
 

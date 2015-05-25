@@ -12,10 +12,12 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.buffer.CircularFifoBuffer;
 
 import tw.edu.ncu.CJ102.algorithm.CentralityAlgorithm;
 import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
+import tw.edu.ncu.CJ102.algorithm.impl.BetweennessCentralityWrapper;
 import tw.edu.ncu.CJ102.algorithm.impl.CN;
 import tw.edu.ncu.CJ102.algorithm.impl.LP;
 import edu.uci.ics.jung.graph.Graph;
@@ -29,7 +31,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 @SuppressWarnings("serial")
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	public static int MAXCORESIZE = 10; //Default Core size
-	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new LP<TermNode,CEdge>(this); //Default Core algorithm
+	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new BetweennessCentralityWrapper<TermNode,CEdge>(this); //Default Core algorithm
 	
 
 	private boolean isLongTermInterest;
@@ -159,10 +161,18 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	}
 
 	public Collection<TermNode> getCoreTerm(){ //Should return all node bigger then K? or only k biggest core?
+		centralityAlgorithm = new BetweennessCentralityWrapper<TermNode,CEdge>(this);
 		HashMap<TermNode,Double> scoreSheet = new HashMap<>();
 		PriorityQueue<TermNode> core = new PriorityQueue<>(MAXCORESIZE, new nodeComparator());
 		for(TermNode term:this.getVertices()){
-			scoreSheet.put(term, centralityAlgorithm.computeCentrality(term));
+			scoreSheet.put(term, centralityAlgorithm.computeCentrality(term,new Transformer<CEdge,Double>(){
+
+				@Override
+				public Double transform(CEdge input) {
+					return input.coScore;
+				}
+				
+			}));
 			if(core.size()==MAXCORESIZE){
 				TermNode minTerm = core.poll();
 				if(scoreSheet.get(minTerm)>=scoreSheet.get(term)){
