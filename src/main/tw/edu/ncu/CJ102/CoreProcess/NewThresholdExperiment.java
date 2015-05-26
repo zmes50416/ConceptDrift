@@ -272,9 +272,9 @@ public class NewThresholdExperiment {
 	
 	public void conceptDriftExperiment(){
 
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.3);
 		user = new MemoryBasedUserProfile();
-		user.setRemoveRate(1);
+		user.setRemoveRate(0.5);
 				
 		exp = new Experiment(this.projectDir.toString(),maper,user);
 		exp.debugMode = debugMode;
