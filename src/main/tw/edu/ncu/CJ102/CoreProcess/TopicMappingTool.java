@@ -59,9 +59,9 @@ public class TopicMappingTool {
 				int userTopicSize = userTopic.getVertexCount(); // 某一模型主題的字詞數量
 				double userTopicTfSum = 0; // 某一模型主題的總TF值
 
-				for (TermNode term : userTopic.getCoreTerm()) {// TF computing
-					for (TermNode docTerm : mappedTopic.getCoreTerm()) {
-						userTopicTfSum += term.termFreq * docTerm.termFreq / 2;
+				for (TermNode docTerm : mappedTopic.getCoreTerm()) {
+					for(TermNode term:userTopic.getCoreTerm()){
+						userTopicTfSum += term.termFreq/2;
 					}
 				}
 
