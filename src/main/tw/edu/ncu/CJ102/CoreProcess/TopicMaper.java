@@ -14,9 +14,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import org.apache.solr.client.solrj.SolrServerException;
+
 import tw.edu.ncu.CJ102.NGD_calculate;
 import tw.edu.ncu.CJ102.SolrSearcher;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
+import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
+import tw.edu.ncu.im.Util.IndexSearchable;
 
 public class TopicMaper {
 
@@ -81,17 +85,15 @@ public class TopicMaper {
 						double term_tf = profile.get(j).get(profile_term);
 						profile_topic_tf_sum = profile_topic_tf_sum + term_tf;
 					}
+					try{
+					IndexSearchable searcher = new EmbeddedIndexSearcher();
 					for (String doc_term : doc.get(i).keySet()) {
 						for (String profile_term : profile.get(j).keySet()) {
 							double term_tf = profile.get(j).get(profile_term);
-							double a = SolrSearcher.getHits("\"" + doc_term
-									+ "\"");
-							double b = SolrSearcher.getHits("\"" + profile_term
-									+ "\"");
+							double a = searcher.searchTermSize(doc_term);
+							double b = searcher.searchTermSize(profile_term);
 							// System.err.println("測試文件與使用者模組概念比對 Query: +\""+doc_term+"\" +\""+profile_term+"\"");
-							double mValue = SolrSearcher
-									.getHits("+\"" + doc_term + "\" +\""
-											+ profile_term + "\"");
+							double mValue = searcher.searchMultipleTerm(new String[]{doc_term,profile_term});
 
 							double NGD = NGD_calculate.NGD_cal(a, b, mValue);
 							if (NGD <= doc_ngd) {
@@ -99,6 +101,9 @@ public class TopicMaper {
 								link_num = link_num + term_tf; // TF方法
 							}
 						}
+					}
+					}catch(SolrServerException e){
+						e.printStackTrace();
 					}
 
 					// 方法2(累積連線數方法)判定可以映射的連線門檻值為比對的文件主題的字詞數*比對的模型主題字詞數*相關判定門檻值
