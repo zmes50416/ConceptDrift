@@ -41,7 +41,7 @@ public class BBCExperimentsCase {
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
-		System.out.println("3.時間實驗");
+		System.out.println("3.效能實驗");
 		System.out.println("4.核心數目實驗");
 		System.out.println("5.概念飄移實驗");
 		System.out.println("6.長期興趣門檻");
@@ -74,7 +74,7 @@ public class BBCExperimentsCase {
 				}
 				expController.removeThresholdExperiment();
 			}else if(i.equals("3")){
-				expController.timeExperiment();
+				expController.performanceExperiment();
 			}else if(i.equals("4")){
 				expController.coreExperiment();
 			}else if(i.equals("5")){
@@ -84,9 +84,9 @@ public class BBCExperimentsCase {
 	}
 	private void conceptDriftExperiment() {
 
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.3);
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
 		user = new MemoryBasedUserProfile();
-		user.setRemoveRate(0.2);
+		user.setRemoveRate(1);
 				
 		exp = new Experiment(rootPath.toString(),maper,user);
 		exp.debugMode = true;
@@ -96,7 +96,7 @@ public class BBCExperimentsCase {
 
 			@Override
 			public void setGenarationRule() {
-				this.setTrainSize(5);
+				this.setTrainSize(10);
 				this.setTestSize(5);
 				this.trainTopics.clear();
 				if(this.theDay<=7){
@@ -143,9 +143,35 @@ public class BBCExperimentsCase {
 		}
 		
 	}
-	private void timeExperiment() {
-		// TODO Auto-generated method stub
-		
+	private void performanceExperiment() {
+		String[][] trainTopic = {{"business","sport"},{"entertainment","politics"},{"sport","tech"},{"business","politics"},{"entertainment","tech"}};
+		for(int i = 0;i<round;i++){
+			Path tempProject = this.rootPath.resolve("round_"+i);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.8);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(0.5);
+			
+			exp = new Experiment(tempProject.toString(),maper,user);
+			exp.debugMode = true;
+			exp.experimentDays = 10;
+			
+			BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(5);
+					this.setTestSize(5);	
+					
+				}
+				
+			};
+			populater.addTrainingTopics(trainTopic[i][0]);
+			populater.addTrainingTopics(trainTopic[i][1]);
+			for(String topic:BBCNewsPopulator.TOPICS){
+				populater.addTestingTopics(topic);
+			}
+			exp.newsPopulater = populater;
+			execute();
+		}
 	}
 	private void removeThresholdExperiment() {
 		int experimentDays = 14;
@@ -190,7 +216,7 @@ public class BBCExperimentsCase {
 			TopicMappingTool maper = new TopicMappingTool(
 					new NgdReverseTfTopicSimilarity(),topicSimliarityThreshold);
 			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(0.1);
+			user.setRemoveRate(0.5);
 
 			Path tempDir = this.rootPath.resolve("turn_"+i);
 			exp = new Experiment(tempDir.toString(),maper,user);
@@ -201,7 +227,7 @@ public class BBCExperimentsCase {
 				@Override
 				public void setGenarationRule() {
 					this.setTrainSize(5);
-					this.setTestSize(2);	
+					this.setTestSize(5);	
 					
 				}
 				

@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+import tw.edu.ncu.CJ102.SettingManager;
+import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
+
 public class Tom_exp {
 
 	BufferedReader trainSortReader, testSortReader; // userProfileReader用來讀目前的user_profile，documentReader用來讀文件，trainSortReader用來直接指定訓練文件的順序，br4用來直接指定測試文件的順序
@@ -452,7 +455,7 @@ public class Tom_exp {
 				for(String line = documentReader.readLine();line!=null;line = documentReader.readLine()){
 					String term = line.split(",")[0]; // 字詞
 					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
-					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
+					double TFScore = Double.valueOf(line.split(",")[1]); // 字詞分數
 					docTF += TFScore;
 					doc_term_count++;
 					topic_term.clear();//FIXME this look like a big bug! everytime it clear before the set get, so it will never have second group
@@ -581,7 +584,7 @@ public class Tom_exp {
 				for(String line =documentReader.readLine();line!=null;line = documentReader.readLine()){
 					String term = line.split(",")[0]; // 字詞
 					int group = Integer.valueOf(line.split(",")[2]); // 字詞所屬群別
-					double TFScore = Integer.valueOf(line.split(",")[1]); // 字詞分數
+					double TFScore = Double.valueOf(line.split(",")[1]); // 字詞分數
 					topic_term.clear();
 					// System.out.print("取出文件資訊=>"+term+","+TFScore+","+group+"\n");
 					if (doc_term.get(group) == null) { // 新的主題直接把字裝進去
@@ -739,25 +742,33 @@ public class Tom_exp {
 		
 	}
 	public static void main(String[] args) {
-		Tom_exp exp = new Tom_exp("TestExp/OldExp");
-		exp.setmUserProfile(new UserProfile(true));
-		exp.setExperimentDays(10);
-		RouterNewsPopulator mPopulater = new RouterNewsPopulator("TestExp/OldExp"){
+		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
+		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
+		String[][] trainTopic = {{"business","sport"},{"entertainment","politics"},{"sport","tech"},{"business","politics"},{"entertainment","tech"}};
+		for(int i=0;i<=trainTopic.length-1;i++){
+			File file = new File("TestExp/OldExp_"+i);
+			Tom_exp exp = new Tom_exp(file.getAbsolutePath());
+			exp.setmUserProfile(new UserProfile(true));
+			exp.setExperimentDays(10);
+			BBCNewsPopulator mPopulater = new BBCNewsPopulator(file.toPath()){
 
-			@Override
-			public void setGenarationRule() {
-				this.setTestSize(5);
-				this.setTrainSize(5);
+				@Override
+				public void setGenarationRule() {
+					this.setTestSize(10);
+					this.setTrainSize(5);
+				}
+				
+			};
+			mPopulater.addTrainingTopics(trainTopic[i][0]);
+			mPopulater.addTrainingTopics(trainTopic[i][1]);
+			for(String testTopic:BBCNewsPopulator.TOPICS){
+				mPopulater.addTestingTopics(testTopic);
 			}
-			
-		};
-		mPopulater.addTrainingTopics("acq");
-		for(String testTopic:RouterNewsPopulator.test){
-			mPopulater.addTestingTopics(testTopic);
+			exp.setExperementSource(mPopulater);
+			exp.start();
 		}
 		
-		exp.setExperementSource(mPopulater);
 		
-		exp.start();
+		
 	}
 }

@@ -2,14 +2,20 @@ package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -272,9 +278,9 @@ public class NewThresholdExperiment {
 	
 	public void conceptDriftExperiment(){
 
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.3);
 		user = new MemoryBasedUserProfile();
-		user.setRemoveRate(1);
+		user.setRemoveRate(0.5);
 				
 		exp = new Experiment(this.projectDir.toString(),maper,user);
 		exp.debugMode = debugMode;
@@ -339,8 +345,13 @@ public class NewThresholdExperiment {
 	private void execute(){
 		try {
 			this.exp.initialize();
+			String projectName = this.exp.getProjectPath().getFileName().toString();
+			File excel = this.exp.getProjectPath().resolve(projectName+"_data.xls").toFile();
 			PerformanceMonitor totalMonitor = new PerformanceMonitor();//record total performance
-			
+			HSSFWorkbook workbook = new HSSFWorkbook();
+	        //Create a blank sheet
+	        HSSFSheet sheet = workbook.createSheet("Data");
+	           
 			Long sumTime = (long) 0;
 			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
 				Long time = System.currentTimeMillis();
@@ -360,11 +371,36 @@ public class NewThresholdExperiment {
 							+ totalMonitor.computePrecision() + ",Accuracy:"
 							+ totalMonitor.computeAccuracy());
 					writer.newLine();
+					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				int count = 1;
+				HSSFRow contentRow = sheet.createRow(dayN);
+				contentRow.createCell(0).setCellValue(dayN);
+				for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
+					HSSFCell secCell = contentRow.createCell(count);
+					secCell.setCellValue(entry.getValue());
+					count++;
+		        }
 			}
-
+			int count = 1;
+			HSSFRow titlerow = sheet.createRow(0);
+			titlerow.createCell(0).setCellValue("Day");
+			HSSFRow contentRow = sheet.createRow(this.exp.experimentDays+1);
+			for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
+				 
+			     HSSFCell cell = titlerow.createCell(count);
+			     cell.setCellValue(entry.getKey().toString());
+				 HSSFCell secCell = contentRow.createCell(count);
+				 secCell.setCellValue(entry.getValue());
+				 count++;
+	        }
+			
+            FileOutputStream out = new FileOutputStream(excel);
+            workbook.write(out);
+            out.close();
+            workbook.close();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
 					.getProjectPath().resolve("setting.txt").toFile(), true));
 			writer.append("Core Size:"+TopicTermGraph.MAXCORESIZE);
