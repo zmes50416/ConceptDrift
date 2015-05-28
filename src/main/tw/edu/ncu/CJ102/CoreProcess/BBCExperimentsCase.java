@@ -1,14 +1,30 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.Map.Entry;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import tw.edu.ncu.CJ102.SettingManager;
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
@@ -27,8 +43,31 @@ public class BBCExperimentsCase {
 	private Path bbcData = Paths.get(SettingManager.getSetting("bbcDataSet"));
 	private MemoryBasedUserProfile user;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private File excelSummary;
+	private long sumTime;
+	private PerformanceMonitor totalMonitor;
+	private double topicSimliarityThreshold;
+	private double removeRate;
+
 	public BBCExperimentsCase(Path path) {
 		this.rootPath = path;
+		
+		excelSummary = this.rootPath.resolve("totalData.xls").toFile();
+		try (HSSFWorkbook workbook = new HSSFWorkbook()) {
+			HSSFSheet sheet = workbook.createSheet("Summary");
+			HSSFRow titleRow = sheet.createRow(0);
+			titleRow.createCell(0).setCellValue("Turn");
+			int count = 1;
+			for (PerformanceType type : PerformanceType.values()) {
+				HSSFCell cell = titleRow.createCell(count);
+				cell.setCellValue(type.toString());
+				count++;
+			}
+			titleRow.createCell(count).setCellValue("Time(NanoSecond)");
+			workbook.write(new FileOutputStream(excelSummary));
+		} catch (IOException e) {
+
+		}
 	}
 	public static void main(String[] args) {
 		//Environment setup
@@ -76,7 +115,10 @@ public class BBCExperimentsCase {
 			}else if(i.equals("3")){
 				expController.performanceExperiment();
 			}else if(i.equals("4")){
-				expController.coreExperiment();
+				for(int turn = 0;turn<= expController.round;turn++){
+					expController.coreExperiment(turn);
+					expController.corelessExperiment(turn);
+				}
 			}else if(i.equals("5")){
 				expController.conceptDriftExperiment();
 			}
@@ -109,40 +151,92 @@ public class BBCExperimentsCase {
 			
 		};
 		populater.addTrainingTopics("business");//only to avoid warning
-		populater.addTestingTopics("tech");
+		populater.addTestingTopics("sport");
 		populater.addTestingTopics("business");
+		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
+		topics.remove("business");
+		topics.remove("sport");
+		topics.get(new Random(1).nextInt(topics.size()));
 		exp.newsPopulater = populater;
 		execute();		
 	}
-	private void coreExperiment() {
-		for(int i=0;i<round;i++){
-			Path tempProject = this.rootPath.resolve("round_"+i);
-			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.4);
-			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(0.1);
-			TopicTermGraph.MAXCORESIZE = TopicTermGraph.MAXCORESIZE + i*5;
-			
-			exp = new Experiment(tempProject.toString(),maper,user);
-			exp.experimentDays = 14;
-			
-			BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
-				@Override
-				public void setGenarationRule() {
-					this.setTrainSize(5);
-					this.setTestSize(5);	
-					
+	private void coreExperiment(int turn) {
+		this.topicSimliarityThreshold = 0.6;
+		this.removeRate = 0.5;
+		for(int j= 0;j<=2;j++){//examine 3 different method
+				TopicTermGraph.METHODTYPE = j;
+				String methodName = null;
+				if(j==0){
+					methodName = "Degree";
+				}else if(j==1){
+					methodName = "LP";
+				}else if(j==2){
+					methodName = "Betweenness";
 				}
+				Path tempProject = this.rootPath.resolve("Methode_"+methodName).resolve("round_"+turn);
+				TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),topicSimliarityThreshold);
+				user = new MemoryBasedUserProfile();
+				user.setRemoveRate(removeRate);
+				TopicTermGraph.MAXCORESIZE = 5 + turn*5;
 				
-			};
-			populater.addTrainingTopics("entertainment");
-			populater.addTestingTopics("entertainment");
-			populater.addTestingTopics("politics");
-			exp.newsPopulater = populater;
-			execute();
-			
+				exp = new Experiment(tempProject.toString(),maper,user);
+				exp.experimentDays = 14;
+				exp.debugMode = true;
+				
+				BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
+					@Override
+					public void setGenarationRule() {
+						this.setTrainSize(10);
+						this.setTestSize(5);	
+						
+					}
+					
+				};
+				populater.addTrainingTopics("business");
+				populater.addTestingTopics("business");
+				List<String> topics = Arrays.asList(BBCNewsPopulator.TOPICS);
+				topics.remove("business");
+				String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
+				populater.addTestingTopics(randomTopic);
+				exp.newsPopulater = populater;
+				execute();
+				this.recordThisRound(turn+j);
 		}
 		
 	}
+	
+	public void  corelessExperiment(int turn){
+		Path tempProject = this.rootPath.resolve("round_"+turn+"coreless");
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.5);
+		user = new MemoryBasedUserProfile();
+		user.setRemoveRate(0.5);
+		TopicTermGraph.MAXCORESIZE = 1000;
+		
+		exp = new Experiment(tempProject.toString(),maper,user);
+		exp.experimentDays = 14;
+		exp.debugMode = true;
+		
+		BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(10);
+				this.setTestSize(5);	
+				
+			}
+			
+		};
+		populater.addTrainingTopics("business");
+		populater.addTestingTopics("business");
+		List<String> topics = Arrays.asList(BBCNewsPopulator.TOPICS);
+		topics.remove("business");
+		String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
+		populater.addTestingTopics(randomTopic);
+		populater.addTestingTopics("earn");
+		exp.newsPopulater = populater;
+		execute();
+		this.recordThisRound(turn+50);
+	}
+	
 	private void performanceExperiment() {
 		String[][] trainTopic = {{"business","sport"},{"entertainment","politics"},{"sport","tech"},{"business","politics"},{"entertainment","tech"}};
 		for(int i = 0;i<round;i++){
@@ -244,9 +338,12 @@ public class BBCExperimentsCase {
 	private void execute() {
 		try {
 			this.exp.initialize();
-			PerformanceMonitor totalMonitor = new PerformanceMonitor();//record total performance
-			
-			Long sumTime = (long) 0;
+			totalMonitor = new PerformanceMonitor();//record total performance
+			String projectName = this.exp.getProjectPath().getFileName().toString();
+			File excel = this.exp.getProjectPath().resolve(projectName+"_data.xls").toFile();
+			HSSFWorkbook workbook = new HSSFWorkbook();
+	        HSSFSheet sheet = workbook.createSheet("Data");
+			sumTime = 0L;
 			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
 				Long time = System.currentTimeMillis();
 				this.exp.run(dayN);
@@ -254,14 +351,21 @@ public class BBCExperimentsCase {
 				Long spendedTime = System.currentTimeMillis() - time;
 				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
 				sumTime += spendedTime;
-				try (BufferedWriter writer = new BufferedWriter(new FileWriter(
-						exp.getUserProfilePath().resolve("userLog.txt")
-								.toFile(), true))) {
-					writer.append("Time spend:" + spendedTime);
-					writer.newLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				BufferedWriter writer = new BufferedWriter(new FileWriter(exp
+						.getUserProfilePath().resolve("userLog.txt").toFile(),
+						true));
+				writer.append("Time spend:" + spendedTime);
+				writer.newLine();
+				writer.close();
+				int count = 1;
+				HSSFRow dailyRow = sheet.createRow(dayN);//Excel log
+				dailyRow.createCell(0).setCellValue(dayN);
+				for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
+					HSSFCell secCell = dailyRow.createCell(count);
+					secCell.setCellValue(entry.getValue());
+					count++;
+			        }
+				dailyRow.createCell(count).setCellValue(spendedTime);
 			}
 
 			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
@@ -278,5 +382,23 @@ public class BBCExperimentsCase {
 
 	}
 		
-
+	public void recordThisRound(int turn){
+		try (HSSFWorkbook book = new HSSFWorkbook(new FileInputStream(excelSummary));) {
+			HSSFSheet sheet = book.getSheetAt(0);
+			HSSFRow turnRow = sheet.createRow(turn+1);
+			turnRow.createCell(0).setCellValue(turn);
+			int count = 1;
+			Set<Entry<PerformanceType, Double>> endResults = this.totalMonitor.getResult().entrySet();
+			for (Entry<PerformanceType, Double> performance : endResults) {
+				HSSFCell cell = turnRow.createCell(count++);
+				cell.setCellValue(performance.getValue());
+			}
+			turnRow.createCell(count).setCellValue(this.sumTime);
+			FileOutputStream fileOut = new FileOutputStream(excelSummary);
+			book.write(fileOut);
+			fileOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
