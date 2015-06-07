@@ -20,7 +20,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int longTermThreshold = 50; // Just for test
+	public static int longTermThreshold = 50; //長期興趣門檻值
 	private Logger loger = LoggerFactory.getLogger(this.getClass());
 	public MemoryBasedUserProfile() {
 		this.setRemoveRate(0.1);
@@ -48,7 +48,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		double decayRate;
 		int timeFactor = today-topic.getUpdateDate();
 		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(Math.E, -timeFactor*0.2);
+			decayRate = Math.pow(Math.E, -timeFactor*0.02);
 		}else{
 			double strength = Math.log10(topic.numberOfDocument)+2;
 			decayRate = Math.pow(Math.E, -(timeFactor*this.getSizeOfShortTerm()/this.getUserTopics().size())/strength);
