@@ -44,8 +44,8 @@ public class BBCExperimentsCase {
 	private MemoryBasedUserProfile user;
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private File excelSummary;
-	private long sumTime;
-	private PerformanceMonitor totalMonitor;
+	long sumTime;
+	PerformanceMonitor totalMonitor;
 	private double topicSimliarityThreshold;
 	private double removeRate;
 
@@ -85,56 +85,61 @@ public class BBCExperimentsCase {
 		System.out.println("5.概念飄移實驗");
 		System.out.println("6.長期興趣門檻");
 		String i;
-		Scanner scanner = new Scanner(System.in);
+		try (Scanner scanner = new Scanner(System.in)) {
 			i = scanner.next();
 			System.out.println("使用HTTP(1)或是嵌入式SOLR(2)?");
-			if(scanner.nextInt()==1){
+			if (scanner.nextInt() == 1) {
 				expController.searcher = new HttpIndexSearcher();
-			}else{
+			} else {
 				expController.searcher = new EmbeddedIndexSearcher();
 			}
 			System.out.println("請填入核心數目");
 			TopicTermGraph.MAXCORESIZE = scanner.nextInt();
 			System.out.println("請填入遞迴回數:");
 			expController.round = scanner.nextInt();
-			if(i.equals("1")){
+			if (i.equals("1")) {
 				System.out.println("請填入主題相關應得門檻起始值:");
 				expController.parama = scanner.nextDouble();
-				if(expController.parama > 1){
+				if (expController.parama > 1) {
 					throw new RuntimeException("輸入門檻值不得大於1");
 				}
 				expController.TopicRelatedScore();
-				
-			}else if(i.equals("2")){
+
+			} else if (i.equals("2")) {
 				System.out.println("請填入移除門檻起始值:");
 				expController.parama = scanner.nextDouble();
-				if(expController.parama > 1){
+				if (expController.parama > 1) {
 					throw new RuntimeException("輸入門檻值不得大於1");
 				}
 				expController.removeThresholdExperiment();
-			}else if(i.equals("3")){
+			} else if (i.equals("3")) {
 				expController.performanceExperiment();
-			}else if(i.equals("4")){
-				for(int turn = 0;turn<= expController.round;turn++){
+			} else if (i.equals("4")) {
+				for (int turn = 0; turn < expController.round; turn++) {
 					expController.coreExperiment(turn);
 					expController.corelessExperiment(turn);
 				}
-			}else if(i.equals("5")){
-				expController.conceptDriftExperiment();
+			} else if (i.equals("5")) {
+				System.out.println("請填入長期門檻起始值:");
+				expController.parama = scanner.nextDouble();
+				for(int turn =0;turn <expController.round;turn++){
+					expController.conceptDriftExperiment(turn);
+				}
 			}
-		expController.searcher.shutdown();
+			System.exit(0);
+		}
 	}
-	private void conceptDriftExperiment() {
-
+	private void conceptDriftExperiment(int turn) {
+		Path project = this.rootPath.resolve("turn_"+turn);
 		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
 		user = new MemoryBasedUserProfile();
-		user.setRemoveRate(1);
-				
-		exp = new Experiment(rootPath.toString(),maper,user);
+		user.setRemoveRate(0.7);
+		MemoryBasedUserProfile.longTermThreshold = (int) (this.parama + 25*turn);
+		exp = new Experiment(project.toString(),maper,user);
 		exp.debugMode = true;
 		exp.experimentDays = 14;
 		
-		BBCNewsPopulator populater = new BBCNewsPopulator(this.rootPath){
+		BBCNewsPopulator populater = new BBCNewsPopulator(project){
 
 			@Override
 			public void setGenarationRule() {
@@ -142,7 +147,7 @@ public class BBCExperimentsCase {
 				this.setTestSize(5);
 				this.trainTopics.clear();
 				if(this.theDay<=7){
-					this.addTrainingTopics("tech");
+					this.addTrainingTopics("business");
 				}else{
 					this.addTrainingTopics("politics");
 				}
@@ -151,14 +156,15 @@ public class BBCExperimentsCase {
 			
 		};
 		populater.addTrainingTopics("business");//only to avoid warning
-		populater.addTestingTopics("sport");
+		populater.addTestingTopics("politics");
 		populater.addTestingTopics("business");
 		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
 		topics.remove("business");
-		topics.remove("sport");
-		topics.get(new Random(1).nextInt(topics.size()));
+		topics.remove("politics");
+		populater.addTestingTopics(topics.get(new Random(0).nextInt(topics.size())));
 		exp.newsPopulater = populater;
-		execute();		
+		execute();	
+		this.recordThisRound(turn);
 	}
 	private void coreExperiment(int turn) {
 		this.topicSimliarityThreshold = 0.6;
@@ -194,13 +200,13 @@ public class BBCExperimentsCase {
 				};
 				populater.addTrainingTopics("business");
 				populater.addTestingTopics("business");
-				List<String> topics = Arrays.asList(BBCNewsPopulator.TOPICS);
+				ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
 				topics.remove("business");
-				String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
+				String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 				populater.addTestingTopics(randomTopic);
 				exp.newsPopulater = populater;
 				execute();
-				this.recordThisRound(turn+j);
+				this.recordThisRound(turn*4+j);
 		}
 		
 	}
@@ -227,23 +233,25 @@ public class BBCExperimentsCase {
 		};
 		populater.addTrainingTopics("business");
 		populater.addTestingTopics("business");
-		List<String> topics = Arrays.asList(BBCNewsPopulator.TOPICS);
+		populater.addTestingTopics("sport");
+		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
 		topics.remove("business");
-		String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
+		topics.remove("sport");
+		String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 		populater.addTestingTopics(randomTopic);
-		populater.addTestingTopics("earn");
 		exp.newsPopulater = populater;
 		execute();
-		this.recordThisRound(turn+50);
+		this.recordThisRound(turn*4+3);
 	}
 	
 	private void performanceExperiment() {
 		String[][] trainTopic = {{"business","sport"},{"entertainment","politics"},{"sport","tech"},{"business","politics"},{"entertainment","tech"}};
+		TopicTermGraph.METHODTYPE = 1; //LP method
 		for(int i = 0;i<round;i++){
 			Path tempProject = this.rootPath.resolve("round_"+i);
-			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.8);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
 			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(0.5);
+			user.setRemoveRate(0.7);
 			
 			exp = new Experiment(tempProject.toString(),maper,user);
 			exp.debugMode = true;
@@ -301,16 +309,17 @@ public class BBCExperimentsCase {
 			}
 
 			execute();
+			this.recordThisRound(i);
 		}		
 	}
 	private void TopicRelatedScore() {
 		for(int i = 0;i<round;i++){
-			double topicSimliarityThreshold = parama + (i/10.0);
+			this.topicSimliarityThreshold = parama + (i/10.0);
 
 			TopicMappingTool maper = new TopicMappingTool(
 					new NgdReverseTfTopicSimilarity(),topicSimliarityThreshold);
 			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(0.5);
+			user.setRemoveRate(0.1);
 
 			Path tempDir = this.rootPath.resolve("turn_"+i);
 			exp = new Experiment(tempDir.toString(),maper,user);
@@ -333,6 +342,7 @@ public class BBCExperimentsCase {
 			populater.addTrainingTopics("tech");
 
 			execute();
+			this.recordThisRound(i);
 		}		
 	}
 	private void execute() {
@@ -374,7 +384,8 @@ public class BBCExperimentsCase {
 			writer.newLine();
 			writer.append("Performance:" + totalMonitor.getResult());
 			writer.close();
-
+			workbook.write(new FileOutputStream(excel));
+			workbook.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

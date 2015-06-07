@@ -40,10 +40,21 @@ public class BBCNewsPopulator implements ExperimentFilePopulater {
 	}
 	
 	public boolean addTrainingTopics(String topic){
-		return this.trainTopics.add(topic);
+		for(String bbcTopic:TOPICS){
+			if(bbcTopic.equals(topic)){
+				return this.trainTopics.add(topic);
+			}
+		}
+		throw new IllegalArgumentException();
 	}
 	public boolean addTestingTopics(String topic){
-		return this.testTopics.add(topic);
+		for(String bbcTopic:TOPICS){
+			if(bbcTopic.equals(topic)){
+				return this.testTopics.add(topic);
+			}
+		}
+		throw new IllegalArgumentException();
+
 	}
 	
 	/**

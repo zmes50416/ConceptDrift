@@ -72,8 +72,7 @@ public class NewThresholdExperiment {
 		System.out.println("5.概念飄移實驗");
 		System.out.println("6.長期興趣門檻");
 		String input;
-		try{
-			Scanner scanner = new Scanner(System.in);
+		try(Scanner scanner = new Scanner(System.in)){
 				input = scanner.next();
 				System.out.println("使用HTTP(1)或是嵌入式SOLR(2)?");
 				if(scanner.nextInt()==1){
@@ -85,7 +84,6 @@ public class NewThresholdExperiment {
 				TopicTermGraph.MAXCORESIZE = scanner.nextInt();
 				System.out.println("請填入遞迴回數:");
 				expController.round = scanner.nextInt();
-				
 				if(input.equals("1")){
 					System.out.println("請填入主題相關應得門檻起始值:");
 					expController.parama = scanner.nextDouble();
@@ -94,7 +92,6 @@ public class NewThresholdExperiment {
 					}
 					for(int turn = 0;turn<expController.round;turn++){
 						expController.TopicRelatedScore(turn);
-						expController.recordThisRound(turn);
 					}
 					
 				}else if(input.equals("2")){
@@ -113,9 +110,17 @@ public class NewThresholdExperiment {
 						expController.recordThisRound(turn);
 					}
 				}else if(input.equals("5")){
+					System.out.println("請填入長期門檻值參數:");
+					expController.parama = scanner.nextDouble();
 					for(int turn =0;turn<expController.round;turn++){
 						expController.conceptDriftExperiment(turn);
 
+					}
+				}else if(input.equals("6")){
+					System.out.println("請填入長期門檻的初始值:");
+					expController.parama = scanner.nextDouble();
+					for(int turn =0;turn<expController.round;turn++){
+						expController.longTermThresholdExperiment(turn);
 					}
 				}
 				System.out.println("Experimetn have been done!\n");
@@ -124,8 +129,6 @@ public class NewThresholdExperiment {
 			System.err.println("IO Have been Interrupted. System stopped.");
 			e.printStackTrace();
 		}
-		expController.searcher.shutdown();
-		
 	}
 	
 	public NewThresholdExperiment(Path _projectDir) {
@@ -178,7 +181,7 @@ public class NewThresholdExperiment {
 		}
 		populater.addTrainingTopics("acq");
 		execute();
-		
+		this.recordThisRound(turn);
 	}
 
 	public void removeThresholdExperiment() throws IOException{
@@ -218,33 +221,6 @@ public class NewThresholdExperiment {
 		}
 	}
 	
-	public void timeExperiment() throws IOException{
-		//TODO unfinished Experiment
-		topicSimliarityThreshold = 0.4;
-		removeRate = 0.1;
-		user.setRemoveRate(removeRate);
-		exp.setUser(user);
-
-		this.exp.experimentDays = 10;
-
-		RouterNewsPopulator populater = new RouterNewsPopulator(this.rootDir.toString(),topicPath){
-			@Override
-			public void setGenarationRule() {
-				this.setTrainSize(4);
-				this.setTestSize(4);	
-				
-			}
-			
-		};
-
-		File copyData = new File("DEMODATA");
-		populater = new ManualRouterNewsPopulater(this.rootDir.toString(), copyData.toPath());
-		exp.newsPopulater = populater;
-		populater.addTrainingTopics("acq");
-		populater.addTestingTopics("earn");
-		execute();
-	}
-	
 	public void coreExperiment(int turn){
 		this.topicSimliarityThreshold = 0.6;
 		this.removeRate = 0.5;
@@ -280,7 +256,7 @@ public class NewThresholdExperiment {
 				populater.addTrainingTopics("acq");
 				populater.addTestingTopics("acq");
 				ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
-				String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
+				String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 				populater.addTestingTopics(randomTopic);
 				exp.newsPopulater = populater;
 				execute();
@@ -313,60 +289,104 @@ public class NewThresholdExperiment {
 		populater.addTestingTopics("acq");
 		ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
 		topics.remove("acq");
-		String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
+		String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 		populater.addTestingTopics(randomTopic);
 		exp.newsPopulater = populater;
 		execute();
 		this.recordThisRound(turn*4+4);
 	}
 	
-	public void conceptDriftExperiment(int turn){
-		Path project = this.rootDir.resolve("turn_"+turn);
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.5);
-		user = new MemoryBasedUserProfile();
-		user.setRemoveRate(1);
-				
-		exp = new Experiment(project.toString(),maper,user);
-		exp.debugMode = debugMode;
-		exp.experimentDays = 14;
+	public void longTermThresholdExperiment(int turn){
 		
-		RouterNewsPopulator populater = new RouterNewsPopulator(project.toString()){
+		for(int j=0;j<5;j++){
+			Path project = this.rootDir.resolve("turn_"+turn).resolve("random_"+j);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.8);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(0.7);
+			MemoryBasedUserProfile.longTermThreshold = (int) (parama + turn*25);
+			
+			exp = new Experiment(project.toString(),maper,user);
+			exp.debugMode = debugMode;
+			exp.experimentDays = 10;
+			
+			RouterNewsPopulator populater = new RouterNewsPopulator(project.toString()){
 
-			@Override
-			public void setGenarationRule() {
-				this.setTrainSize(10);
-				this.setTestSize(5);
-				this.trainTopics.clear();
-				if(this.theDay<=7){
-					this.addTrainingTopics("acq");
-				}else{
-					this.addTrainingTopics("earn");
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(5);
+					this.setTestSize(5);
+					
 				}
 				
-			}
-			
-		};
-		populater.addTrainingTopics("acq");//only to avoid warning
-		populater.addTestingTopics("acq");
-		populater.addTestingTopics("trade");
-		ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
-		topics.remove("acq");
-		topics.remove("trade");
-		String randomTopic = topics.get(new Random(turn).nextInt(topics.size()));
-		populater.addTestingTopics(randomTopic);
-		exp.newsPopulater = populater;
-		execute();
-		this.recordThisRound(turn);
+			};
+			populater.addTrainingTopics("acq");//only to avoid warning
+			populater.addTestingTopics("acq");
+			populater.addTestingTopics("trade");
+			ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
+			topics.remove("acq");
+			topics.remove("trade");
+			String randomTopic = topics.get(new Random(j).nextInt(topics.size()));
+			populater.addTestingTopics(randomTopic);
+			exp.newsPopulater = populater;
+			execute();
+			this.recordThisRound(turn*5+j);
+		}
+		
+		
+	}
+	
+	public void conceptDriftExperiment(int turn){
+		for(int j = 0;j<=5;j++){
+			Path project = this.rootDir.resolve("turn_" + turn).resolve(j+"_seed");
+			TopicMappingTool maper = new TopicMappingTool(
+					new NgdReverseTfTopicSimilarity(), 0.5);
+			user = new MemoryBasedUserProfile();
+			user.setRemoveRate(0.7);
+			MemoryBasedUserProfile.longTermThreshold = (int) (25*turn+parama);
+			exp = new Experiment(project.toString(), maper, user);
+			exp.debugMode = debugMode;
+			exp.experimentDays = 14;
+
+			RouterNewsPopulator populater = new RouterNewsPopulator(
+					project.toString()) {
+
+				@Override
+				public void setGenarationRule() {
+					this.setTrainSize(10);
+					this.setTestSize(5);
+					this.trainTopics.clear();
+					if (this.theDay <= 7) {
+						this.addTrainingTopics("acq");
+					} else {
+						this.addTrainingTopics("earn");
+					}
+
+				}
+
+			};
+			populater.addTrainingTopics("acq");// only to avoid warning
+			populater.addTestingTopics("acq");
+			populater.addTestingTopics("trade");
+			ArrayList<String> topics = Lists
+					.newArrayList(RouterNewsPopulator.test);
+			topics.remove("acq");
+			topics.remove("trade");
+			String randomTopic = topics.get(new Random(j).nextInt(topics
+					.size()));
+			populater.addTestingTopics(randomTopic);
+			exp.newsPopulater = populater;
+			execute();
+		}
 	}
 	
 	public void performanceExperiment(){
 		String[][] trainTopic={{"acq","earn"},{"crude","coffee"},{"sugar","trade"},{"acq","cocoa"},{"crude","trade"}};
-		
+		TopicTermGraph.METHODTYPE = 1; //LP method
 		for(int i = 0;i<round;i++){
 			Path tempProject = this.rootDir.resolve("round_"+i);
 			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.8);
 			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(0.5);
+			user.setRemoveRate(0.7);
 			
 			exp = new Experiment(tempProject.toString(),maper,user);
 			exp.debugMode = debugMode;
@@ -388,6 +408,7 @@ public class NewThresholdExperiment {
 			}
 			exp.newsPopulater = populater;
 			execute();
+			this.recordThisRound(i);
 		}
 	}
 
@@ -411,13 +432,6 @@ public class NewThresholdExperiment {
 				sumTime += spendedTime;
 				BufferedWriter writer = new BufferedWriter(new FileWriter(userLog, true)); 
 				writer.append("Time spend:" + spendedTime);//Simple UserLog
-				writer.newLine();
-				writer.append("Performance to date:F-measure"
-							+ totalMonitor.computeFmeasure() + "Recall:"
-							+ totalMonitor.computeRecall() + ",Percision:"
-							+ totalMonitor.computePrecision() + ",Accuracy:"
-							+ totalMonitor.computeAccuracy());
-				writer.newLine();
 				writer.close();
 				int count = 1;
 				HSSFRow dailyRow = sheet.createRow(dayN);//Excel log
@@ -458,9 +472,6 @@ public class NewThresholdExperiment {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
-		//this.exp.simplelog(experimentDays);
 
 	}
 	/**
@@ -472,8 +483,7 @@ public class NewThresholdExperiment {
 			HSSFRow turnRow = sheet.createRow(turn+1);
 			turnRow.createCell(0).setCellValue(turn);
 			int count = 1;
-			Set<Entry<PerformanceType, Double>> endResults = this.totalMonitor.getResult().entrySet();
-			for (Entry<PerformanceType, Double> performance : endResults) {
+			for (Entry<PerformanceType, Double> performance : this.totalMonitor.getResult().entrySet()) {
 				HSSFCell cell = turnRow.createCell(count++);
 				cell.setCellValue(performance.getValue());
 			}
