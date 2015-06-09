@@ -31,7 +31,7 @@ import edu.uci.ics.jung.graph.util.Pair;
 @SuppressWarnings("serial")
 public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implements Serializable{
 	public static int MAXCORESIZE = 10; //Default Core size
-	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new BetweennessCentralityWrapper<TermNode,CEdge>(this); //Default Core algorithm
+	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new LP<TermNode,CEdge>(this); //Default Core algorithm
 	public static int METHODTYPE = 0;
 
 	private boolean isLongTermInterest;

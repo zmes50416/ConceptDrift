@@ -81,11 +81,11 @@ public class UserProfileManager {
 			}
 			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,topic.getDecayRate());
 
-			if (topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
+			if (!topic.isLongTermInterest() && topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
 				loger.info("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
 				i.remove();
 			}
-		}
+		}//end of while
 		
 	}
 	
