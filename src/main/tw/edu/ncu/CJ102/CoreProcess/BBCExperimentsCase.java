@@ -34,40 +34,16 @@ import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
 import tw.edu.ncu.im.Util.HttpIndexSearcher;
 import tw.edu.ncu.im.Util.IndexSearchable;
 
-public class BBCExperimentsCase {
+public class BBCExperimentsCase extends AbstractExperimentCase {
 	Experiment exp;
 	Path rootPath;
-	private IndexSearchable searcher;
 	private int round;
 	private double parama;
-	private Path bbcData = Paths.get(SettingManager.getSetting("bbcDataSet"));
-	private MemoryBasedUserProfile user;
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private File excelSummary;
 	long sumTime;
-	PerformanceMonitor totalMonitor;
-	private double topicSimliarityThreshold;
-	private double removeRate;
 
 	public BBCExperimentsCase(Path path) {
-		this.rootPath = path;
-		
-		excelSummary = this.rootPath.resolve("totalData.xls").toFile();
-		try (HSSFWorkbook workbook = new HSSFWorkbook()) {
-			HSSFSheet sheet = workbook.createSheet("Summary");
-			HSSFRow titleRow = sheet.createRow(0);
-			titleRow.createCell(0).setCellValue("Turn");
-			int count = 1;
-			for (PerformanceType type : PerformanceType.values()) {
-				HSSFCell cell = titleRow.createCell(count);
-				cell.setCellValue(type.toString());
-				count++;
-			}
-			titleRow.createCell(count).setCellValue("Time(NanoSecond)");
-			workbook.write(new FileOutputStream(excelSummary));
-		} catch (IOException e) {
-
-		}
+		super(path);
 	}
 	public static void main(String[] args) {
 		//Environment setup
@@ -344,72 +320,5 @@ public class BBCExperimentsCase {
 			execute();
 			this.recordThisRound(i);
 		}		
-	}
-	private void execute() {
-		try {
-			this.exp.initialize();
-			totalMonitor = new PerformanceMonitor();//record total performance
-			String projectName = this.exp.getProjectPath().getFileName().toString();
-			File excel = this.exp.getProjectPath().resolve(projectName+"_data.xls").toFile();
-			HSSFWorkbook workbook = new HSSFWorkbook();
-	        HSSFSheet sheet = workbook.createSheet("Data");
-			sumTime = 0L;
-			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
-				Long time = System.currentTimeMillis();
-				this.exp.run(dayN);
-				totalMonitor.addUp(this.exp.systemDailyPerformance);
-				Long spendedTime = System.currentTimeMillis() - time;
-				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
-				sumTime += spendedTime;
-				BufferedWriter writer = new BufferedWriter(new FileWriter(exp
-						.getUserProfilePath().resolve("userLog.txt").toFile(),
-						true));
-				writer.append("Time spend:" + spendedTime);
-				writer.newLine();
-				writer.close();
-				int count = 1;
-				HSSFRow dailyRow = sheet.createRow(dayN);//Excel log
-				dailyRow.createCell(0).setCellValue(dayN);
-				for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
-					HSSFCell secCell = dailyRow.createCell(count);
-					secCell.setCellValue(entry.getValue());
-					count++;
-			        }
-				dailyRow.createCell(count).setCellValue(spendedTime);
-			}
-
-			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
-					.getProjectPath().resolve("setting.txt").toFile(), true));
-			writer.append("Total time: " + sumTime +" millsecond");
-			writer.newLine();
-			writer.append("Performance:" + totalMonitor.getResult());
-			writer.close();
-			workbook.write(new FileOutputStream(excel));
-			workbook.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-
-	}
-		
-	public void recordThisRound(int turn){
-		try (HSSFWorkbook book = new HSSFWorkbook(new FileInputStream(excelSummary));) {
-			HSSFSheet sheet = book.getSheetAt(0);
-			HSSFRow turnRow = sheet.createRow(turn+1);
-			turnRow.createCell(0).setCellValue(turn);
-			int count = 1;
-			Set<Entry<PerformanceType, Double>> endResults = this.totalMonitor.getResult().entrySet();
-			for (Entry<PerformanceType, Double> performance : endResults) {
-				HSSFCell cell = turnRow.createCell(count++);
-				cell.setCellValue(performance.getValue());
-			}
-			turnRow.createCell(count).setCellValue(this.sumTime);
-			FileOutputStream fileOut = new FileOutputStream(excelSummary);
-			book.write(fileOut);
-			fileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

@@ -1,60 +1,25 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
-
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import tw.edu.ncu.CJ102.SettingManager;
-import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
 import tw.edu.ncu.im.Util.EmbeddedIndexSearcher;
 import tw.edu.ncu.im.Util.HttpIndexSearcher;
-import tw.edu.ncu.im.Util.IndexSearchable;
 
-public class NewThresholdExperiment {
-	Path rootDir;
-	String topicPath = "Tom_reuters_0.4/single";
-	Experiment exp ;
-	AbstractUserProfile user;
-	IndexSearchable searcher;
-	private double topicSimliarityThreshold;
-	private int experimentDays;
-	private double removeRate;
-	PerformanceMonitor totalMonitor;//record total performance
-	File excelSummary;
-	Logger logger = LoggerFactory.getLogger(this.getClass());
-	Long sumTime = 0L;
-	public int round;
-	public double parama;
-	private boolean debugMode;
+import com.google.common.collect.Lists;
+
+public class NewThresholdExperiment extends AbstractExperimentCase {
+	String topicPath = "stanford/";
+	public int round; // for how many round experiment should run
+	public double parama;//different meaning in different experiment, the control variable
 	public static void main(String[] args) {
 		//Environment setup
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
@@ -63,8 +28,8 @@ public class NewThresholdExperiment {
 		
 		Path path = Paths.get(SettingManager.chooseProject());
 		NewThresholdExperiment expController = new NewThresholdExperiment(path); 
-		System.out.println("You Dir is:"+path);
-		System.out.println("Which ThresholdExp you wanna run?");
+		System.out.println("You Dir is:"+path);		
+		System.out.println("Which Experiment you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
 		System.out.println("3.效能實驗");
@@ -132,24 +97,7 @@ public class NewThresholdExperiment {
 	}
 	
 	public NewThresholdExperiment(Path _projectDir) {
-		this.rootDir = _projectDir;
-		debugMode = true;
-		excelSummary = this.rootDir.resolve("totalData.xls").toFile();
-		try (HSSFWorkbook workbook = new HSSFWorkbook()) {
-			HSSFSheet sheet = workbook.createSheet("Summary");
-			HSSFRow titleRow = sheet.createRow(0);
-			titleRow.createCell(0).setCellValue("Turn");
-			int count = 1;
-			for (PerformanceType type : PerformanceType.values()) {
-				HSSFCell cell = titleRow.createCell(count);
-				cell.setCellValue(type.toString());
-				count++;
-			}
-			titleRow.createCell(count).setCellValue("Time(NanoSecond)");
-			workbook.write(new FileOutputStream(excelSummary));
-		} catch (IOException e) {
-
-		}
+		super(_projectDir);
 	}
 	
 	public void TopicRelatedScore(int turn) throws IOException{
@@ -162,9 +110,9 @@ public class NewThresholdExperiment {
 		user = new MemoryBasedUserProfile();
 		user.setRemoveRate(removeRate);
 		Path experimentDir = this.rootDir.resolve("turn_"+turn);
-		exp = new Experiment(experimentDir.toString(),maper,user);
-		exp.debugMode = debugMode;
-		this.exp.experimentDays = experimentDays;
+		experiment = new Experiment(experimentDir.toString(),maper,user);
+		experiment.debugMode = debugMode;
+		this.experiment.experimentDays = experimentDays;
 
 		RouterNewsPopulator populater = new RouterNewsPopulator(experimentDir.toString(),topicPath){
 				@Override
@@ -175,7 +123,7 @@ public class NewThresholdExperiment {
 				}
 				
 			};
-		exp.newsPopulater = populater;
+		experiment.newsPopulater = populater;
 		for(String topic:RouterNewsPopulator.test){
 			populater.addTestingTopics(topic);
 		}
@@ -196,9 +144,9 @@ public class NewThresholdExperiment {
 			removeRate = parama + (i / 10.0);
 			user.setRemoveRate(removeRate);
 
-			this.exp = new Experiment(tempDir.toString(), maper, user);
-			this.exp.setExperimentDays(experimentDays);
-			exp.debugMode = debugMode;
+			this.experiment = new Experiment(tempDir.toString(), maper, user);
+			this.experiment.setExperimentDays(experimentDays);
+			experiment.debugMode = debugMode;
 
 
 			RouterNewsPopulator populater = new RouterNewsPopulator(
@@ -211,7 +159,7 @@ public class NewThresholdExperiment {
 				}
 
 			};
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			populater.addTrainingTopics("acq");
 			for (String topic : RouterNewsPopulator.test) {
 				populater.addTestingTopics(topic);
@@ -240,9 +188,9 @@ public class NewThresholdExperiment {
 				user.setRemoveRate(this.removeRate);
 				TopicTermGraph.MAXCORESIZE = 5 + turn*5;
 				
-				exp = new Experiment(tempProject.toString(),maper,user);
-				exp.experimentDays = 14;
-				exp.debugMode = this.debugMode;
+				experiment = new Experiment(tempProject.toString(),maper,user);
+				experiment.experimentDays = 14;
+				experiment.debugMode = this.debugMode;
 				
 				RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
 					@Override
@@ -258,23 +206,23 @@ public class NewThresholdExperiment {
 				ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
 				String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 				populater.addTestingTopics(randomTopic);
-				exp.newsPopulater = populater;
+				experiment.newsPopulater = populater;
 				execute();
 				
 				this.recordThisRound(turn*4+j);
 		}
 	}
-	
-	public void  corelessExperiment(int turn){
+	//core less will compare with core
+	public void corelessExperiment(int turn){
 		Path tempProject = this.rootDir.resolve("Method_coreless").resolve("round_"+turn);
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);//Will be the same of Core exp
+		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);//Will be the same of Core experiment
 		user = new MemoryBasedUserProfile();
 		user.setRemoveRate(this.removeRate);
 		TopicTermGraph.MAXCORESIZE = 1000;
 		
-		exp = new Experiment(tempProject.toString(),maper,user);
-		exp.experimentDays = 14;
-		exp.debugMode = this.debugMode;
+		experiment = new Experiment(tempProject.toString(),maper,user);
+		experiment.experimentDays = 14;
+		experiment.debugMode = this.debugMode;
 		
 		RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
 			@Override
@@ -291,7 +239,7 @@ public class NewThresholdExperiment {
 		topics.remove("acq");
 		String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 		populater.addTestingTopics(randomTopic);
-		exp.newsPopulater = populater;
+		experiment.newsPopulater = populater;
 		execute();
 		this.recordThisRound(turn*4+4);
 	}
@@ -305,9 +253,9 @@ public class NewThresholdExperiment {
 			user.setRemoveRate(0.7);
 			MemoryBasedUserProfile.longTermThreshold = (int) (parama + turn*25);
 			
-			exp = new Experiment(project.toString(),maper,user);
-			exp.debugMode = debugMode;
-			exp.experimentDays = 10;
+			experiment = new Experiment(project.toString(),maper,user);
+			experiment.debugMode = debugMode;
+			experiment.experimentDays = 10;
 			
 			RouterNewsPopulator populater = new RouterNewsPopulator(project.toString()){
 
@@ -327,7 +275,7 @@ public class NewThresholdExperiment {
 			topics.remove("trade");
 			String randomTopic = topics.get(new Random(j).nextInt(topics.size()));
 			populater.addTestingTopics(randomTopic);
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			execute();
 			this.recordThisRound(turn*5+j);
 		}
@@ -343,9 +291,9 @@ public class NewThresholdExperiment {
 			user = new MemoryBasedUserProfile();
 			user.setRemoveRate(0.7);
 			MemoryBasedUserProfile.longTermThreshold = (int) (25*turn+parama);
-			exp = new Experiment(project.toString(), maper, user);
-			exp.debugMode = debugMode;
-			exp.experimentDays = 14;
+			experiment = new Experiment(project.toString(), maper, user);
+			experiment.debugMode = debugMode;
+			experiment.experimentDays = 14;
 
 			RouterNewsPopulator populater = new RouterNewsPopulator(
 					project.toString()) {
@@ -374,7 +322,7 @@ public class NewThresholdExperiment {
 			String randomTopic = topics.get(new Random(j).nextInt(topics
 					.size()));
 			populater.addTestingTopics(randomTopic);
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			execute();
 		}
 	}
@@ -388,9 +336,9 @@ public class NewThresholdExperiment {
 			user = new MemoryBasedUserProfile();
 			user.setRemoveRate(0.7);
 			
-			exp = new Experiment(tempProject.toString(),maper,user);
-			exp.debugMode = debugMode;
-			exp.experimentDays = 10;
+			experiment = new Experiment(tempProject.toString(),maper,user);
+			experiment.debugMode = debugMode;
+			experiment.experimentDays = 10;
 			
 			RouterNewsPopulator populater = new RouterNewsPopulator(tempProject.toString(),topicPath){
 				@Override
@@ -406,93 +354,9 @@ public class NewThresholdExperiment {
 			for(String topic:RouterNewsPopulator.test){
 				populater.addTestingTopics(topic);
 			}
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			execute();
 			this.recordThisRound(i);
-		}
-	}
-
-	private void execute(){
-		try {
-			this.exp.initialize();
-			String projectName = this.exp.getProjectPath().getFileName().toString();
-			this.totalMonitor = new PerformanceMonitor();
-			File excel = this.exp.getProjectPath().resolve(projectName+"_data.xls").toFile();
-			HSSFWorkbook workbook = new HSSFWorkbook();
-	        HSSFSheet sheet = workbook.createSheet("Data");
-			sumTime = 0L;
-			
-			for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) {
-				Long time = System.currentTimeMillis();
-				File userLog =exp.getUserProfilePath().resolve("userLog.txt").toFile();
-				this.exp.run(dayN);
-				totalMonitor.addUp(this.exp.systemDailyPerformance);
-				Long spendedTime = System.currentTimeMillis() - time;
-				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
-				sumTime += spendedTime;
-				BufferedWriter writer = new BufferedWriter(new FileWriter(userLog, true)); 
-				writer.append("Time spend:" + spendedTime);//Simple UserLog
-				writer.close();
-				int count = 1;
-				HSSFRow dailyRow = sheet.createRow(dayN);//Excel log
-				dailyRow.createCell(0).setCellValue(dayN);
-				for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
-					HSSFCell secCell = dailyRow.createCell(count);
-					secCell.setCellValue(entry.getValue());
-					count++;
-		        }
-				dailyRow.createCell(count).setCellValue(spendedTime);
-			}
-			int count = 1;
-			HSSFRow titlerow = sheet.createRow(0);
-			titlerow.createCell(0).setCellValue("Day");
-			HSSFRow finalRow = sheet.createRow(this.exp.experimentDays+1);
-			for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
-				 
-			     HSSFCell cell = titlerow.createCell(count);
-			     cell.setCellValue(entry.getKey().toString());
-				 HSSFCell secCell = finalRow.createCell(count);
-				 secCell.setCellValue(entry.getValue());
-				 count++;
-	        }
-			titlerow.createCell(count).setCellValue("Time");
-			finalRow.createCell(count).setCellValue(sumTime);
-            FileOutputStream out = new FileOutputStream(excel);
-            workbook.write(out);
-            out.close();
-            workbook.close();
-			BufferedWriter writer = new BufferedWriter(new FileWriter(exp
-					.getProjectPath().resolve("setting.txt").toFile(), true));
-			writer.append("Core Size:"+TopicTermGraph.MAXCORESIZE);
-			writer.append("Total time: " + sumTime +" millsecond");
-			writer.newLine();
-			writer.append("Performance:" + totalMonitor.getResult());
-			writer.close();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-	/**
-	 * record total number of experiment
-	 */
-	public void recordThisRound(int turn){
-		try (HSSFWorkbook book = new HSSFWorkbook(new FileInputStream(excelSummary));) {
-			HSSFSheet sheet = book.getSheetAt(0);
-			HSSFRow turnRow = sheet.createRow(turn+1);
-			turnRow.createCell(0).setCellValue(turn);
-			int count = 1;
-			for (Entry<PerformanceType, Double> performance : this.totalMonitor.getResult().entrySet()) {
-				HSSFCell cell = turnRow.createCell(count++);
-				cell.setCellValue(performance.getValue());
-			}
-			turnRow.createCell(count).setCellValue(this.sumTime);
-			FileOutputStream fileOut = new FileOutputStream(excelSummary);
-			book.write(fileOut);
-			fileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }
