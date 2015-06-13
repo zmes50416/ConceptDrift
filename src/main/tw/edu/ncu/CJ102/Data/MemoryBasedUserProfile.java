@@ -55,12 +55,6 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}
 		return decayRate;
 	}
-
-	@Override
-	public double getCoOccranceThreshold() {
-		// TODO implement complext threshold compute
-		return 0.1;
-	}
 	
 	@Override
 	public void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap,int today) {

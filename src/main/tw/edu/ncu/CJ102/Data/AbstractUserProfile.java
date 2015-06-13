@@ -27,7 +27,27 @@ public abstract class AbstractUserProfile implements Serializable{
 	public Collection<TopicTermGraph> getUserTopics() {
 		return userTopics;
 	}
+	
+	public int getShortTermcount(){
+		int count = 0;
+		for(TopicTermGraph topic:userTopics){
+			if(!topic.isLongTermInterest()){
+				count++;
+			}
+		}
+		return count;
+				
+	}
 
+	public int getLongTermCount(){
+		int count = 0;
+		for(TopicTermGraph topic:this.userTopics){
+			if(topic.isLongTermInterest()){
+				count++;
+			}
+		}
+		return count;
+	}
 	/**
 	 * 實作使用者模型的遺忘公式
 	 * @param topic 使用者模型內的主題興趣
@@ -52,8 +72,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	public double getTermRemoveThreshold(){
 		return this.termRemoveThreshold * this.removeRate;
 	}
-	public abstract double getCoOccranceThreshold();
-
+	
 	public double getRemoveRate() {
 		return removeRate;
 	}
