@@ -118,6 +118,8 @@ public class Experiment {
 				writer.newLine();
 				writer.write("去除比例:"+this.user.getRemoveRate());
 				writer.newLine();
+				writer.write("Core Size:"+TopicTermGraph.MAXCORESIZE);
+				writer.newLine();
 			}catch(IOException e){
 				e.printStackTrace();
 			}

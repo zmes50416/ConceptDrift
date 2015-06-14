@@ -38,7 +38,7 @@ public class AbstractExperimentCase {
 	public AbstractExperimentCase(Path _projectDir) {
 		this.rootDir = _projectDir;
 		debugMode = true;
-		excelSummary = this.rootDir.resolve("totalData.xls").toFile();
+		excelSummary = this.rootDir.resolve(rootDir.getFileName()+"_summary.xls").toFile(); // using the recordthisround to add into summary
 		try (HSSFWorkbook workbook = new HSSFWorkbook()) {
 			HSSFSheet sheet = workbook.createSheet("Summary");
 			HSSFRow titleRow = sheet.createRow(0);
@@ -50,8 +50,6 @@ public class AbstractExperimentCase {
 				count++;
 			}
 			titleRow.createCell(count++).setCellValue("Time(NanoSecond)");
-			titleRow.createCell(count++).setCellValue("Size of Short Term Interest");
-			titleRow.createCell(count++).setCellValue("Size of Long Term Interest");
 			workbook.write(new FileOutputStream(excelSummary));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -59,64 +57,52 @@ public class AbstractExperimentCase {
 	}
 
 	protected void execute() {
-		try {
+		try(HSSFWorkbook workbook = new HSSFWorkbook()) {
 			this.experiment.initialize();
 			String projectName = this.experiment.getProjectPath().getFileName().toString();
 			this.totalMonitor = new PerformanceMonitor();
 			File excel = this.experiment.getProjectPath().resolve(projectName+"_data.xls").toFile();
-			HSSFWorkbook workbook = new HSSFWorkbook();
-	        HSSFSheet sheet = workbook.createSheet("Data");
-			sumTime = 0L;
 			
-			for (int dayN = 1; dayN <= this.experiment.experimentDays; dayN++) {
+	        HSSFSheet sheet = workbook.createSheet("Data");
+	        int cellCount = 1;
+			HSSFRow titlerow = sheet.createRow(0);
+			titlerow.createCell(0).setCellValue("Day");
+			for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
+				 
+			     HSSFCell cell = titlerow.createCell(cellCount);
+			     cell.setCellValue(entry.getKey().toString());
+				 cellCount++;
+	        }
+			titlerow.createCell(cellCount).setCellValue("Time(NanoSeconds)");
+			titlerow.createCell(++cellCount).setCellValue("Size of Short Term Interest");
+			titlerow.createCell(++cellCount).setCellValue("Size of Long Term Interest");
+	        
+	        sumTime = 0L;
+			
+			for (int dayN = 1; dayN <= this.experiment.experimentDays; dayN++) { //execute every day and record performance
 				Long time = System.currentTimeMillis();
-				File userLog =experiment.getUserProfilePath().resolve("userLog.txt").toFile();
 				this.experiment.run(dayN);
 				totalMonitor.addUp(this.experiment.systemDailyPerformance);
 				Long spendedTime = System.currentTimeMillis() - time;
 				logger.info("Run a day {}, time: {}ms", dayN, spendedTime);
 				sumTime += spendedTime;
-				BufferedWriter writer = new BufferedWriter(new FileWriter(userLog, true)); 
-				writer.append("Time spend:" + spendedTime);//Simple UserLog
-				writer.close();
-				int count = 1;
+
+				cellCount = 1;
 				HSSFRow dailyRow = sheet.createRow(dayN);//Excel log
 				dailyRow.createCell(0).setCellValue(dayN);
 				for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
-					HSSFCell secCell = dailyRow.createCell(count);
+					HSSFCell secCell = dailyRow.createCell(cellCount);
 					secCell.setCellValue(entry.getValue());
-					count++;
+					cellCount++;
 		        }
-				dailyRow.createCell(count++).setCellValue(spendedTime);
-				dailyRow.createCell(count++).setCellValue(user.getShortTermcount());
-				dailyRow.createCell(count++).setCellValue(user.getLongTermCount());
+				dailyRow.createCell(cellCount++).setCellValue(spendedTime);
+				dailyRow.createCell(cellCount++).setCellValue(user.getShortTermcount());
+				dailyRow.createCell(cellCount++).setCellValue(user.getLongTermCount());
 
 			}
-			int count = 1;
-			HSSFRow titlerow = sheet.createRow(0);
-			titlerow.createCell(0).setCellValue("Day");
-			HSSFRow finalRow = sheet.createRow(this.experiment.experimentDays+1);
-			for(Entry<PerformanceType, Double> entry:totalMonitor.getResult().entrySet()){
-				 
-			     HSSFCell cell = titlerow.createCell(count);
-			     cell.setCellValue(entry.getKey().toString());
-				 HSSFCell secCell = finalRow.createCell(count);
-				 secCell.setCellValue(entry.getValue());
-				 count++;
-	        }
-			titlerow.createCell(count).setCellValue("Time");
-			finalRow.createCell(count).setCellValue(sumTime);
+			
 	        FileOutputStream out = new FileOutputStream(excel);
 	        workbook.write(out);
-	        out.close();
-	        workbook.close();
-			BufferedWriter writer = new BufferedWriter(new FileWriter(experiment
-					.getProjectPath().resolve("setting.txt").toFile(), true));
-			writer.append("Core Size:"+TopicTermGraph.MAXCORESIZE);
-			writer.append("Total time: " + sumTime +" millsecond");
-			writer.newLine();
-			writer.append("Performance:" + totalMonitor.getResult());
-			writer.close();
 	
 		} catch (IOException e) {
 			e.printStackTrace();
