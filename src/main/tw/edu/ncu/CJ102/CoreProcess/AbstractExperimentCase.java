@@ -28,7 +28,7 @@ public class AbstractExperimentCase {
 	protected double topicSimliarityThreshold;
 	protected int experimentDays;
 	protected double removeRate;
-	protected PerformanceMonitor totalMonitor;
+	protected PerformanceMonitor totalMonitor = new PerformanceMonitor();
 	protected Long sumTime = 0L;
 	protected boolean debugMode;
 	protected Path rootDir;
@@ -44,9 +44,9 @@ public class AbstractExperimentCase {
 			HSSFRow titleRow = sheet.createRow(0);
 			titleRow.createCell(0).setCellValue("Turn");
 			int count = 1;
-			for (PerformanceType type : PerformanceType.values()) {
+			for (Entry<PerformanceType,Double> type : totalMonitor.getResult().entrySet()) {
 				HSSFCell cell = titleRow.createCell(count);
-				cell.setCellValue(type.toString());
+				cell.setCellValue(type.getKey().toString());
 				count++;
 			}
 			titleRow.createCell(count++).setCellValue("Time(NanoSecond)");

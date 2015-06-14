@@ -106,6 +106,7 @@ public class UserProfileManager {
 	}
 	
 	public void draw(AbstractUserProfile user,Path outputDir) throws IOException{
+			try{
 			Collection<TopicTermGraph> userTopics = user.getUserTopics();
 			for (TopicTermGraph topic : userTopics) {
 				final Collection<TermNode> coreTerms = topic.getCoreTerm();
@@ -139,6 +140,12 @@ public class UserProfileManager {
 				File outputfile = outputDir.resolve(topic.toString() + ".png").toFile();
 				ImageIO.write(image, "png", outputfile);
 
+			}
+			}catch(Exception e){
+				if(e instanceof IOException){
+					throw e;
+				}
+				loger.error("Drawing failed in {}",e.getMessage());
 			}
 	}
 	
