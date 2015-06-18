@@ -11,7 +11,7 @@ import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 public class PerformanceMonitor {
 	public static double lamda = 0.15,sigma = -0.05;
 	private double TP, TN, FP, FN;
-	private ArrayList<Double> HistoryFMeasure  = new ArrayList<>();
+	private ArrayList<Double> historyFMeasure  = new ArrayList<>();
 	
 	public PerformanceMonitor(){
 		TP = 0;
@@ -83,8 +83,11 @@ public class PerformanceMonitor {
 		results.put(PerformanceType.ERROR, this.computeError());
 		return results;
 	}
+	/**
+	 * mean a day have been passed. monitor should be saved
+	 */
 	public void saveRecord(){
-		this.HistoryFMeasure.add(this.computeFmeasure());
+		this.historyFMeasure.add(this.computeFmeasure());
 		this.FN = 0;
 		this.FP = 0;
 		this.TP = 0;
@@ -145,18 +148,24 @@ public class PerformanceMonitor {
 	}
 	public boolean phTest(){
 		boolean phFlag = false;
-		double pHTest  = 0;
-		double totalFmeasure = 0,MT = 100000;
-		for (int i = 0; i < HistoryFMeasure.size(); i++) {
-			double fMeasure = HistoryFMeasure.get(i);
-			totalFmeasure += fMeasure;
-			double avgFmeasure = totalFmeasure / (i+1);
-			double mT = (fMeasure - avgFmeasure - sigma);
-			if(mT<MT){
-				MT = mT;
-			}
-			pHTest = mT - MT;
+		if(historyFMeasure.size()<3){ // at least exist size day
+			return phFlag;
 		}
+		double pHTest  = 0;
+		double totalFmeasure = 0,mT = 100000,uT = 0;//mT:最小累積差;uT:累積差和
+		for (double fMeasure:historyFMeasure){
+			totalFmeasure += fMeasure;
+		}
+		double avgFmeasure = totalFmeasure / historyFMeasure.size();
+
+		for (double fMeasure:historyFMeasure) {
+			uT += (fMeasure - avgFmeasure - sigma);
+			if(uT<mT){ // find the smallest possible mT
+				mT = uT;
+			}
+		}
+		pHTest = uT - mT;
+
 		if(pHTest>lamda){
 			phFlag = true;
 		}

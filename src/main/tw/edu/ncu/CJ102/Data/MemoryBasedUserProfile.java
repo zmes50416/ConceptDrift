@@ -21,7 +21,6 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	 */
 	private static final long serialVersionUID = 1L;
 	public static int longTermThreshold = 50; //長期興趣門檻值
-	private Logger loger = LoggerFactory.getLogger(this.getClass());
 	public MemoryBasedUserProfile() {
 		this.setRemoveRate(0.1);
 	}
@@ -76,7 +75,7 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 				}
 				mappedTopic.setUpdateDate(today);
 			}else{
-				loger.info("new Topic {} into the User Profile",topic);
+				loger.debug("new Topic {} into the User Profile",topic);
 				if(!this.userTopics.add(topic)){
 					throw new RuntimeException("Cant add topic");
 				}
