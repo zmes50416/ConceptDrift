@@ -34,9 +34,13 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		tool = createMock("mockMappingTool",TopicMappingTool.class);
 		manager = new UserProfileManager(tool);
 		topic1 = new TopicTermGraph(0);
-		user = createMock("mockUserProfile",AbstractUserProfile.class);
 		mockUserTopics = new HashSet<TopicTermGraph>();
 		mockUserTopics.add(topic1);
+		
+		user = createMock("mockUserProfile",AbstractUserProfile.class);
+		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();
+
+		
 	}
 
 	@After
@@ -53,8 +57,6 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		topic1.addVertex(new TermNode("test1",5.0));
 		topic1.addVertex(new TermNode("test2",5.0));
 		expect(user.updateDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
-		expect(user.getUserTopics()).andReturn(mockUserTopics);
-		expect(user.getTopicRemoveThreshold()).andReturn(7.0);
 		replay(user);
 		
 		this.manager.updateUserProfile(2, user);
@@ -62,10 +64,22 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		for(TermNode term:topic1.getVertices()){//sum up
 			score += term.termFreq;
 		}
-		assertTrue(mockUserTopics.isEmpty());
 		assertEquals("Decay are not function normally",5.0,score,0.1);
 	}
+	@Test
+	public void testRemoveBelow(){
+		expect(user.getTopicRemoveThreshold()).andReturn(3.0).anyTimes();
+		expect(user.getTermRemoveThreshold()).andReturn(3.0).anyTimes();
+		replay(user);
+		topic1.addVertex(new TermNode("test1",10.0));
+		topic1.addVertex(new TermNode("test2",1.0));
+		TopicTermGraph topic2 = new TopicTermGraph(0);
+		this.mockUserTopics.add(topic2);
+		this.manager.removeBelowThreshold(user);
+		assertTrue("Should have remove the topic2",!user.getUserTopics().contains(topic2));
+		assertTrue("topic1 should remove term test 2",!topic1.containsVertex(new TermNode("test2")));
 
+	}
 	@Test
 	public void testInsertTopic() {
 		topic1 = new TopicTermGraph(0);
@@ -81,7 +95,6 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		documentTopics.add(x);
 		documentTopics.add(y);
 		
-		expect(user.getUserTopics()).andReturn(mockUserTopics).anyTimes();
 		expectLastCall();
 		replayAll();
 		

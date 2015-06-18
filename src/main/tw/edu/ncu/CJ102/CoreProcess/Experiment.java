@@ -137,6 +137,7 @@ public class Experiment {
 				logger.warn("Concept Drift Happened in day {}",dayN-1);
 			}
 			userManager.updateUserProfile(dayN, user);
+			userManager.removeBelowThreshold(user);
 			this.checkLongTermMemory();
 			this.removeOutdatedMonitor();
 			train(dayN);
@@ -153,6 +154,9 @@ public class Experiment {
 					e.printStackTrace();
 				}
 			}
+			
+		}else{
+			throw new IllegalArgumentException(dayN+" are not valid date");
 		}
 		
 	}
@@ -163,7 +167,7 @@ public class Experiment {
 	 */
 	protected void train(int today){
 		Path training = this.projectPath.resolve("training/day_"+today);
-		
+		int countOfNewTopic = 0;
 		traingLabel = new HashSet<String>();//training label只會有當天的目標
 		for(File doc:training.toFile().listFiles()){
 			List<TopicTermGraph> documentTopics = this.readFromSimpleText(today,doc);
@@ -174,10 +178,13 @@ public class Experiment {
 			for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 				if(topicPair.getKey()==topicPair.getValue()){//new Topic, add a monitor
 					this.monitors.put(topicPair.getKey(), new PerformanceMonitor());
+					countOfNewTopic++;
 				}
 			}
 			user.addDocument(topicMap,today);
 		}
+		
+		logger.info("Day {}, {} New Topic is generated",today,countOfNewTopic);
 		
 	}
 	
@@ -193,7 +200,7 @@ public class Experiment {
 		
 	}
 	/**
-	 * Read the Simple txt file from preprocess to get document topic
+	 * Read the Simple txt file from preprocess process to get document topic
 	 * @param theDay
 	 * @param doc 
 	 * @return List of Document topic or Null if Exception happened
@@ -236,6 +243,12 @@ public class Experiment {
 		}
 		
 	}
+	/**
+	 * preprocess document on the fly
+	 * @param theDay
+	 * @param doc raw txt file
+	 * @return a set of document topics
+	 */
 	public List<TopicTermGraph> readFromDTG(int theDay,File doc){
 		Transformer<CEdge, Double> edgeTransformer = new Transformer<CEdge,Double>(){
 

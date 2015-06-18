@@ -58,37 +58,48 @@ public class UserProfileManager {
 			return;
 		}
 		
-		Iterator<TopicTermGraph> i = userTopics.iterator();// filiter remove element,do not use java default for each
-		while (i.hasNext()) {// 遺忘因子流程
-			TopicTermGraph topic = i.next();
+		for (TopicTermGraph topic: userTopics) {// 遺忘因子流程
 			topic.setDecayRate(user.updateDecayRate(topic, theDay));
-			double topicInterest = 0;
-			HashSet<TermNode> termsToRemove = new HashSet<TermNode>();
 			for (TermNode term : topic.getVertices()) { //update every term in topic
 				term.termFreq = term.termFreq * topic.getDecayRate();
+			}
+			for(CEdge edge:topic.getEdges()){//decay Edge weight
+				edge.setCoScore(edge.getCoScore()*topic.getDecayRate());
+			}
+			loger.debug("Day{} ,Topic:{}, decay factory:{}",theDay,topic,topic.getDecayRate());
+
+		}//end of while
+		
+	}
+	public void removeBelowThreshold(AbstractUserProfile user){
+		Iterator<TopicTermGraph> iter = user.getUserTopics().iterator();
+		while(iter.hasNext()){
+			TopicTermGraph topic = iter.next();
+			double topicInterest = 0;
+			HashSet<TermNode> termsToRemove = new HashSet<TermNode>();
+			for (TermNode term : topic.getVertices()) {
 				if(term.termFreq<user.getTermRemoveThreshold()){//avoid modify exception
 					termsToRemove.add(term);
 					continue;//don't add up the topic value 
 				}
 				topicInterest += term.termFreq;
 			}
+			if(topicInterest<user.getTopicRemoveThreshold() && topicInterest < user.getTopicRemoveThreshold()){
+				iter.remove();
+				loger.debug("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
+				continue;
+			}
 			for(TermNode term:termsToRemove){
 				topic.removeVertex(term);
-				loger.debug("Term {} remove from topic because value too low",term);
+				if(loger.isDebugEnabled()){
+					loger.debug("Term {} remove from topic because value too low",term);
+				}
 			}
-			for(CEdge edge:topic.getEdges()){//decay Edge weight
-				edge.setCoScore(edge.getCoScore()*topic.getDecayRate());
-			}
-			loger.info("Day{} ,Topic:{}, decay factory:{}",theDay,topic,topic.getDecayRate());
-
-			if (!topic.isLongTermInterest() && topicInterest < user.getTopicRemoveThreshold()) {// 先判定興趣去除階段，如果需要移除就不用更新圖形內的字詞了
-				loger.info("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
-				i.remove();
-			}
-		}//end of while
+			
+			
+		}
 		
 	}
-	
 	/**
 	 * 將文件內的每一個主題進行主題映射找出最相似的使用者主題
 	 * @param user 使用者模型
