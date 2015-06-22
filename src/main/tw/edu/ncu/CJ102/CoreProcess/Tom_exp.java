@@ -684,10 +684,6 @@ public class Tom_exp {
 		this.experimentDays = days;
 	}
 	
-	public void reRandomize(){ // 重新更改變數種子
-		
-	}
-	
 	public UserProfile mUserProfile() {
 		return mUserProfile;
 	}
@@ -744,13 +740,57 @@ public class Tom_exp {
 	public static void main(String[] args) {
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
 		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
+		ConcreteExperiment exp = new ConcreteExperiment();
+		exp.reuturesConceptDrift();
+		
+	}
+	
+	
+	
+	
+}
+class ConcreteExperiment{
+	Path expPath;
+	ConcreteExperiment(){
+		expPath = Paths.get(SettingManager.chooseProject());
+	}
+	
+	public void reuturesConceptDrift(){
+		String[] testTopics = {"acq","earn","trade"};
+		Tom_exp exp = new Tom_exp(expPath.toString());
+		exp.setmUserProfile(new UserProfile(true));
+		exp.setExperimentDays(14);
+		RouterNewsPopulator mPopulater = new RouterNewsPopulator(expPath.toString()){
+
+			@Override
+			public void setGenarationRule() {
+				this.trainTopics.clear();
+				this.setTrainSize(10);
+				this.setTestSize(5);
+				if(this.theDay<=7){
+					this.addTrainingTopics("acq"); 
+				}else{
+					this.addTrainingTopics("earn");
+				}
+			}
+			
+		};
+		mPopulater.addTrainingTopics("acq");
+		for(String topic:testTopics){
+			mPopulater.addTestingTopics(topic);
+		}
+		exp.setExperementSource(mPopulater);
+		exp.start();
+	}
+	
+	public void bbcPerformance(){
 		String[][] trainTopic = {{"business","sport"},{"entertainment","politics"},{"sport","tech"},{"business","politics"},{"entertainment","tech"}};
 		for(int i=0;i<=trainTopic.length-1;i++){
-			File file = new File("TestExp/OldExp_"+i);
-			Tom_exp exp = new Tom_exp(file.getAbsolutePath());
+			File project = expPath.resolve("turn_"+i).toFile();
+			Tom_exp exp = new Tom_exp(project.getAbsolutePath());
 			exp.setmUserProfile(new UserProfile(true));
 			exp.setExperimentDays(10);
-			BBCNewsPopulator mPopulater = new BBCNewsPopulator(file.toPath()){
+			BBCNewsPopulator mPopulater = new BBCNewsPopulator(project.toPath()){
 
 				@Override
 				public void setGenarationRule() {
@@ -767,8 +807,7 @@ public class Tom_exp {
 			exp.setExperementSource(mPopulater);
 			exp.start();
 		}
-		
-		
-		
+
 	}
+	
 }

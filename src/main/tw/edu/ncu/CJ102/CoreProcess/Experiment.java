@@ -338,17 +338,16 @@ public class Experiment {
 		}
 		boolean systemAnswer = false;
 		int hitCount =0;//at least half of topic should be in cover
-//		boolean systemAnswer = true;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 			if(topicPair.getKey()!=topicPair.getValue()){//the same topic mean no likliy topic in user profile
-			//if(topicPair.getKey()==topicPair.getValue()){
 				hitCount ++;
-				if(hitCount>=(topicMap.size()/2)){
+				if(hitCount>=((topicMap.size()/3)*2)){
 					systemAnswer = true;
 					break;
 				}
 			}
 		}
+		
 		Collection<TopicTermGraph> matchedTopics = topicMap.values();
 		if (realAnswer == true) {// two possible Type: TP,FN
 			if(systemAnswer==true){
