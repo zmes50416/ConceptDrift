@@ -136,7 +136,7 @@ public class Experiment {
 				logger.warn("Concept Drift Happened in day {}",dayN-1);
 			}
 			userManager.updateUserProfile(dayN, user);
-			userManager.removeBelowThreshold(user);
+			userManager.identifyBelowRemoveAndLongTermThreshold(user);
 			train(dayN);
 			test(dayN);
 			

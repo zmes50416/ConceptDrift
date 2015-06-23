@@ -71,7 +71,7 @@ public class UserProfileManager {
 		}//end of while
 		
 	}
-	public void removeBelowThreshold(AbstractUserProfile user){
+	public void identifyBelowRemoveAndLongTermThreshold(AbstractUserProfile user){
 		Iterator<TopicTermGraph> iter = user.getUserTopics().iterator();
 		while(iter.hasNext()){
 			TopicTermGraph topic = iter.next();
@@ -85,10 +85,10 @@ public class UserProfileManager {
 				topicInterest += term.termFreq;
 			}
 			//TODO should not depend on low level implement detail, but no time to fix it
-			if(topic.isLongTermInterest()&&topicInterest <MemoryBasedUserProfile.longTermThreshold){
+			if(topic.isLongTermInterest()&& topicInterest < MemoryBasedUserProfile.longTermThreshold/2.0){
 				topic.setLongTermInterest(false);
 			}
-			if(!topic.isLongTermInterest() && topicInterest < user.getTopicRemoveThreshold()){
+			if(topicInterest < user.getTopicRemoveThreshold()){
 				iter.remove();
 				loger.debug("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
 				continue;

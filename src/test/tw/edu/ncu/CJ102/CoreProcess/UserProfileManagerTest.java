@@ -75,7 +75,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		topic1.addVertex(new TermNode("test2",1.0));
 		TopicTermGraph topic2 = new TopicTermGraph(0);
 		this.mockUserTopics.add(topic2);
-		this.manager.removeBelowThreshold(user);
+		this.manager.identifyBelowRemoveAndLongTermThreshold(user);
 		assertTrue("Should have remove the topic2",!user.getUserTopics().contains(topic2));
 		assertTrue("topic1 should remove term test 2",!topic1.containsVertex(new TermNode("test2")));
 
