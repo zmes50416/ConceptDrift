@@ -30,6 +30,7 @@ import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.graph.Graph;
 import tw.edu.ncu.CJ102.Data.AbstractUserProfile;
 import tw.edu.ncu.CJ102.Data.CEdge;
+import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TermNode;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.im.Preprocess.RouterNewsPreprocessor;
@@ -44,7 +45,6 @@ public class Experiment {
 	protected int experimentDays;
 	Boolean isInitialized = false;
 	protected Set<String> traingLabel;//系統正確主題指標
-	protected Map<TopicTermGraph,PerformanceMonitor> monitors;
 	protected PerformanceMonitor systemDailyPerformance;
 	public boolean debugMode;
 	double betweenessThreshold = 0.35;
@@ -52,7 +52,6 @@ public class Experiment {
 	public Experiment(String project,TopicMappingTool maper,AbstractUserProfile user) {		// 創造出實驗資料匣
 		this.projectPath = Paths.get(project);
 		this.userProfilePath = projectPath.resolve("user_profile");
-		this.monitors= new HashMap<>();
 		this.systemDailyPerformance = new PerformanceMonitor();
 		this.userManager= new UserProfileManager(maper);
 		this.user = user;
@@ -138,8 +137,6 @@ public class Experiment {
 			}
 			userManager.updateUserProfile(dayN, user);
 			userManager.removeBelowThreshold(user);
-			this.checkLongTermMemory();
-			this.removeOutdatedMonitor();
 			train(dayN);
 			test(dayN);
 			
@@ -177,7 +174,6 @@ public class Experiment {
 			
 			for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
 				if(topicPair.getKey()==topicPair.getValue()){//new Topic, add a monitor
-					this.monitors.put(topicPair.getKey(), new PerformanceMonitor());
 					countOfNewTopic++;
 				}
 			}
@@ -348,7 +344,6 @@ public class Experiment {
 			}
 		}
 		
-		Collection<TopicTermGraph> matchedTopics = topicMap.values();
 		if (realAnswer == true) {// two possible Type: TP,FN
 			if(systemAnswer==true){
 				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
@@ -364,48 +359,8 @@ public class Experiment {
 		}//end of RealAnswer if
 		
 		
-		for (TopicTermGraph topic : user.getUserTopics()) {
-			PerformanceMonitor monitor = this.monitors.get(topic);
-			if (realAnswer == true) {// two possible Type: TP,FN
-				if (matchedTopics.contains(topic)) {// topic is matched -- TP
-					monitor.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
-				} else {// topic is not matched -- FN
-					monitor.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
-				}
-			} else { // two possible type: FP,TN
-				if (matchedTopics.contains(topic)) {// topic is matched but not relative -- FP
-					monitor.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
-				} else { // topic is not matched, and it is not relative too -- TN
-					monitor.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
-				}
-			}// end of RealAnswer if
-		}
-		
-		
 	}
 	
-	protected void removeOutdatedMonitor(){
-		Collection<TopicTermGraph> userTopics = this.user.getUserTopics();
-		Iterator<Entry<TopicTermGraph, PerformanceMonitor>> iterator = this.monitors.entrySet().iterator();
-		while(iterator.hasNext()){
-			Entry<TopicTermGraph, PerformanceMonitor> entry = iterator.next();
-			if(!userTopics.contains(entry.getKey())){
-				iterator.remove();
-			}
-		}
-	}
-	protected void checkLongTermMemory(){
-		for(Entry<TopicTermGraph, PerformanceMonitor> monitorPair:this.monitors.entrySet()){
-			PerformanceMonitor monitor = monitorPair.getValue();
-			monitor.saveRecord();
-			TopicTermGraph topic = monitorPair.getKey();
-			if(topic.isLongTermInterest()&&monitor.phTest()){
-				TopicTermGraph driftedTopic = monitorPair.getKey();
-				logger.warn("Concept Drift occur in topic {}",driftedTopic.toString());
-				driftedTopic.setLongTermInterest(false);
-			}
-		}
-	}
 	protected void simplelog(int theDay){
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.userProfilePath.resolve("userLog.txt").toFile(),true))){
 			writer.append("==Day"+theDay+"==");

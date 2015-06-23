@@ -84,7 +84,11 @@ public class UserProfileManager {
 				}
 				topicInterest += term.termFreq;
 			}
-			if(topicInterest<user.getTopicRemoveThreshold() && topicInterest < user.getTopicRemoveThreshold()){
+			//TODO should not depend on low level implement detail, but no time to fix it
+			if(topic.isLongTermInterest()&&topicInterest <MemoryBasedUserProfile.longTermThreshold){
+				topic.setLongTermInterest(false);
+			}
+			if(!topic.isLongTermInterest() && topicInterest < user.getTopicRemoveThreshold()){
 				iter.remove();
 				loger.debug("System remove a topic:{}, Interest value = {}",topic.toString(),topicInterest);
 				continue;

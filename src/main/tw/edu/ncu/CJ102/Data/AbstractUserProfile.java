@@ -31,7 +31,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	public Collection<TopicTermGraph> getUserTopics() {
 		return userTopics;
 	}
-	
+	//TODO topic should not know itself is longterm or not.
 	public int getShortTermcount(){
 		int count = 0;
 		for(TopicTermGraph topic:userTopics){
