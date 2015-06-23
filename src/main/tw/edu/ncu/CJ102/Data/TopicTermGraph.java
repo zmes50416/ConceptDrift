@@ -55,6 +55,9 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 		
 		return value;
 	}
+	public void setBirthDate(int date){
+		this.birthDate = date;
+	}
 	/**
 	 * @return the birthDate
 	 */
