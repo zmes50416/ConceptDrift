@@ -35,8 +35,6 @@ import tw.edu.ncu.im.Util.HttpIndexSearcher;
 import tw.edu.ncu.im.Util.IndexSearchable;
 
 public class BBCExperimentsCase extends AbstractExperimentCase {
-	Experiment exp;
-	Path rootPath;
 	private int round;
 	private double parama;
 	private File excelSummary;
@@ -52,7 +50,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		HttpIndexSearcher.url = "http://localhost/searchweb/";
 		Path path = Paths.get(SettingManager.chooseProject());
 		BBCExperimentsCase expController = new BBCExperimentsCase(path); 
-		System.out.println("You Dir is:"+expController.rootPath);
+		System.out.println("You Dir is:"+expController.rootDir);
 		System.out.println("Which ThresholdExp you wanna run?");
 		System.out.println("1.主題相關應得分數比例");
 		System.out.println("2.興趣去除比例");
@@ -106,14 +104,14 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		}
 	}
 	private void conceptDriftExperiment(int turn) {
-		Path project = this.rootPath.resolve("turn_"+turn);
+		Path project = this.rootDir.resolve("turn_"+turn);
 		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
 		user = new MemoryBasedUserProfile();
 		user.setRemoveRate(0.7);
 		MemoryBasedUserProfile.longTermThreshold = (int) (this.parama + 25*turn);
-		exp = new Experiment(project.toString(),maper,user);
-		exp.debugMode = true;
-		exp.experimentDays = 14;
+		experiment = new Experiment(project.toString(),maper,user);
+		experiment.debugMode = true;
+		experiment.experimentDays = 14;
 		
 		BBCNewsPopulator populater = new BBCNewsPopulator(project){
 
@@ -138,7 +136,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		topics.remove("business");
 		topics.remove("politics");
 		populater.addTestingTopics(topics.get(new Random(0).nextInt(topics.size())));
-		exp.newsPopulater = populater;
+		experiment.newsPopulater = populater;
 		execute();	
 		this.recordThisRound(turn);
 	}
@@ -155,15 +153,15 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 				}else if(j==2){
 					methodName = "Betweenness";
 				}
-				Path tempProject = this.rootPath.resolve("Methode_"+methodName).resolve("round_"+turn);
+				Path tempProject = this.rootDir.resolve("Methode_"+methodName).resolve("round_"+turn);
 				TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),topicSimliarityThreshold);
 				user = new MemoryBasedUserProfile();
 				user.setRemoveRate(removeRate);
 				TopicTermGraph.MAXCORESIZE = 5 + turn*5;
 				
-				exp = new Experiment(tempProject.toString(),maper,user);
-				exp.experimentDays = 14;
-				exp.debugMode = true;
+				experiment = new Experiment(tempProject.toString(),maper,user);
+				experiment.experimentDays = 14;
+				experiment.debugMode = true;
 				
 				BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
 					@Override
@@ -180,7 +178,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 				topics.remove("business");
 				String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 				populater.addTestingTopics(randomTopic);
-				exp.newsPopulater = populater;
+				experiment.newsPopulater = populater;
 				execute();
 				this.recordThisRound(turn*4+j);
 		}
@@ -188,15 +186,15 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 	}
 	
 	public void  corelessExperiment(int turn){
-		Path tempProject = this.rootPath.resolve("round_"+turn+"coreless");
+		Path tempProject = this.rootDir.resolve("round_"+turn+"coreless");
 		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.5);
 		user = new MemoryBasedUserProfile();
 		user.setRemoveRate(0.5);
 		TopicTermGraph.MAXCORESIZE = 1000;
 		
-		exp = new Experiment(tempProject.toString(),maper,user);
-		exp.experimentDays = 14;
-		exp.debugMode = true;
+		experiment = new Experiment(tempProject.toString(),maper,user);
+		experiment.experimentDays = 14;
+		experiment.debugMode = true;
 		
 		BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
 			@Override
@@ -215,7 +213,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		topics.remove("sport");
 		String randomTopic = topics.get(new Random(1).nextInt(topics.size()));
 		populater.addTestingTopics(randomTopic);
-		exp.newsPopulater = populater;
+		experiment.newsPopulater = populater;
 		execute();
 		this.recordThisRound(turn*4+3);
 	}
@@ -224,14 +222,14 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		String[][] trainTopic = {{"business","sport"},{"entertainment","politics"},{"sport","tech"},{"business","politics"},{"entertainment","tech"}};
 		TopicTermGraph.METHODTYPE = 1; //LP method
 		for(int i = 0;i<round;i++){
-			Path tempProject = this.rootPath.resolve("round_"+i);
-			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),0.7);
+			Path tempProject = this.rootDir.resolve("round_"+i);
+			TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),1);
 			user = new MemoryBasedUserProfile();
 			user.setRemoveRate(0.7);
 			
-			exp = new Experiment(tempProject.toString(),maper,user);
-			exp.debugMode = true;
-			exp.experimentDays = 10;
+			experiment = new Experiment(tempProject.toString(),maper,user);
+			experiment.debugMode = true;
+			experiment.experimentDays = 10;
 			
 			BBCNewsPopulator populater = new BBCNewsPopulator(tempProject){
 				@Override
@@ -247,23 +245,23 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 			for(String topic:BBCNewsPopulator.TOPICS){
 				populater.addTestingTopics(topic);
 			}
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			execute();
 		}
 	}
 	private void removeThresholdExperiment() {
 		int experimentDays = 14;
 		for (int i = 0; i < round; i++) {
-			Path tempDir = this.rootPath.resolve("turn_" + i);
+			Path tempDir = this.rootDir.resolve("turn_" + i);
 			double removeRate = parama + (i/10.0);
 			TopicMappingTool maper = new TopicMappingTool(
 					new NgdReverseTfTopicSimilarity(),0.4);
 			user = new MemoryBasedUserProfile();
 			user.setRemoveRate(removeRate);
 
-			this.exp = new Experiment(tempDir.toString(), maper, user);
-			this.exp.setExperimentDays(experimentDays);
-			exp.debugMode = true;
+			this.experiment = new Experiment(tempDir.toString(), maper, user);
+			this.experiment.setExperimentDays(experimentDays);
+			experiment.debugMode = true;
 
 			removeRate = parama + (i / 10.0);
 
@@ -276,7 +274,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 				}
 
 			};
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			populater.addTrainingTopics("business");
 			populater.addTrainingTopics("entertainment");
 			populater.addTrainingTopics("politics");
@@ -297,10 +295,10 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 			user = new MemoryBasedUserProfile();
 			user.setRemoveRate(0.1);
 
-			Path tempDir = this.rootPath.resolve("turn_"+i);
-			exp = new Experiment(tempDir.toString(),maper,user);
-			exp.debugMode = true;
-			this.exp.experimentDays = 10;
+			Path tempDir = this.rootDir.resolve("turn_"+i);
+			experiment = new Experiment(tempDir.toString(),maper,user);
+			experiment.debugMode = true;
+			this.experiment.experimentDays = 10;
 
 			BBCNewsPopulator populater = new BBCNewsPopulator(tempDir){
 				@Override
@@ -311,7 +309,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 				}
 				
 			};
-			exp.newsPopulater = populater;
+			experiment.newsPopulater = populater;
 			for(String topic:BBCNewsPopulator.TOPICS){
 				populater.addTestingTopics(topic);
 			}
