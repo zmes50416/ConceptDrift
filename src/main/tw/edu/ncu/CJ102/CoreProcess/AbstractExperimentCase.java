@@ -1,20 +1,16 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -157,7 +153,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 		EmbeddedIndexSearcher.SolrHomePath = SettingManager.getSetting("SolrHomePath");
 		EmbeddedIndexSearcher.solrCoreName = SettingManager.getSetting("SolrCoreName");
 		HttpIndexSearcher.url = "http://localhost/searchweb/";
-		HashSet<AbstractExperimentCase> exps = new HashSet<>();
+		ArrayList<AbstractExperimentCase> exps = new ArrayList<>();
 		try(Scanner scanner = new Scanner(System.in)){
 			System.out.println("使用HTTP(1)或是嵌入式SOLR(2)?");
 			if(scanner.nextInt()==1){
@@ -204,6 +200,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 					}
 					for(int turn = 0;turn<round;turn++){
 						AbstractExperimentCase expController = newExpController(type,path);
+						expController.roundNumber = turn;
 						expController.removeThresholdExperiment(turn);
 						exps.add(expController);
 					}
@@ -231,12 +228,16 @@ public abstract class AbstractExperimentCase implements Runnable{
 				}else if(input.equals("5")){
 					System.out.println("請填入長期門檻值參數:");
 					double parama = scanner.nextDouble();
-
+					System.out.println("請填入隨機次數:");
+					int times = scanner.nextInt();
+					
 					for(int turn =0;turn<round;turn++){
-						for(int j = 0;j<=3;j++){
+						for(int j = 1;j<=times;j++){
 							AbstractExperimentCase expController = newExpController(type,path); 
 							expController.parama = parama;
 							expController.conceptDriftExperiment(turn,j);
+							expController.roundNumber = turn*j+j;
+							exps.add(expController);
 						}
 						
 
