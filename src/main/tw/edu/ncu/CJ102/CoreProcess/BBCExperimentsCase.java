@@ -75,7 +75,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
 		topics.remove("business");
 		topics.remove("politics");
-		populater.addTestingTopics(topics.get(new Random(0).nextInt(topics.size())));
+		populater.addTestingTopics(topics.get(new Random(j).nextInt(topics.size())));
 		experiment.newsPopulater = populater;
 	}
 	@Override

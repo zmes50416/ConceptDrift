@@ -42,7 +42,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 	protected Path rootDir;
 	File excelSummary;
 	Logger logger = LoggerFactory.getLogger(this.getClass());
-	protected int roundNumber;
+	protected int roundNumber;//For excel recording
 	public AbstractExperimentCase(Path _projectDir) {
 		this.rootDir = _projectDir;
 		debugMode = true;
@@ -133,7 +133,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 				workbook.write(out);
 			}
 			this.recordThisRound(roundNumber);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -174,19 +174,19 @@ public abstract class AbstractExperimentCase implements Runnable{
 				System.out.println("5.概念飄移實驗");
 				System.out.println("6.長期興趣門檻");
 				String input = scanner.next();
-				System.out.println("請填入核心數目");
-				TopicTermGraph.MAXCORESIZE = scanner.nextInt();
+				TopicTermGraph.MAXCORESIZE = 15;
+				System.out.println("預設核心數目:"+TopicTermGraph.MAXCORESIZE);
 				System.out.println("請填入遞迴回數:");
 				int round = scanner.nextInt();
 				if(input.equals("1")){
 					System.out.println("請填入主題相關應得門檻起始值:");
-					double parama = scanner.nextDouble();
-					if(parama > 1){
+					double initTopicThreshold = scanner.nextDouble();
+					if(initTopicThreshold > 1){
 						throw new RuntimeException("輸入門檻值不得大於1");
 					}
 					for(int turn = 0;turn<round;turn++){
 						AbstractExperimentCase expController = newExpController(type,path);
-						expController.parama = parama;
+						expController.parama = initTopicThreshold;
 						expController.roundNumber = turn;
 						expController.TopicRelatedScore(turn);
 						exps.add(expController);
@@ -194,14 +194,15 @@ public abstract class AbstractExperimentCase implements Runnable{
 					
 				}else if(input.equals("2")){
 					System.out.println("請填入移除門檻起始值:");
-					double parama = scanner.nextDouble();
-					if(parama > 1){
+					double initRemoveThreshold = scanner.nextDouble();
+					if(initRemoveThreshold > 1){
 						throw new RuntimeException("輸入門檻值不得大於1");
 					}
 					for(int turn = 0;turn<round;turn++){
 						AbstractExperimentCase expController = newExpController(type,path);
 						expController.roundNumber = turn;
 						expController.removeThresholdExperiment(turn);
+						expController.parama = initRemoveThreshold;
 						exps.add(expController);
 					}
 				}else if(input.equals("3")){
@@ -212,6 +213,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 						exps.add(expController);
 					}
 				}else if(input.equals("4")){
+					System.out.println("初始核心數目為5");
 					for(int turn=0;turn<round;turn++){
 						for(int j= 0;j<=2;j++){//examine 3 different method
 							TopicTermGraph.METHODTYPE = j;

@@ -1,15 +1,21 @@
 package tw.edu.ncu.CJ102.CoreProcess;
 
 import static org.junit.Assert.*;
-
+import static org.easymock.EasyMock.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.spi.LoggerFactory;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,18 +44,32 @@ public class ExperimentTest{
 	@Before
 	public void setUp() throws Exception {
 		expPath = Files.createTempDirectory("ExperimentClass");
-		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(), 0.1);
+		TopicMappingTool maper = createMock(TopicMappingTool.class);
+		TopicTermGraph t = new TopicTermGraph(0);
+		expect(maper.map(notNull(TopicTermGraph.class), notNull(AbstractUserProfile.class))).andReturn(t).anyTimes();
+		replay(maper);
 		user = new MemoryBasedUserProfile();
 
 		exp = new Experiment(expPath.toString(),maper,user);
 		exp.setUser(user);
 		exp.setExperimentDays(14);
-		
+		RouterNewsPopulator mPopulater = new RouterNewsPopulator(this.exp.getProjectPath().toString()){
+
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(1);
+				this.setTestSize(1);
+			}
+			
+		};
+		mPopulater.addTrainingTopics("acq");
+		mPopulater.addTestingTopics("acq");
+		this.exp.newsPopulater = mPopulater;
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		FileUtils.deleteDirectory(this.expPath.toFile());
+//		FileUtils.deleteDirectory(this.expPath.toFile());
 	}
 
 	@Test
@@ -59,51 +79,31 @@ public class ExperimentTest{
 		assertTrue("user are not the right user",isRightUser);
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void testInitialize() {//What should we test? expect throw out Exception when user and experiment day are not set
-		try {
-			this.exp.initialize();
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-		
-	}
+//	@Test(expected = RuntimeException.class)
+//	public void testInitialize() {//What should we test? expect throw out Exception when user and experiment day are not set
+//		try {
+//			this.exp.initialize();
+//		} catch (IOException e) {
+//			fail(e.getMessage());
+//		}
+//		
+//	}
 
 	@Test
-	public void testReadFromSimpleTXT() throws IOException {
-		File simpleTxt = Files.createTempFile("exp_", null).toFile();
-		FileWriter writer = new FileWriter(simpleTxt);
-		writer.write("1"+System.getProperty("line.separator"));
-		writer.write("QUALITY+PRODUCTS,1,1"+System.getProperty("line.separator"));
-		writer.write("Google,2,2");
+	public void testRun(){
+		try {
+			this.exp.initialize();
 		
-		writer.close();
-		List<TopicTermGraph> doc = this.exp.readFromSimpleText(0, simpleTxt);
-		assertNotNull("Should not be null",doc);
-		assertSame("should have two topic",2,doc.size());
-		Files.delete(simpleTxt.toPath());
+		for (int dayN = 1; dayN <= this.exp.experimentDays; dayN++) { //execute every day and record performance
+			Long time = System.currentTimeMillis();
+			this.exp.run(dayN);
+			Long spendedTime = System.currentTimeMillis() - time;
+		}
 		
-	}
-	@Test
-	public void testReadFromDTG(){
-		this.exp.betweenessThreshold = 0.1;
-		File testFile = new File("usedData/acq/acq_0000212.txt");
-		EmbeddedIndexSearcher.SolrHomePath= "D:/Documents/NGD/webpart/solr";
-		EmbeddedIndexSearcher.solrCoreName= "collection1";
-		List<TopicTermGraph> results = exp.readFromDTG(1, testFile);
-		System.out.println(results.size());
-		//fail("Not yet finished");
-	}
-	@Test
-	public void testTrain(){
-		//TODO implement test
-		fail("Not yet implement");
-	}
-	
-	@Test
-	public void testTest(){
-		//TODO implement test
-		fail("Not yet implment");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 }

@@ -161,46 +161,51 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 		populater.addTestingTopics(randomTopic);
 		experiment.newsPopulater = populater;
 	}
+
 	@Override
-	public void conceptDriftExperiment(int turn,int seed){
-			Path project = this.rootDir.resolve("turn_" + turn).resolve("seed_"+seed);
-			TopicMappingTool maper = new TopicMappingTool(
-					new NgdReverseTfTopicSimilarity(), 0.5);
-			user = new MemoryBasedUserProfile();
-			user.setRemoveRate(0.7);
-			MemoryBasedUserProfile.longTermThreshold = (int) (25*turn+parama);
-			experiment = new Experiment(project.toString(), maper, user);
-			experiment.debugMode = debugMode;
-			experiment.experimentDays = 14;
+	public void conceptDriftExperiment(int turn, int seed) {
+		this.topicSimliarityThreshold = 0.8;
+		this.removeRate = 0.7;
+		this.experimentDays = 14;
+		Path project = this.rootDir.resolve("turn_" + turn).resolve(
+				"seed_" + seed);
+		TopicMappingTool maper = new TopicMappingTool(
+				new NgdReverseTfTopicSimilarity(),
+				this.topicSimliarityThreshold);
+		user = new MemoryBasedUserProfile();
+		user.setRemoveRate(this.removeRate);
+		MemoryBasedUserProfile.longTermThreshold = (int) (25 * turn + parama);
+		experiment = new Experiment(project.toString(), maper, user);
+		experiment.debugMode = debugMode;
+		experiment.setExperimentDays(experimentDays);
 
-			RouterNewsPopulator populater = new RouterNewsPopulator(
-					project.toString()) {
+		RouterNewsPopulator populater = new RouterNewsPopulator(
+				project.toString()) {
 
-				@Override
-				public void setGenarationRule() {
-					this.setTrainSize(10);
-					this.setTestSize(5);
-					this.trainTopics.clear();
-					if (this.theDay <= 7) {
-						this.addTrainingTopics("acq");
-					} else {
-						this.addTrainingTopics("earn");
-					}
-
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(10);
+				this.setTestSize(5);
+				this.trainTopics.clear();
+				if (this.theDay <= 7) {
+					this.addTrainingTopics("acq");
+				} else {
+					this.addTrainingTopics("earn");
 				}
 
-			};
-			populater.addTrainingTopics("acq");// only to avoid warning
-			populater.addTestingTopics("acq");
-			populater.addTestingTopics("trade");
-			ArrayList<String> topics = Lists
-					.newArrayList(RouterNewsPopulator.test);
-			topics.remove("acq");
-			topics.remove("trade");
-			String randomTopic = topics.get(new Random(seed).nextInt(topics
-					.size()));
-			populater.addTestingTopics(randomTopic);
-			experiment.newsPopulater = populater;
+			}
+
+		};
+		populater.addTrainingTopics("acq");// only to avoid warning
+		populater.addTestingTopics("acq");
+		populater.addTestingTopics("trade");
+		ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
+		topics.remove("acq");
+		topics.remove("trade");
+		String randomTopic = topics
+				.get(new Random(seed).nextInt(topics.size()));
+		populater.addTestingTopics(randomTopic);
+		experiment.newsPopulater = populater;
 	}
 	@Override
 	public void performanceExperiment(int turn){
