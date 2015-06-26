@@ -174,7 +174,7 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 				this.topicSimliarityThreshold);
 		user = new MemoryBasedUserProfile();
 		user.setRemoveRate(this.removeRate);
-		MemoryBasedUserProfile.longTermThreshold = (int) (25 * turn + parama);
+		user.longTermThreshold = (int) (25 * turn + parama);
 		experiment = new Experiment(project.toString(), maper, user);
 		experiment.debugMode = debugMode;
 		experiment.setExperimentDays(experimentDays);

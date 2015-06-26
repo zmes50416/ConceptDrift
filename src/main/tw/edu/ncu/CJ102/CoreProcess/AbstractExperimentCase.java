@@ -263,6 +263,8 @@ public abstract class AbstractExperimentCase implements Runnable{
 			e.printStackTrace();
 		}
 		
+		System.exit(0);
+		
 	}
 	abstract void removeThresholdExperiment(int turn);
 	abstract void TopicRelatedScore(int turn) throws IOException;

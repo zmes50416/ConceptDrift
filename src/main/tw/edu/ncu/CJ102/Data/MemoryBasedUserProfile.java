@@ -20,7 +20,6 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static int longTermThreshold = 50; //長期興趣門檻值
 	public MemoryBasedUserProfile() {
 		this.setRemoveRate(0.1);
 	}

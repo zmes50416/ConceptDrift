@@ -48,7 +48,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
 		user = new MemoryBasedUserProfile();
 		user.setRemoveRate(this.removeRate);
-		MemoryBasedUserProfile.longTermThreshold = (int) (this.parama + 25*turn);
+		user.longTermThreshold = (int) (this.parama + 25*turn);
 		experiment = new Experiment(project.toString(),maper,user);
 		experiment.debugMode = true;
 		experiment.experimentDays = 14;

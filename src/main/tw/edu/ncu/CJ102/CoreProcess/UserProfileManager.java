@@ -85,7 +85,7 @@ public class UserProfileManager {
 				topicInterest += term.termFreq;
 			}
 			//TODO should not depend on low level implement detail, but no time to fix it
-			if(topic.isLongTermInterest()&& topicInterest < MemoryBasedUserProfile.longTermThreshold/2.0){
+			if(topic.isLongTermInterest()&& topicInterest < user.longTermThreshold/2.0){
 				topic.setLongTermInterest(false);
 			}
 			if(topicInterest < user.getTopicRemoveThreshold()){

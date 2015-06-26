@@ -119,6 +119,8 @@ public class Experiment {
 				writer.newLine();
 				writer.write("Core Size:"+TopicTermGraph.MAXCORESIZE);
 				writer.newLine();
+				writer.write("Long Term Threshold:"+user.longTermThreshold);
+				writer.newLine();
 			}catch(IOException e){
 				e.printStackTrace();
 			}

@@ -17,7 +17,7 @@ public abstract class AbstractUserProfile implements Serializable{
 	 * 使用者的辨識方法,目前無實作
 	 */
 	String id;
-
+	public int longTermThreshold = 50; //長期興趣門檻值
 	protected double removeRate; //興趣去除比例
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
