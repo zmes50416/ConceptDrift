@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import tw.edu.ncu.CJ102.SettingManager;
+import tw.edu.ncu.CJ102.Data.FreqBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import tw.edu.ncu.CJ102.algorithm.impl.NgdReverseTfTopicSimilarity;
@@ -161,7 +162,51 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 		populater.addTestingTopics(randomTopic);
 		experiment.newsPopulater = populater;
 	}
+	@Override
+	public void oldConceptDriftExperiment(int turn, int seed) {
+		this.topicSimliarityThreshold = 0.8;
+		this.removeRate = 0.7;	
+		this.experimentDays = 14;
+		Path project = this.rootDir.resolve("turn_" + turn).resolve(
+				"seed_" + seed);
+		TopicMappingTool maper = new TopicMappingTool(
+				new NgdReverseTfTopicSimilarity(),
+				this.topicSimliarityThreshold);
+		user = new FreqBasedUserProfile(this.removeRate);
+		user.longTermThreshold = (int) (25 * turn + parama);
+		experiment = new Experiment(project.toString(), maper, user);
+		experiment.debugMode = debugMode;
+		experiment.setExperimentDays(experimentDays);
 
+
+		RouterNewsPopulator populater = new RouterNewsPopulator(
+				project.toString()) {
+
+			@Override
+			public void setGenarationRule() {
+				this.setTrainSize(5);
+				this.setTestSize(5);
+				this.trainTopics.clear();
+				if (this.theDay <= 7) {
+					this.addTrainingTopics("acq");
+				} else {
+					this.addTrainingTopics("earn");
+				}
+
+			}
+
+		};
+		populater.addTrainingTopics("acq");// only to avoid warning
+		populater.addTestingTopics("acq");
+		populater.addTestingTopics("earn");
+		ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
+		topics.remove("acq");
+		topics.remove("earn");
+		String randomTopic = topics
+				.get(new Random(seed).nextInt(topics.size()));
+//		populater.addTestingTopics(randomTopic);
+		experiment.newsPopulater = populater;
+	}
 	@Override
 	public void conceptDriftExperiment(int turn, int seed) {
 		this.topicSimliarityThreshold = 0.8;
@@ -184,7 +229,7 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 
 			@Override
 			public void setGenarationRule() {
-				this.setTrainSize(10);
+				this.setTrainSize(5);
 				this.setTestSize(5);
 				this.trainTopics.clear();
 				if (this.theDay <= 7) {
@@ -198,13 +243,13 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 		};
 		populater.addTrainingTopics("acq");// only to avoid warning
 		populater.addTestingTopics("acq");
-		populater.addTestingTopics("trade");
+		populater.addTestingTopics("earn");
 		ArrayList<String> topics = Lists.newArrayList(RouterNewsPopulator.test);
 		topics.remove("acq");
-		topics.remove("trade");
+		topics.remove("earn");
 		String randomTopic = topics
 				.get(new Random(seed).nextInt(topics.size()));
-		populater.addTestingTopics(randomTopic);
+//		populater.addTestingTopics(randomTopic);
 		experiment.newsPopulater = populater;
 	}
 	@Override
@@ -236,5 +281,6 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 			}
 			experiment.newsPopulater = populater;
 	}
+	
 	
 }

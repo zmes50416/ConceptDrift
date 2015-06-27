@@ -1,66 +1,56 @@
 package tw.edu.ncu.CJ102.Data;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import edu.uci.ics.jung.graph.util.Pair;
-
-/**
- * 基於長期以及短期記憶區塊的使用者模型，
- * @author TingWen
- *
- */
-public class MemoryBasedUserProfile extends AbstractUserProfile {
+public class FreqBasedUserProfile extends AbstractUserProfile {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public MemoryBasedUserProfile() {
-		this.setRemoveRate(0.1);
+	
+	private HashMap<TopicTermGraph,Boolean> lastUpdateTopics = new HashMap<>();
+	private HashMap<TopicTermGraph,Double> forgetFactorMap = new HashMap<>();
+	public FreqBasedUserProfile() {
+		// TODO Auto-generated constructor stub
 	}
-	public MemoryBasedUserProfile(double _removeRate){
+	public FreqBasedUserProfile(double _removeRate) {
 		this.setRemoveRate(_removeRate);
 	}
-	
-	/**
-	 * @return the sizeOfShortTerm
-	 */
-	private int getSizeOfShortTerm() {
-		int sizeOfShortTerm = 0;
-		for(TopicTermGraph topic : userTopics){
-			if(!topic.isLongTermInterest()){
-				sizeOfShortTerm++;
-			}
+
+	@Override
+	public double updateDecayRate(TopicTermGraph topic, int date) {
+		Boolean isReadDocuments = this.lastUpdateTopics.get(topic);
+		if(isReadDocuments == null){
+			isReadDocuments = false;
 		}
-		return sizeOfShortTerm;
+		double forgetFactor = this.forgetFactorMap.get(topic);
+		if (isReadDocuments) {
+			forgetFactor = forgetFactor - 0.079;
+		} else {
+			forgetFactor = forgetFactor + 0.079;
+		}
+		if (forgetFactor > 0.98) {
+			forgetFactor = 0.98;
+		} else if (forgetFactor < 0.45) {
+			forgetFactor = 0.45;
+		}
+		this.forgetFactorMap.put(topic, forgetFactor);
+		this.lastUpdateTopics.put(topic,false);
+		return forgetFactor;
+
 	}
 
 	@Override
-	public double updateDecayRate(TopicTermGraph topic,int today) {
-
-		double decayRate;
-		int timeFactor = today-topic.getUpdateDate();
-		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(Math.E, -timeFactor*0.02);
-		}else{
-			double strength = Math.log10(topic.numberOfDocument)+2;
-			decayRate = Math.pow(Math.E, -(timeFactor*this.getSizeOfShortTerm()/this.getUserTopics().size())/strength);
-		}
-		return decayRate;
-	}
-	
-	@Override
-	public void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap,int today) {
+	public void addDocument(Map<TopicTermGraph, TopicTermGraph> topicMap,
+			int today) {
 		if(topicMap.isEmpty()){//document should have something to add
 			throw new IllegalArgumentException("document topic should not be empty!");
 		}
 		
-		HashSet<TopicTermGraph> documentTopics = new HashSet<>();//use for CoOccurance topic in document
 		HashSet<TopicTermGraph> recordTopics = new HashSet<>();
 		double documentTf = 0;
 		int termCount =0;
@@ -72,23 +62,18 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 				if(recordTopics.add(mappedTopic)){ //Prevent Add too much when multiple topic mapping into one user topic
 					mappedTopic.numberOfDocument++;
 				}
+				this.lastUpdateTopics.put(mappedTopic, true);
 				mappedTopic.setUpdateDate(today);
 			}else{
 				loger.debug("new Topic {} into the User Profile",topic);
+				this.forgetFactorMap.put(topic, 0.921);
 				if(!this.userTopics.add(topic)){
 					throw new RuntimeException("Cant add topic");
 				}
 			}
-			double sumInterest = 0;
-			if(!mappedTopic.isLongTermInterest()){
-				for(TermNode term:mappedTopic.getVertices()){
-					sumInterest += term.termFreq;
-					if(sumInterest>=this.longTermThreshold){
-						loger.info("Topic {} become long term Interest",mappedTopic);
-						mappedTopic.setLongTermInterest(true);
-						break;//reduce computing when long term is sured!
-					}
-				}
+			if(!mappedTopic.isLongTermInterest()&&today - mappedTopic.getBirthDate() >= 7){
+				loger.info("Topic {} become long term Interest",mappedTopic);
+				mappedTopic.setLongTermInterest(true);
 			}
 			
 			for(TermNode term:topic.getVertices()){//Record tf of new Term & document
@@ -104,8 +89,9 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 
 		this.updateTopicRemoveThreshold(avgDocumentTf);
 		this.updateTermRemoveThreshold(avgTermTf);
-	}
 
+	}
+	
 	protected void updateTopicRemoveThreshold(double newDocumentTf) {
 		if(topicRemoveThreshold==0){
 			this.topicRemoveThreshold = newDocumentTf;
@@ -120,6 +106,4 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}
 		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
 	}
-
-
 }

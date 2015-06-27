@@ -107,6 +107,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 			titlerow.createCell(cellCount).setCellValue("Time(NanoSeconds)");
 			titlerow.createCell(++cellCount).setCellValue("Size of Short Term Interest");
 			titlerow.createCell(++cellCount).setCellValue("Size of Long Term Interest");
+			titlerow.createCell(++cellCount).setCellValue("Drifted");
 	        
 	        sumTime = 0L;
 			
@@ -129,6 +130,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 				dailyRow.createCell(cellCount++).setCellValue(spendedTime);
 				dailyRow.createCell(cellCount++).setCellValue(user.getShortTermcount());
 				dailyRow.createCell(cellCount++).setCellValue(user.getLongTermCount());
+				dailyRow.createCell(cellCount++).setCellValue(this.experiment.numberOfDrifted);
 				FileOutputStream out = new FileOutputStream(excel);
 				workbook.write(out);
 			}
@@ -244,6 +246,23 @@ public abstract class AbstractExperimentCase implements Runnable{
 						
 
 					}
+				}else if(input.equals("6")){
+					System.out.println("請填入長期門檻值參數:");
+					double parama = scanner.nextDouble();
+					System.out.println("請填入隨機次數:");
+					int times = scanner.nextInt();
+					
+					for(int turn =0;turn<round;turn++){
+						for(int j = 1;j<=times;j++){
+							AbstractExperimentCase expController = newExpController(type,path); 
+							expController.parama = parama;
+							expController.oldConceptDriftExperiment(turn,j);
+							expController.roundNumber = turn*j+j;
+							exps.add(expController);
+						}
+						
+
+					}
 				}
 				System.out.println("Do you continue add up next exp?(0==Exit)");
 			}while(scanner.nextInt()!=0);
@@ -272,5 +291,5 @@ public abstract class AbstractExperimentCase implements Runnable{
 	abstract void corelessExperiment(int turn) throws IOException ;
 	abstract void performanceExperiment(int turn) throws IOException;
 	abstract void conceptDriftExperiment(int turn,int seed);
-
+	abstract void oldConceptDriftExperiment(int turn,int seed);
 }
