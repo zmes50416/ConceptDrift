@@ -42,7 +42,6 @@ public class TopicMappingTool {
 		Collection<TopicTermGraph> userTopics = user.getUserTopics();
 		TopicTermGraph mappedTopic = _topic; //
 		
-		int doc_topic_num = _topic.getVertexCount(); // 某一主題的字詞數量
 		double similarityThreshold = 0; // 相似度門檻值
 		double maximumSimilarity = 0; //目前最大相似者
 		int taskCount = 0;
@@ -59,14 +58,13 @@ public class TopicMappingTool {
 				int userTopicSize = userTopic.getVertexCount(); // 某一模型主題的字詞數量
 				double userTopicTfSum = 0; // 某一模型主題的總TF值
 
-				for (TermNode docTerm : mappedTopic.getCoreTerm()) {
+				for (TermNode docTerm : _topic.getCoreTerm()) {
 					for(TermNode term:userTopic.getCoreTerm()){
 						userTopicTfSum += term.termFreq/2;
 					}
 				}
-
 				similarityThreshold = (userTopicTfSum * relateness_threshold)
-						/ (userTopic.getCoreTerm().size() * mappedTopic.getCoreTerm().size());
+						/ (userTopic.getCoreTerm().size() * _topic.getCoreTerm().size());
 				// 文件的字詞總和可以分母分子化簡
 
 				double similarity = completedTask.get();
@@ -80,12 +78,9 @@ public class TopicMappingTool {
 				e.printStackTrace();
 			}
 		}//end of all task for loop 
-		if(!taskMap.isEmpty()){
-			throw new RuntimeException("Should have finised all task");
-		}
 		return mappedTopic;
 	}
-
+	
 }
 class mapTask implements Callable<Double>{
 	private TopicTermGraph theTopic;
