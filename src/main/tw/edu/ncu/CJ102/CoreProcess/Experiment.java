@@ -345,20 +345,29 @@ public class Experiment {
 				}
 			}
 		}
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter(this.userProfilePath.resolve("testResult.txt").toFile(),true))){
+			if (realAnswer == true) {// two possible Type: TP,FN
+				if(systemAnswer==true){
+					writer.write(documentTopicLabel+":TP");
+					this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
+				}else{
+					writer.write(documentTopicLabel+":FN");
+					this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
+				}
+			} else { // two possible type: FP,TN
+				if(systemAnswer==true){
+					writer.write(documentTopicLabel+":FP");
+					this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
+				}else{
+					writer.write(documentTopicLabel+":TN");
+					this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
+				}
+			}//end of RealAnswer if
+			writer.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
-		if (realAnswer == true) {// two possible Type: TP,FN
-			if(systemAnswer==true){
-				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUEPOSTIVE);
-			}else{
-				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.FALSENEGATIVE);
-			}
-		} else { // two possible type: FP,TN
-			if(systemAnswer==true){
-				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.FALSEPOSTIVE);
-			}else{
-				this.systemDailyPerformance.set_EfficacyMeasure(PerformanceType.TRUENEGATIVE);
-			}
-		}//end of RealAnswer if
 		
 		
 	}

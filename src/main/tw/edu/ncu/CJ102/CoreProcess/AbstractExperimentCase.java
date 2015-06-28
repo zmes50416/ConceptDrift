@@ -107,7 +107,6 @@ public abstract class AbstractExperimentCase implements Runnable{
 			titlerow.createCell(cellCount).setCellValue("Time(NanoSeconds)");
 			titlerow.createCell(++cellCount).setCellValue("Size of Short Term Interest");
 			titlerow.createCell(++cellCount).setCellValue("Size of Long Term Interest");
-			titlerow.createCell(++cellCount).setCellValue("Drifted");
 	        
 	        sumTime = 0L;
 			
@@ -130,7 +129,6 @@ public abstract class AbstractExperimentCase implements Runnable{
 				dailyRow.createCell(cellCount++).setCellValue(spendedTime);
 				dailyRow.createCell(cellCount++).setCellValue(user.getShortTermcount());
 				dailyRow.createCell(cellCount++).setCellValue(user.getLongTermCount());
-				dailyRow.createCell(cellCount++).setCellValue(this.experiment.numberOfDrifted);
 				FileOutputStream out = new FileOutputStream(excel);
 				workbook.write(out);
 			}

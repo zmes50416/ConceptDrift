@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class FreqBasedUserProfile extends AbstractUserProfile {
-
+	//TODO 學長的遺忘因子是綁定在字詞上面，這個作法弄錯了
 	/**
 	 * 
 	 */
