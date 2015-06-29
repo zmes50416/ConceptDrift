@@ -40,7 +40,7 @@ public class ExperimentTest{
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
 	}
-
+	
 	@Before
 	public void setUp() throws Exception {
 		expPath = Files.createTempDirectory("ExperimentClass");
@@ -78,16 +78,6 @@ public class ExperimentTest{
 		boolean isRightUser = (u==user);
 		assertTrue("user are not the right user",isRightUser);
 	}
-
-//	@Test(expected = RuntimeException.class)
-//	public void testInitialize() {//What should we test? expect throw out Exception when user and experiment day are not set
-//		try {
-//			this.exp.initialize();
-//		} catch (IOException e) {
-//			fail(e.getMessage());
-//		}
-//		
-//	}
 
 	@Test
 	public void testRun(){

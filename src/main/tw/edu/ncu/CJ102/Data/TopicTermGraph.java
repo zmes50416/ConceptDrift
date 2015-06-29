@@ -1,10 +1,13 @@
 package tw.edu.ncu.CJ102.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.Collections;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
@@ -14,6 +17,8 @@ import java.util.TreeSet;
 
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.buffer.CircularFifoBuffer;
+
+import com.google.common.collect.Lists;
 
 import tw.edu.ncu.CJ102.algorithm.CentralityAlgorithm;
 import tw.edu.ncu.CJ102.algorithm.LinkPrediction;
@@ -33,7 +38,6 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	public static int MAXCORESIZE = 10; //Default Core size
 	CentralityAlgorithm<TermNode,CEdge> centralityAlgorithm = new LP<TermNode,CEdge>(this); //Default Core algorithm
 	public static int METHODTYPE = 0;
-
 	private boolean isLongTermInterest;
 	double averageTermTf;
 	private int birthDate;
@@ -176,7 +180,6 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 
 		}
 		HashMap<TermNode,Double> scoreSheet = new HashMap<>();
-		PriorityQueue<TermNode> core = new PriorityQueue<>(MAXCORESIZE, new nodeComparator());
 		for(TermNode term:this.getVertices()){
 			scoreSheet.put(term, centralityAlgorithm.computeCentrality(term,new Transformer<CEdge,Double>(){
 
@@ -186,25 +189,36 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 				}
 				
 			}));
-			if(core.size()==MAXCORESIZE){
-				TermNode minTerm = core.poll();
-				if(scoreSheet.get(minTerm)>=scoreSheet.get(term)){
-					core.offer(minTerm);
-					continue;
-				}
-			}
-			core.offer(term);
-		
 		}
-		return core;
+		ArrayList<Entry<TermNode,Double>> sortTerm = Lists.newArrayList(scoreSheet.entrySet());
+		Collections.sort(sortTerm,new nodeComparator());
+		ArrayList<TermNode> coreTerm = new ArrayList<>();
+		int currentIndex = sortTerm.size()-1;
+		int count = 0;
+		while(count<MAXCORESIZE){
+			if(currentIndex<0){
+				break;
+			}
+			TermNode term = sortTerm.get(currentIndex).getKey();
+			coreTerm.add(term);
+			currentIndex--;
+			count++;
+		}
+		return coreTerm;
 	}
-	class nodeComparator implements Comparator<TermNode>{
+	class nodeComparator implements Comparator<Entry<TermNode,Double>>{
 
 		@Override
-		public int compare(TermNode arg0, TermNode arg1) {
-			int degree0 = getNeighborCount(arg0);
-			int degree1 = getNeighborCount(arg1);
-			return degree0-degree1;
+		public int compare(Entry<TermNode,Double> arg0, Entry<TermNode,Double> arg1) {
+			Double degree0 = arg0.getValue();
+			Double degree1 = arg1.getValue();
+			if(degree0<degree1){
+				return -1;
+			}else if(degree0>degree1){
+				return 1;
+			}else{
+				return 0;
+			}
 		}
 		
 	}

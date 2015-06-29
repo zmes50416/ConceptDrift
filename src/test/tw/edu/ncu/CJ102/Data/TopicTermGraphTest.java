@@ -9,8 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import tw.edu.ncu.CJ102.CoreProcess.Experiment;
-import tw.edu.ncu.CJ102.Data.TermNode;
-import tw.edu.ncu.CJ102.Data.TopicTermGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class TopicTermGraphTest {
@@ -64,19 +62,35 @@ public class TopicTermGraphTest {
 	@Test
 	public void testGetCoreTerm(){
 		TopicTermGraph.MAXCORESIZE = 2;
-		TermNode testNode = new TermNode("test",1);
+		TermNode[] nodes = {new TermNode("Google",1),new TermNode("Apple",2),new TermNode("Samsung",3),new TermNode("Galaxy S4",1),new TermNode("iPhone",1)};
+		CEdge edgeiPGa = new CEdge();
+		edgeiPGa.setCoScore(1);
+		CEdge edgeSamApp = new CEdge();
+		edgeSamApp.setCoScore(2);
+		CEdge edgeGaSa =  new CEdge();
+		edgeGaSa.setCoScore(1);
+		CEdge edgeiPAp = new CEdge();
+		edgeiPAp.setCoScore(1);
+		CEdge edgeApGo = new CEdge();
+		edgeApGo.setCoScore(1);
+		CEdge edgeSamGo = new CEdge();
+		edgeSamGo.setCoScore(1);
 		
-		TermNode testNode1 = new TermNode("Google");
-		TermNode testNode2 = new TermNode("Samsung");
-		TermNode testNode3 = new TermNode("Apple");
-		c.addEdge(new CEdge(), testNode,testNode1);
-		c.addEdge(new CEdge(), testNode1,testNode2);
-		c.addEdge(new CEdge(), testNode3,testNode2);
-		
-		Collection<TermNode> cores = this.c.getCoreTerm();
-		System.out.println(cores);
+		c.addEdge(edgeSamGo, nodes[2], nodes[0]);
+		c.addEdge(edgeApGo, nodes[1],nodes[0]);
+		c.addEdge(edgeiPGa,nodes[4],nodes[3]);
+		c.addEdge(edgeiPAp, nodes[4],nodes[1]);
+		c.addEdge(edgeSamApp, nodes[2],nodes[1]);
+		c.addEdge(edgeGaSa, nodes[0],nodes[2]);
+		Collection<TermNode> cores = null;
+		for(int i=0;i<=2;i++){
+			TopicTermGraph.METHODTYPE = i;
+			cores = this.c.getCoreTerm();
+			System.out.println(cores);
+//			System.out.println(c.scoreSheet);
+		}
 		assertEquals(2,cores.size());
-		assertTrue(!cores.contains(testNode));
+//		assertTrue(!cores.contains(testNode));
 		
 	}
 
