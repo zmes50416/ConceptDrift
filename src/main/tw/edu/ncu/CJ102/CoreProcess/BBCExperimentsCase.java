@@ -10,12 +10,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Stack;
 
+import org.apache.hadoop.http.HttpServer.StackServlet;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -24,9 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 
 import tw.edu.ncu.CJ102.SettingManager;
+import tw.edu.ncu.CJ102.Data.BaseLineUserProfile;
 import tw.edu.ncu.CJ102.Data.FreqBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
@@ -36,6 +41,8 @@ import tw.edu.ncu.im.Util.HttpIndexSearcher;
 import tw.edu.ncu.im.Util.IndexSearchable;
 
 public class BBCExperimentsCase extends AbstractExperimentCase {
+	final String[][] conceptDriftTopic = {{"sport","business"},{"politics","tech"},{"business","entertainment"},{"tech","sport"},{"entertainment","politics"}};
+	
 	public BBCExperimentsCase(Path path) {
 		super(path);
 		this.topicPath = SettingManager.getSetting("bbcDataSet");
@@ -46,7 +53,7 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		this.topicSimliarityThreshold = 0.7;
 		this.removeRate = 0.7;
 		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
-		user = new FreqBasedUserProfile(this.removeRate);
+		user = new BaseLineUserProfile(this.removeRate);
 		user.longTermThreshold = (int) (this.parama + 25*turn);
 		experiment = new Experiment(project.toString(),maper,user);
 		experiment.debugMode = true;
@@ -56,29 +63,25 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 			@Override
 			public void setGenarationRule() {
 				this.setTrainSize(5);
-				this.setTestSize(5);
+				this.setTestSize(10);
 				this.trainTopics.clear();
 				if(this.theDay<=7){
-					this.addTrainingTopics("business");
+					this.addTrainingTopics(conceptDriftTopic[seed][0]);
 				}else{
-					this.addTrainingTopics("politics");
+					this.addTrainingTopics(conceptDriftTopic[seed][1]);
 				}
 				
 			}
 			
 		};
 		populater.addTrainingTopics("business");//only to avoid warning
-		populater.addTestingTopics("politics");
-		populater.addTestingTopics("business");
-		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
-		topics.remove("business");
-		topics.remove("politics");
-//		populater.addTestingTopics(topics.get(new Random(seed).nextInt(topics.size())));
+		populater.addTrainingTopics(conceptDriftTopic[seed][0]);
 		experiment.newsPopulater = populater;
 	}
 	@Override
 	public void conceptDriftExperiment(int turn,int j) {
-		Path project = this.rootDir.resolve("turn_"+turn);
+		Path project = this.rootDir.resolve("turn_" + turn).resolve(
+				"seed_" + j);
 		this.topicSimliarityThreshold = 0.7;
 		this.removeRate = 0.7;
 		TopicMappingTool maper = new TopicMappingTool(new NgdReverseTfTopicSimilarity(),this.topicSimliarityThreshold);
@@ -88,30 +91,25 @@ public class BBCExperimentsCase extends AbstractExperimentCase {
 		experiment = new Experiment(project.toString(),maper,user);
 		experiment.debugMode = true;
 		experiment.experimentDays = 14;
-		
+		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
 		BBCNewsPopulator populater = new BBCNewsPopulator(project){
 
 			@Override
 			public void setGenarationRule() {
 				this.setTrainSize(5);
-				this.setTestSize(5);
+				this.setTestSize(10);
 				this.trainTopics.clear();
 				if(this.theDay<=7){
-					this.addTrainingTopics("business");
+					this.addTrainingTopics(conceptDriftTopic[j][0]);
 				}else{
-					this.addTrainingTopics("politics");
+					this.addTrainingTopics(conceptDriftTopic[j][1]);
 				}
 				
 			}
 			
 		};
-		populater.addTrainingTopics("business");//only to avoid warning
-		populater.addTestingTopics("politics");
-		populater.addTestingTopics("business");
-		ArrayList<String> topics = Lists.newArrayList(BBCNewsPopulator.TOPICS);
-		topics.remove("business");
-		topics.remove("politics");
-//		populater.addTestingTopics(topics.get(new Random(j).nextInt(topics.size())));
+		populater.addTrainingTopics(conceptDriftTopic[j][0]);//only to avoid warning
+		populater.addTestingTopics(conceptDriftTopic[j][0]);
 		experiment.newsPopulater = populater;
 	}
 	@Override

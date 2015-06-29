@@ -234,11 +234,11 @@ public abstract class AbstractExperimentCase implements Runnable{
 					int times = scanner.nextInt();
 					
 					for(int turn =0;turn<round;turn++){
-						for(int j = 1;j<=times;j++){
+						for(int j = 0;j<times;j++){
 							AbstractExperimentCase expController = newExpController(type,path); 
 							expController.parama = parama;
 							expController.conceptDriftExperiment(turn,j);
-							expController.roundNumber = turn*j+j;
+							expController.roundNumber = turn+j;
 							exps.add(expController);
 						}
 						
@@ -251,11 +251,11 @@ public abstract class AbstractExperimentCase implements Runnable{
 					int times = scanner.nextInt();
 					
 					for(int turn =0;turn<round;turn++){
-						for(int j = 1;j<=times;j++){
+						for(int j = 0;j<times;j++){
 							AbstractExperimentCase expController = newExpController(type,path); 
 							expController.parama = parama;
 							expController.oldConceptDriftExperiment(turn,j);
-							expController.roundNumber = turn*j+j;
+							expController.roundNumber = turn+j;
 							exps.add(expController);
 						}
 						

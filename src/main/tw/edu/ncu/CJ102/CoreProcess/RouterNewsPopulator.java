@@ -13,6 +13,8 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.common.collect.Lists;
+
 import tw.edu.ncu.CJ102.SettingManager;
 
 /**
@@ -77,9 +79,6 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 
 	@Override
 	public boolean populateExperiment(int days) {
-		if(this.trainTopics.isEmpty()||this.testTopics.isEmpty()){
-			throw new RuntimeException("topic is empty, nothing will be generate!");
-		}
 		for (int i = 1; i <= days; i++) {
 			// 創造出實驗訓練集,測試集第i天資料匣
 			Path traingPath = projectDir.resolve(Paths.get("training" ,"day_"
@@ -124,7 +123,7 @@ public abstract class RouterNewsPopulator implements ExperimentFilePopulater {
 		
 		if(document.isFile()){
 			String topicName = document.getName().split("_")[0];
-			if(this.testTopics.contains(topicName)||this.trainTopics.contains(topicName)){
+			if(Lists.newArrayList(test).contains(topicName)){
 				return topicName;
 			}else{
 				throw new IllegalArgumentException("File isn't in the topics or File Name are not in correct Format");
