@@ -97,17 +97,16 @@ public class LP<V, E> implements LinkPrediction<V, E>, CentralityAlgorithm<V,E> 
 	public double computeCentrality(V term,
 			Transformer<E, Double> edgeWeightTransformer) {
 		double score = 0;
+		double A2 = 0;
 		for(V neighbor:graph.getNeighbors(term)){
 			double A3 = 0;
 			E e = this.graph.findEdge(term, neighbor);
-			double A2 = edgeWeightTransformer.transform(e); 
+			A2 += edgeWeightTransformer.transform(e); 
 			for(V neighborOfNeigbor:graph.getNeighbors(neighbor)){
 				E e2 = this.graph.findEdge(neighbor, neighborOfNeigbor);
 				A3 += edgeWeightTransformer.transform(e2);
 			}
-					
 			score +=  A2+(A3*0.01);
-
 		}
 		return score;
 	}
