@@ -4,63 +4,25 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import edu.uci.ics.jung.graph.util.Pair;
-
-/**
- * 基於長期以及短期記憶區塊的使用者模型，
- * @author TingWen
- *
- */
-public class MemoryBasedUserProfile extends AbstractUserProfile {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	public MemoryBasedUserProfile() {
-		this.setRemoveRate(0.1);
+public class BaseLineUserProfile extends AbstractUserProfile {
+	//長短期沒差的遺忘因子使用者模型，當作比較的基準點
+	public BaseLineUserProfile(double removeRate) {
+		this.removeRate = removeRate;
 	}
-	public MemoryBasedUserProfile(double _removeRate){
-		this.setRemoveRate(_removeRate);
-	}
-	
 	/**
-	 * @return the sizeOfShortTerm
+	 * All update everyday
 	 */
-	private int getSizeOfShortTerm() {
-		int sizeOfShortTerm = 0;
-		for(TopicTermGraph topic : userTopics){
-			if(!topic.isLongTermInterest()){
-				sizeOfShortTerm++;
-			}
-		}
-		return sizeOfShortTerm;
+	@Override
+	public double updateDecayRate(TopicTermGraph topic, int date) {
+		return 0.98;
 	}
 
 	@Override
-	public double updateDecayRate(TopicTermGraph topic,int today) {
-		final int z = 2;
-		double decayRate;
-		int timeFactor = today-topic.getUpdateDate();
-		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(2, -((timeFactor)*(z/100.0)));
-		}else{
-			double strength = topic.numberOfDocument;
-			decayRate = Math.pow(2, -timeFactor/strength);
-		}
-		return decayRate;
-	}
-	
-	@Override
-	public void addDocument(Map<TopicTermGraph,TopicTermGraph> topicMap,int today) {
+	public void addDocument(Map<TopicTermGraph, TopicTermGraph> topicMap,
+			int today) {
 		if(topicMap.isEmpty()){//document should have something to add
 			throw new IllegalArgumentException("document topic should not be empty!");
 		}
-		
-		HashSet<TopicTermGraph> documentTopics = new HashSet<>();//use for CoOccurance topic in document
 		HashSet<TopicTermGraph> recordTopics = new HashSet<>();
 		double documentTf = 0;
 		int termCount =0;
