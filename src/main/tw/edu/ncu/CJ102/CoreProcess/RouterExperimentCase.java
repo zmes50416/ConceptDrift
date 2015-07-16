@@ -236,7 +236,7 @@ public class RouterExperimentCase extends AbstractExperimentCase {
 			}
 
 		};
-		populater.addTestingTopics(TEST_TOPICS[seed-1][0]);
+		populater.addTestingTopics(TEST_TOPICS[seed][0]);
 
 //		populater.addTestingTopics(TEST_TOPICS[seed][1]);
 		experiment.newsPopulater = populater;

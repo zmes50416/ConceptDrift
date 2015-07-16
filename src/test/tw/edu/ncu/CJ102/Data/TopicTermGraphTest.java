@@ -81,7 +81,7 @@ public class TopicTermGraphTest {
 		c.addEdge(edgeiPGa,nodes[4],nodes[3]);
 		c.addEdge(edgeiPAp, nodes[4],nodes[1]);
 		c.addEdge(edgeSamApp, nodes[2],nodes[1]);
-		c.addEdge(edgeGaSa, nodes[0],nodes[2]);
+		c.addEdge(edgeGaSa, nodes[3],nodes[2]);
 		Collection<TermNode> cores = null;
 		for(int i=0;i<=2;i++){
 			TopicTermGraph.METHODTYPE = i;
@@ -94,4 +94,11 @@ public class TopicTermGraphTest {
 		
 	}
 
+	@Test
+	public void testGetStrength(){
+		c.addVertex(new TermNode("Apple",2.0));
+		c.addVertex(new TermNode("Ball", 1.5));
+		
+		assertEquals("Should have total node tf in compute",3.5,c.getStrength(),0);
+	}
 }

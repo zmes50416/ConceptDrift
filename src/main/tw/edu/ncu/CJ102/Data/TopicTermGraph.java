@@ -68,7 +68,16 @@ public class TopicTermGraph extends UndirectedSparseGraph<TermNode,CEdge> implem
 	public int getBirthDate() {
 		return birthDate;
 	}
-
+	/**
+	 * get the f(Ci) value
+	 */
+	public double getStrength(){
+		double strength = 0;
+		for(TermNode term :this.getVertices()){
+			strength += term.termFreq;
+		}
+		return strength;
+	}
 	/**
 	 * @return the updateDate
 	 */

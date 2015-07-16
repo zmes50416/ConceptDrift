@@ -95,6 +95,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 			File excel = this.experiment.getProjectPath().resolve(projectName+"_data.xls").toFile();
 			
 	        HSSFSheet sheet = workbook.createSheet("Data");
+	        HSSFSheet dailySheet = workbook.createSheet("Daily");
 	        int cellCount = 1;
 			HSSFRow titlerow = sheet.createRow(0);
 			titlerow.createCell(0).setCellValue("Day");
