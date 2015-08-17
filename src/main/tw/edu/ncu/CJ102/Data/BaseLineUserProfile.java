@@ -83,7 +83,7 @@ public class BaseLineUserProfile extends AbstractUserProfile {
 		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
 	}
 	@Override
-	public void computeLongTermThreshold() {
+	public double getLongTermThreshold() {
 		this.longTermThreshold = 1000;
 	}
 
