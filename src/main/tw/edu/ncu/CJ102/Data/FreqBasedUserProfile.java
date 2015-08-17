@@ -110,4 +110,9 @@ public class FreqBasedUserProfile extends AbstractUserProfile {
 		}
 		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
 	}
+	@Override
+	public void computeLongTermThreshold() {
+		// TODO Auto-generated method stub
+		
+	}
 }

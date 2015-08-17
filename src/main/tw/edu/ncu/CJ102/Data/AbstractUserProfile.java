@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -17,7 +20,22 @@ public abstract class AbstractUserProfile implements Serializable{
 	 * 使用者的辨識方法,目前無實作
 	 */
 	String id;
-	public int longTermThreshold = 50; //長期興趣門檻值
+	protected double longTermThreshold = 25; //長期興趣門檻值
+	//Override the set and getter than you can use different rule of long Term threshold
+	/**
+	 * set the longTermThreshold
+	 * @param threshold
+	 */
+	public void setlongTermThreshold(double threshold){
+		this.longTermThreshold = threshold;
+	}
+	/**
+	 * @return the longTermThreshold
+	 */
+	public double getLongTermThreshold(){
+		return this.longTermThreshold;
+	}
+	
 	protected double removeRate; //興趣去除比例
 	double topicRemoveThreshold;
 	double termRemoveThreshold;
@@ -84,5 +102,5 @@ public abstract class AbstractUserProfile implements Serializable{
 	public void setRemoveRate(double remove_rate) {
 		this.removeRate = remove_rate;
 	}
-
+	
 }

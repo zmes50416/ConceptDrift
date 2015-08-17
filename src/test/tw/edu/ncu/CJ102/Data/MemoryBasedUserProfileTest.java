@@ -1,17 +1,19 @@
 package tw.edu.ncu.CJ102.Data;
 
 import static org.junit.Assert.*;
+import static org.easymock.EasyMock.*;
 
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.easymock.EasyMockSupport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import tw.edu.ncu.CJ102.Data.MemoryBasedUserProfile;
 import tw.edu.ncu.CJ102.Data.TopicTermGraph;
-public class MemoryBasedUserProfileTest{
+public class MemoryBasedUserProfileTest extends EasyMockSupport{
 	public MemoryBasedUserProfile user;
 
 	@Before
@@ -35,23 +37,19 @@ public class MemoryBasedUserProfileTest{
 //		longTopic.numberOfDocument = 100;
 		user.userTopics.add(shortTopic);
 		user.userTopics.add(longTopic);
-		for(int i=0;i<=8;i++){
-			TopicTermGraph t = new TopicTermGraph(1);
-			if(i<=9){
-				t.setLongTermInterest(true);
-			}
-			user.userTopics.add(t);
-		}
+
 		double factorShort = 1;
 		double factorLong = 1;
-		for(int day=2;day<=8;day++){
+		for(int day=2;day<=7;day++){
 			shortTopic.numberOfDocument++;
-			double decayFactor = user.updateDecayRate(shortTopic, day);
-			factorLong *= user.updateDecayRate(longTopic, day);
-			factorShort *= decayFactor;
-			System.out.println("Day "+day+", ShortTermTopic:"+factorShort);
-			System.out.println(decayFactor);
-			System.out.println("Day "+day+", longTermTopic:"+factorLong);
+			double shortDecayFactor = user.updateDecayRate(shortTopic, day);
+			double longDecayFactor = user.updateDecayRate(longTopic, day);
+			factorLong *= longDecayFactor;
+			factorShort *= shortDecayFactor;
+//			System.out.println("Day"+day+",ShortTermTopic:"+factorShort);
+//			System.out.println("Day "+day+", longTermTopic:"+factorLong);
+			System.out.println("Day "+day+", long:"+longDecayFactor);
+			System.out.println("Day"+day+",short:"+shortDecayFactor);
 		}
 	}
 
@@ -98,6 +96,19 @@ public class MemoryBasedUserProfileTest{
 		
 		assertEquals("user should have 3 user topic now",3,topics.size());
 		//TODO test whether a topic will be longTerm or not
+	}
+	
+	@Test
+	public void testLongTermThreshold(){
+		for(int i=1;i<=10;i++){
+			TopicTermGraph topic = createMock(TopicTermGraph.class);
+			expect(topic.getStrength()).andReturn((double)i).anyTimes();
+			replay(topic);
+			user.userTopics.add(topic);
+		}
+		user.percentageOfLongTerm = 0.5;
+		user.computeLongTermThreshold();
+		assertEquals(5.0,user.getLongTermThreshold(),0);
 	}
 
 }

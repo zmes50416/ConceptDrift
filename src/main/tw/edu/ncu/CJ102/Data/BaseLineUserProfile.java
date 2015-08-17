@@ -45,7 +45,7 @@ public class BaseLineUserProfile extends AbstractUserProfile {
 			if(!mappedTopic.isLongTermInterest()){
 				for(TermNode term:mappedTopic.getVertices()){
 					sumInterest += term.termFreq;
-					if(sumInterest>=this.longTermThreshold){
+					if(sumInterest>=this.getLongTermThreshold()){
 						loger.info("Topic {} become long term Interest",mappedTopic);
 						mappedTopic.setLongTermInterest(true);
 						break;//reduce computing when long term is sured!
@@ -81,6 +81,10 @@ public class BaseLineUserProfile extends AbstractUserProfile {
 			this.termRemoveThreshold = newTermTf;
 		}
 		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
+	}
+	@Override
+	public void computeLongTermThreshold() {
+		this.longTermThreshold = 1000;
 	}
 
 

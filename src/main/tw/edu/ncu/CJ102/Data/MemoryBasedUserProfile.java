@@ -111,35 +111,6 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		}
 		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
 	}
-	@Override
-	public void computeLongTermThreshold() {
-		if (userTopics.isEmpty()) {
-			this.longTermThreshold = 0;
-			return;
-		}
-		List<TopicTermGraph> sortedTopics = (List<TopicTermGraph>) userTopics;
-		Collections.sort(sortedTopics, new Comparator<TopicTermGraph>() {
-			// Reverse Order
-			@Override
-			public int compare(TopicTermGraph t0, TopicTermGraph t1) {
-				double tf0 = t0.getStrength(), tf1 = t1.getStrength();
-
-				if (tf0 - tf1 > 0) {
-					return -1;
-				} else if (tf0 - tf1 < 0) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-
-		});
-		int index = (int) (Math.ceil(this.percentageOfLongTerm
-				* (sortedTopics.size() - 1)));
-		TopicTermGraph thresholdTopic = sortedTopics.get(index);
-		this.longTermThreshold = thresholdTopic.getStrength();
-
-	}
 
 
 }
