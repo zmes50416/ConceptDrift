@@ -74,3 +74,5 @@ citeulikeData/
 *.lock
 *.png
 *.xls
+*.xlsx
+*.zip
