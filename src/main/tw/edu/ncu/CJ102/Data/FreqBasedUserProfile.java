@@ -4,9 +4,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-
+/**
+ * 透過同樣架構重現吳登翔學長的使用者模型，但目前學長的遺忘因子是綁定在字詞上面，這個作法弄錯了
+ * @author TingWen
+ *
+ */
+@Deprecated
 public class FreqBasedUserProfile extends AbstractUserProfile {
-	//TODO 學長的遺忘因子是綁定在字詞上面，這個作法弄錯了
 	/**
 	 * 
 	 */

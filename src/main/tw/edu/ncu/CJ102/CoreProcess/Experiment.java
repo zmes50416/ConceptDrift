@@ -137,12 +137,10 @@ public class Experiment {
 			if(this.systemDailyPerformance.phTest()){
 				logger.warn("Concept Drift Happened in day {}",dayN-1);
 			}
+			userManager.checkTopicType(user);
 			userManager.updateUserProfile(dayN, user);
-			userManager.identifyBelowRemoveAndLongTermThreshold(user);
-			train(dayN);
-			test(dayN);
+			userManager.removeForgottenTopics(user);
 			
-
 			if(debugMode == true){
 				this.simplelog(dayN);
 				try {
@@ -153,6 +151,12 @@ public class Experiment {
 					e.printStackTrace();
 				}
 			}
+			
+			train(dayN);
+			test(dayN);
+			
+
+			
 			
 		}else{
 			throw new IllegalArgumentException(dayN+" are not valid date");
@@ -382,6 +386,8 @@ public class Experiment {
 			writer.append("Topic remove threshold:"+user.getTopicRemoveThreshold());
 			writer.newLine();
 			writer.append("Term remove threshold:"+user.getTermRemoveThreshold());
+			writer.newLine();
+			writer.append("LongTermThreshold:"+user.getLongTermThreshold());
 			writer.newLine();
 			for(TopicTermGraph topic:topics){
 				writer.append("topic:"+topic.toString()+"value:"+(int)topic.getValue()+",is Long term:"+topic.isLongTermInterest()+",Decay Factor:"+topic.getDecayRate()+",number of terms:"+topic.getVertexCount()+" Core term:"+topic.getCoreTerm());

@@ -57,6 +57,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		topic1.addVertex(new TermNode("test1",5.0));
 		topic1.addVertex(new TermNode("test2",5.0));
 		expect(user.updateDecayRate(notNull(TopicTermGraph.class), anyInt())).andReturn(0.5);
+		expect(user.getTermRemoveThreshold()).andReturn(0.0).anyTimes();
 		replay(user);
 		
 		this.manager.updateUserProfile(2, user);
@@ -67,7 +68,7 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		assertEquals("Decay are not function normally",5.0,score,0.1);
 	}
 	@Test
-	public void testRemoveBelow(){
+	public void testRemoveForgottenTopics(){
 		expect(user.getTopicRemoveThreshold()).andReturn(3.0).anyTimes();
 		expect(user.getTermRemoveThreshold()).andReturn(3.0).anyTimes();
 		replay(user);
@@ -75,10 +76,24 @@ public class UserProfileManagerTest extends EasyMockSupport{
 		topic1.addVertex(new TermNode("test2",1.0));
 		TopicTermGraph topic2 = new TopicTermGraph(0);
 		this.mockUserTopics.add(topic2);
-		this.manager.identifyBelowRemoveAndLongTermThreshold(user);
+		this.manager.removeForgottenTopics(user);
 		assertTrue("Should have remove the topic2",!user.getUserTopics().contains(topic2));
-		assertTrue("topic1 should remove term test 2",!topic1.containsVertex(new TermNode("test2")));
-
+	}
+	
+	@Test
+	public void testCheckType(){
+		user.computeLongTermThreshold();
+		expect(user.getLongTermThreshold()).andReturn(5.0).anyTimes();
+		TopicTermGraph topic1 = createMock(TopicTermGraph.class);
+		expect(topic1.getStrength()).andReturn(7.0);
+		expect(topic1.isLongTermInterest()).andReturn(false);
+		topic1.setLongTermInterest(true);
+		expectLastCall().once();
+		replay(topic1);
+		replay(user);
+		this.mockUserTopics.add(topic1);
+		this.manager.checkTopicType(user);
+		verify(topic1);
 	}
 	@Test
 	public void testInsertTopic() {

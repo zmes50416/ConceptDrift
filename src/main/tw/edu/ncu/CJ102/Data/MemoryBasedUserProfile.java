@@ -1,6 +1,9 @@
 package tw.edu.ncu.CJ102.Data;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -42,14 +45,13 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 
 	@Override
 	public double updateDecayRate(TopicTermGraph topic,int today) {
-		final int z = 2;
 		double decayRate;
 		int timeFactor = today-topic.getUpdateDate();
 		if(topic.isLongTermInterest()){
-			decayRate = Math.pow(2, -((timeFactor)*(z/100.0)));
+			decayRate = Math.pow(Math.E, -((timeFactor)*(Math.log(2)/30.0)));
 		}else{
 			double strength = topic.numberOfDocument;
-			decayRate = Math.pow(2, -timeFactor/strength);
+			decayRate = Math.pow(Math.E, -timeFactor/strength);
 		}
 		return decayRate;
 	}
@@ -65,33 +67,22 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 		double documentTf = 0;
 		int termCount =0;
 		for(Entry<TopicTermGraph, TopicTermGraph> topicPair:topicMap.entrySet()){
-			TopicTermGraph topic = topicPair.getKey();
+			TopicTermGraph documentTopic = topicPair.getKey();
 			TopicTermGraph mappedTopic = topicPair.getValue();
-			if(this.userTopics.contains(mappedTopic)){
-				mappedTopic.merge(topic);
+			if(this.userTopics.contains(mappedTopic)){ //mapped Topic already in user profile
+				mappedTopic.merge(documentTopic);
 				if(recordTopics.add(mappedTopic)){ //Prevent Add too much when multiple topic mapping into one user topic
 					mappedTopic.numberOfDocument++;
 				}
 				mappedTopic.setUpdateDate(today);
 			}else{
-				loger.debug("new Topic {} into the User Profile",topic);
-				if(!this.userTopics.add(topic)){
+				loger.debug("new Topic {} into the User Profile",documentTopic);
+				if(!this.userTopics.add(documentTopic)){
 					throw new RuntimeException("Cant add topic");
 				}
 			}
-			double sumInterest = 0;
-			if(!mappedTopic.isLongTermInterest()){
-				for(TermNode term:mappedTopic.getVertices()){
-					sumInterest += term.termFreq;
-					if(sumInterest>=this.longTermThreshold){
-						loger.info("Topic {} become long term Interest",mappedTopic);
-						mappedTopic.setLongTermInterest(true);
-						break;//reduce computing when long term is sured!
-					}
-				}
-			}
 			
-			for(TermNode term:topic.getVertices()){//Record tf of new Term & document
+			for(TermNode term:documentTopic.getVertices()){//Record tf of new Term & document
 				this.updateTermRemoveThreshold(term.termFreq);
 				documentTf += term.termFreq;
 				termCount++;
@@ -119,6 +110,35 @@ public class MemoryBasedUserProfile extends AbstractUserProfile {
 			this.termRemoveThreshold = newTermTf;
 		}
 		this.termRemoveThreshold = (newTermTf + this.termRemoveThreshold)/2;
+	}
+	@Override
+	public void computeLongTermThreshold() {
+		if (userTopics.isEmpty()) {
+			this.longTermThreshold = 0;
+			return;
+		}
+		List<TopicTermGraph> sortedTopics = (List<TopicTermGraph>) userTopics;
+		Collections.sort(sortedTopics, new Comparator<TopicTermGraph>() {
+			// Reverse Order
+			@Override
+			public int compare(TopicTermGraph t0, TopicTermGraph t1) {
+				double tf0 = t0.getStrength(), tf1 = t1.getStrength();
+
+				if (tf0 - tf1 > 0) {
+					return -1;
+				} else if (tf0 - tf1 < 0) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+
+		});
+		int index = (int) (Math.ceil(this.percentageOfLongTerm
+				* (sortedTopics.size() - 1)));
+		TopicTermGraph thresholdTopic = sortedTopics.get(index);
+		this.longTermThreshold = thresholdTopic.getStrength();
+
 	}
 
 

@@ -239,7 +239,7 @@ public abstract class AbstractExperimentCase implements Runnable{
 							AbstractExperimentCase expController = newExpController(type,path); 
 							expController.parama = parama;
 							expController.conceptDriftExperiment(turn,j);
-							expController.roundNumber = turn+j;
+							expController.roundNumber = turn*times+j;
 							exps.add(expController);
 						}
 						
