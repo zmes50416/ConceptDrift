@@ -84,7 +84,7 @@ public class BaseLineUserProfile extends AbstractUserProfile {
 	}
 	@Override
 	public double getLongTermThreshold() {
-		this.longTermThreshold = 1000;
+		return 1000;
 	}
 
 
